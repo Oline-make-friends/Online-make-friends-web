@@ -12,23 +12,32 @@ import {
   Link,
   Avatar,
   FormControl,
-  FormHelperText,
   InputRightElement,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../redux/apiRequest";
+import { useDispatch } from "react-redux";
+import axios from "axios";
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowClick = () => setShowPassword(!showPassword);
 
   const logIn = (e) => {
     e.preventDefault();
-    navigate("/home");
+    const newUser = {
+      user_name: username,
+      password: password,
+    };
+    loginUser(newUser, dispatch, navigate);
   };
 
   return (
@@ -63,7 +72,10 @@ const Login = () => {
                       pointerEvents="none"
                       children={<CFaUserAlt color="gray.300" />}
                     />
-                    <Input type="email" placeholder="Username" />
+                    <Input
+                      placeholder="Username"
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
                   </InputGroup>
                 </FormControl>
                 <FormControl>
@@ -76,6 +88,7 @@ const Login = () => {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <InputRightElement width="4.5rem">
                       <Button h="1.75rem" size="sm" onClick={handleShowClick}>
@@ -83,9 +96,6 @@ const Login = () => {
                       </Button>
                     </InputRightElement>
                   </InputGroup>
-                  <FormHelperText textAlign="right">
-                    <Link>forgot password?</Link>
-                  </FormHelperText>
                 </FormControl>
                 <Button
                   borderRadius={0}
