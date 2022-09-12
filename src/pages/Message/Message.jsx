@@ -81,7 +81,7 @@ export default function Message() {
             >
               <Box
                 className="Sender"
-                bg="#496ada"
+                bg="#f7c8cf"
                 w="40%"
                 m="4"
                 borderRadius="10px"

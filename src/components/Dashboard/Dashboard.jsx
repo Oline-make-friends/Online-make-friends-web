@@ -35,7 +35,7 @@ const Dashboard = () => {
           <Box
             w="30%"
             mx="3%"
-            bg="#0076f6"
+            bg="#f7c8cf"
             bgGradient="linear(to-r, #0076f6, pink.500)"
             height="150px"
             borderRadius="10px"
