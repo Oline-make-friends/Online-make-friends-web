@@ -9,7 +9,6 @@ import {
   InputLeftElement,
   chakra,
   Box,
-  Link,
   Avatar,
   FormControl,
   InputRightElement,
@@ -18,6 +17,9 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
@@ -29,14 +31,13 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowClick = () => setShowPassword(!showPassword);
-
   const logIn = (e) => {
     e.preventDefault();
     const newUser = {
-      user_name: username,
+      username: username,
       password: password,
     };
-    loginUser(newUser, dispatch, navigate);
+    loginUser(newUser, dispatch, navigate, toast);
   };
 
   return (
@@ -74,6 +75,7 @@ const Login = () => {
                     <Input
                       placeholder="Username"
                       onChange={(e) => setUsername(e.target.value)}
+                      required
                     />
                   </InputGroup>
                 </FormControl>
@@ -88,6 +90,7 @@ const Login = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       onChange={(e) => setPassword(e.target.value)}
+                      required
                     />
                     <InputRightElement width="4.5rem">
                       <Button h="1.75rem" size="sm" onClick={handleShowClick}>
@@ -109,12 +112,7 @@ const Login = () => {
             </form>
           </Box>
         </Stack>
-        <Box>
-          New to us?{" "}
-          <Link color="pink.500" href="#">
-            Sign Up
-          </Link>
-        </Box>
+        <Box></Box>
       </Flex>
     </>
   );

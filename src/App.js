@@ -8,6 +8,8 @@ import User from "./pages/User/User";
 import Profile from "./pages/User/Profile";
 import Notification from "./pages/Notification/Notification";
 import Message from "./pages/Message/Message";
+import RequireAuth from "./components/Auth/RequireAuth";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const location = useLocation();
@@ -23,15 +25,17 @@ function App() {
     >
       {location.pathname === "/" ? "" : <SideBar />}
       <Routes>
-        <Route path="/dashboard" element={<Dashboard />} />
-
+        <Route element={<RequireAuth />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/user" element={<User />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/notification" element={<Notification />} />
+          <Route path="/message" element={<Message />} />
+        </Route>
         <Route path="/" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/user" element={<User />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/notification" element={<Notification />} />
-        <Route path="/message" element={<Message />} />
       </Routes>
+      <ToastContainer position="top-center" />
     </div>
   );
 }

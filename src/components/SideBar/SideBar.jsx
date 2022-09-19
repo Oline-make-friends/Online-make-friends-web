@@ -6,21 +6,29 @@ import {
   Divider,
   Avatar,
   Heading,
+  Button,
 } from "@chakra-ui/react";
 import { FiMenu, FiUser, FiHome } from "react-icons/fi";
 import { VscDashboard } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { AiOutlineMessage } from "react-icons/ai";
 import NavItem from "./NavItem";
+import { useDispatch, useSelector } from "react-redux";
+import { logOutUser } from "../../redux/apiRequest";
 
 export default function Sidebar() {
+  const user = useSelector((state) => state.auth?.login.currentUser);
+  const dispatch = useDispatch();
+  const logOut = () => {
+    logOutUser(dispatch);
+  };
   const [navSize, changeNavSize] = useState("large");
   return (
     <Flex
       pos="sticky"
       h="100vh"
       boxShadow="0 4px 12px 0 rgba(0, 0, 0, 0.05)"
-      borderRadius="30px"
+      borderRadius="20px"
       border="1px"
       flexDir="column"
       justifyContent="space-between"
@@ -81,9 +89,10 @@ export default function Sidebar() {
             display={navSize === "small" ? "none" : "flex"}
           >
             <Heading as="h3" size="sm">
-              Sylwia Weller
+              {user?.fullname}
             </Heading>
             <Text color="gray">Admin</Text>
+            <Button onClick={() => logOut()}>Logout</Button>
           </Flex>
         </Flex>
       </Flex>

@@ -22,9 +22,15 @@ const authSlice = createSlice({
       state.login.isFetching = false;
       state.login.error = true;
     },
+    logOut: (state) => {
+      state.login.currentUser = null;
+      state.login.isFetching = false;
+      state.login.error = false;
+    },
   },
 });
 
-export const { loginStart, loginFail, loginSuccess } = authSlice.actions;
+export const { loginStart, loginFail, loginSuccess, logOut } =
+  authSlice.actions;
 
 export default authSlice.reducer;

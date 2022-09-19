@@ -5,14 +5,31 @@ import {
   Image,
   Text,
   Heading,
-  Button,
   Avatar,
   Center,
 } from "@chakra-ui/react";
 import { BiLike } from "react-icons/bi";
 import { BsFillChatLeftDotsFill } from "react-icons/bs";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetUserProfile } from "../../redux/apiRequest";
+import { toast } from "react-toastify";
 
 const Profile = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+
+  const profile = useSelector((state) => state.user?.users.profile);
+
+  useEffect(() => {
+    const fetchUser = () => {
+      handleGetUserProfile(dispatch, toast, id);
+    };
+    fetchUser();
+    console.log(profile);
+    // eslint-disable-next-line
+  }, [id]);
   return (
     <Box
       style={{
@@ -24,7 +41,7 @@ const Profile = () => {
     >
       <Flex w="100%" h="500px" m="2" direction="center" p="4">
         <Image
-          src="https://bit.ly/dan-abramov"
+          src={profile.avatar_url}
           alt="Dan Abramov"
           w="250px"
           h="300px"
@@ -32,25 +49,31 @@ const Profile = () => {
         />
         <Box style={{ color: "black" }} w="40%" h="100%" py="4">
           <Heading as="h1" fontSize="4xl">
-            Sylwia Weller
+            {profile.fullname}
           </Heading>
           <Text color="gray" fontSize="lg">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste, saepe
+            {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste, saepe */}
+            {profile.about}
           </Text>
           <br />
           <Flex justify="flex-start">
             <Flex direction="column" mr="30%">
-              <Text style={{ fontWeight: "bold" }}>abcdxyz@gmail.com</Text>
-              <Text style={{ fontWeight: "bold" }}>Software Engineer</Text>
+              <Text style={{ fontWeight: "bold" }}>
+                Interest : {profile.interrests}
+              </Text>
+              <Text style={{ fontWeight: "bold" }}>
+                Major : {profile.major}
+              </Text>
             </Flex>
             <Flex direction="column">
-              <Text style={{ fontWeight: "bold" }}>TPHCM</Text>
-              <Text style={{ fontWeight: "bold" }}>Hokage</Text>
+              <Text style={{ fontWeight: "bold" }}>
+                location:{profile.location}
+              </Text>
+              <Text style={{ fontWeight: "bold" }}>
+                Gender:{profile.gender}
+              </Text>
             </Flex>
           </Flex>
-          <Button my="4" bg="#0076f6">
-            <Text color="white">Send message</Text>
-          </Button>
         </Box>
         <Box style={{ color: "black" }} h="100%" py="4" m="40px">
           <Text color="gray" fontWeight="bold">
