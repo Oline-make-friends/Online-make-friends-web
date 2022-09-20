@@ -49,3 +49,15 @@ export const handleGetUserProfile = async (dispatch, toast, id) => {
     toast.error("can not get profile");
   }
 };
+
+export const handleSendEmailResetPassword = async (toast, username) => {
+  try {
+    await axios.post(
+      `http://localhost:8000/sendMail/sendEmailResetPassword/${username}`
+    );
+
+    toast.success("send email success");
+  } catch (error) {
+    toast.error("can not find user");
+  }
+};

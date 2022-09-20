@@ -15,7 +15,10 @@ import {
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../redux/apiRequest";
+import {
+  loginUser,
+  handleSendEmailResetPassword,
+} from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,6 +41,9 @@ const Login = () => {
       password: password,
     };
     loginUser(newUser, dispatch, navigate, toast);
+  };
+  const handleSendEmailReset = () => {
+    handleSendEmailResetPassword(toast, username);
   };
 
   return (
@@ -112,7 +118,18 @@ const Login = () => {
             </form>
           </Box>
         </Stack>
-        <Box></Box>
+        <Box>
+          <Button
+            borderRadius={0}
+            type="submit"
+            variant="solid"
+            colorScheme="red"
+            width="full"
+            onClick={handleSendEmailReset}
+          >
+            Send email reset password
+          </Button>
+        </Box>
       </Flex>
     </>
   );
