@@ -29,14 +29,15 @@ const Profile = () => {
     fetchUser();
     console.log(profile);
     // eslint-disable-next-line
-  }, [id]);
+  }, []);
   return (
     <Box
       style={{
         overflow: "scroll",
-        height: "800px",
+        height: "900px",
         width: "100%",
         color: "white",
+        overflowX:"hidden"
       }}
     >
       <Flex w="100%" h="500px" m="2" direction="center" p="4">

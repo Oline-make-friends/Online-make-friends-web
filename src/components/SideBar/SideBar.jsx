@@ -34,6 +34,9 @@ export default function Sidebar() {
       justifyContent="space-between"
       px="20px"
       bg="white"
+      // style={{
+      //   height: "100%",
+      // }}
     >
       <Flex
         flexDir="column"
@@ -57,7 +60,7 @@ export default function Sidebar() {
           title="Dashboard"
           href="/dashboard"
         />
-        <NavItem navSize={navSize} icon={FiHome} title="Posts" href="/home" />
+        <NavItem navSize={navSize} icon={FiHome} title="Home" href="/home" />
         <NavItem navSize={navSize} icon={FiUser} title="Users" href="/user" />
         <NavItem
           navSize={navSize}
