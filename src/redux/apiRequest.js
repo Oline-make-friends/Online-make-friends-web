@@ -29,7 +29,7 @@ export const logOutUser = (dispatch) => {
 export const handleGetAllUser = async (dispatch, toast) => {
   dispatch(getUserStart());
   try {
-    const res = await axios.get("http://localhost:8000/user/getAll");
+    const res = await axios.get("http://localhost:8000/user/getAllUser");
     dispatch(getUserSuccess(res.data));
 
     toast.success("get user success");

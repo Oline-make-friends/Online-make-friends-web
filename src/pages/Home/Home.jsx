@@ -1,12 +1,14 @@
 import React from "react";
-import { Box, Avatar, Flex, Text, Center, Image } from "@chakra-ui/react";
-import { BiLike } from "react-icons/bi";
-import { BsFillChatLeftDotsFill } from "react-icons/bs";
+import { Box, Avatar, Flex, Text, Center, Image, Link } from "@chakra-ui/react";
+// import { BiLike } from "react-icons/bi";
+// import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const handleGetAllPost = async () => {
     try {
@@ -82,10 +84,17 @@ const Home = () => {
               />
             </Box>
             <Flex alignItems="start" my="2">
-              <BiLike size={25} style={{ marginRight: "5px" }} />
+              {/* <BiLike size={25} style={{ marginRight: "5px" }} />
               <BsFillChatLeftDotsFill size={25} />
 
-              <Text mx="2">See comment</Text>
+              <Text mx="2">See comment</Text> */}
+              <Link mx="4" onClick={() => {
+                navigate("/post",{
+                  state:{
+                    post
+                  }
+                });
+              }}><b>Detail</b></Link>
             </Flex>
           </Flex>);
         })}

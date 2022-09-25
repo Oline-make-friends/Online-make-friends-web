@@ -7,20 +7,39 @@ import {
   Heading,
   Avatar,
   Center,
+  Link
 } from "@chakra-ui/react";
-import { BiLike } from "react-icons/bi";
-import { BsFillChatLeftDotsFill } from "react-icons/bs";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+// import { BiLike } from "react-icons/bi";
+// import { BsFillChatLeftDotsFill } from "react-icons/bs";
+import { useState,useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { handleGetUserProfile } from "../../redux/apiRequest";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const profile = useSelector((state) => state.user?.users.profile);
+  const [posts, setPosts] = useState([]);
+  const handleGetAllPost = async () => {
+    try {
+      const res = await axios.post("http://localhost:8000/post/get/"+id);
+      toast.success("get post success!");
+      setPosts(res.data);
+      console.log(res.data);
+
+    } catch (error) {
+      toast.error("get post user fail!");
+    }
+
+  }
+
 
   useEffect(() => {
     const fetchUser = () => {
@@ -28,6 +47,7 @@ const Profile = () => {
     };
     fetchUser();
     console.log(profile);
+    handleGetAllPost()
     // eslint-disable-next-line
   }, []);
   return (
@@ -90,7 +110,6 @@ const Profile = () => {
       {/* ////////////////////// */}
       <Center
         style={{
-          height: "800px",
           width: "100%",
           color: "black",
         }}
@@ -100,7 +119,9 @@ const Profile = () => {
             width: "50%",
           }}
         >
-          <Flex
+          {/*  */}
+        {posts?.map((post) => {
+          return (<Flex
             direction="column"
             align="start"
             border="1px"
@@ -108,79 +129,52 @@ const Profile = () => {
             borderRadius="10px"
             my="4"
             bg="white"
+            key={post._id}
           >
             <Box my="2">
               <Flex>
                 <Avatar
                   m={[2, 2]}
-                  name="Dan Abrahmov"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8kQL47PtECE3iRRjzyfgXbNcPgFX4txEG6w&usqp=CAU"
+                  src={`${post.created_by.avatar_url}`}
                 />
                 <Center style={{ display: "flex", flexDirection: "column" }}>
                   <Text>
-                    <b>Duy Phong</b>
+                    <b>{post.created_by.fullname}</b>
                   </Text>
-                  <Text>17/08/2022</Text>
+                  <Text>{post.createdAt.substring(0, 10)}</Text>
                 </Center>
               </Flex>
             </Box>
             <Box mx="2">
-              <Text>Content post here</Text>
+              <Text>{post.content}</Text>
             </Box>
             <Box>
               <Image
                 border="1px"
                 borderColor="black"
-                src="https://gamek.mediacdn.vn/133514250583805952/2020/5/31/anh-4-15909430232362015900333.png"
+                src={`${post.imageUrl}`}
                 alt="image"
               />
             </Box>
             <Flex alignItems="start" my="2">
-              <BiLike size={25} style={{ marginRight: "5px" }} />
+              {/* <BiLike size={25} style={{ marginRight: "5px" }} />
               <BsFillChatLeftDotsFill size={25} />
 
-              <Text mx="2">See comment</Text>
+              <Text mx="2">See comment</Text> */}
+              <Link mx="4" onClick={() => {
+                navigate("/post",{
+                  state:{
+                    post
+                  }
+                });
+              }}><b>Detail</b></Link>
             </Flex>
-          </Flex>
+          </Flex>);
+        })}
 
-          <Flex
-            direction="column"
-            align="start"
-            border="1px"
-            borderColor="black"
-            borderRadius="10px"
-          >
-            <Box my="2">
-              <Flex>
-                <Avatar
-                  m={[2, 2]}
-                  name="Dan Abrahmov"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8kQL47PtECE3iRRjzyfgXbNcPgFX4txEG6w&usqp=CAU"
-                />
-                <Center style={{ display: "flex", flexDirection: "column" }}>
-                  <Text>
-                    <b>Duy Phong</b>
-                  </Text>
-                  <Text>17/08/2022</Text>
-                </Center>
-              </Flex>
-            </Box>
-            <Box mx="2">
-              <Text>Content post here</Text>
-            </Box>
-            <Box>
-              <Image
-                src="https://gamek.mediacdn.vn/133514250583805952/2020/5/31/anh-4-15909430232362015900333.png"
-                alt="image"
-              />
-            </Box>
-            <Flex alignItems="start" my="2">
-              <BiLike size={25} style={{ marginRight: "5px" }} />
-              <BsFillChatLeftDotsFill size={25} />
 
-              <Text mx="2">See comment</Text>
-            </Flex>
-          </Flex>
+
+        {/*  */}
         </Box>
       </Center>
     </Box>

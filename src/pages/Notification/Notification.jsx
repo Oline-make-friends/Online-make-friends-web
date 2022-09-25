@@ -6,20 +6,50 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
   TableContainer,
-  Flex,
-  Avatar,
-  Center,
   Text,
 } from "@chakra-ui/react";
-import { AiFillSetting } from "react-icons/ai";
-import { RiDeleteBin5Fill } from "react-icons/ri";
+// import { AiFillSetting } from "react-icons/ai";
+// import { RiDeleteBin5Fill } from "react-icons/ri";
 import SendNoti from "../../components/SendNoti/SendNoti";
+import Noti from "../../components/SendNoti/Noti";
+import axios from "axios";
+import { useState,useEffect } from "react";
+import { toast } from "react-toastify";
 
 const Notification = () => {
+  const [notis, setNotis] = useState([]);
+  const handleGetAllNoti = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/noti/getAll");
+      toast.success("get notification success!");
+      setNotis(res.data);
+      console.log(res.data);
+    } catch (error) {
+      toast.error("get notification  fail!");
+    }
+  }
+  useEffect(() => {
+
+    handleGetAllNoti();
+    // eslint-disable-next-line
+  }, []);
   return (
-    <Box w="100%" h="800px">
+    <Box
+      style={{
+        overflow: "scroll",
+         height: "900px",
+        overflowX: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        width: "100%"
+      }}
+    >
+      <Box
+        style={{
+          marginTop: "20px",
+        }}
+      >
       <Text
         fontSize="4xl"
         style={{ fontWeight: "bold", color: "black" }}
@@ -45,49 +75,12 @@ const Notification = () => {
             </Tr>
           </Thead>
           <Tbody>
-            <Tr>
-              <Td>1/1/2022</Td>
-              <Td>
-                <Flex>
-                  <Avatar
-                    m={[2, 2]}
-                    name="Dan Abrahmov"
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8kQL47PtECE3iRRjzyfgXbNcPgFX4txEG6w&usqp=CAU"
-                  />
-                  <Center style={{ display: "flex", flexDirection: "column" }}>
-                    <Text>
-                      <b>Duy Phong</b>
-                    </Text>
-                  </Center>
-                </Flex>
-              </Td>
-              <Td>Tittle of notification</Td>
-              <Td>Some thing here</Td>
-              <Td>
-                <Flex>
-                  <AiFillSetting
-                    size={40}
-                    style={{
-                      background: "#28a745",
-                      padding: "10px",
-                      borderRadius: "5px",
-                      margin: "0 10px",
-                    }}
-                  />
-                  <RiDeleteBin5Fill
-                    size={40}
-                    style={{
-                      background: "#dc3545",
-                      padding: "10px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </Flex>
-              </Td>
-            </Tr>
+          {notis?.map((noti)=>{return <Noti key={noti._id} noti={noti}/>})}
+          
           </Tbody>
         </Table>
       </TableContainer>
+      </Box>
     </Box>
   );
 };

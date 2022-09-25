@@ -111,7 +111,7 @@ export default function User() {
               <Th>#</Th>
               <Th>Name</Th>
               <Th>Date create</Th>
-              <Th>Role</Th>
+              {/* <Th>Role</Th> */}
               <Th>Status</Th>
               <Th>Action</Th>
             </Tr>
@@ -138,7 +138,7 @@ export default function User() {
                     </Flex>
                   </Td>
                   <Td>{user.createdAt.substring(0, 10)}</Td>
-                  <Td>{user.is_admin === true ? "Admin" : "User"}</Td>
+                  {/* <Td>{user.is_admin === true ? "Admin" : "User"}</Td> */}
                   <Td>
                     <Flex align="center">
                       {user.is_active === true ? (
