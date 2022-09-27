@@ -10,7 +10,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-export default function SendNoti({}) {
+export default function SendNoti() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const handleSendNoti = async () => {

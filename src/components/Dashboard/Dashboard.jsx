@@ -4,16 +4,8 @@ import {
   Center,
   Text,
   Box,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
 } from "@chakra-ui/react";
-import { BsPencil } from "react-icons/bs";
-import { RiDeleteBin5Fill } from "react-icons/ri";
+import Report from "./Report";
 
 const Dashboard = () => {
   return (
@@ -79,7 +71,7 @@ const Dashboard = () => {
               <Text as="samp" fontSize="xl">
                 600
                 <br />
-                Men
+                Male
               </Text>
             </Center>
           </Box>
@@ -97,58 +89,12 @@ const Dashboard = () => {
               <Text as="samp" fontSize="xl">
                 600
                 <br />
-                Women
+                Female
               </Text>
             </Center>
           </Box>
         </Flex>
-        <Box w="100%">
-          <TableContainer
-            style={{ color: "black" }}
-            bg="white"
-            m="4"
-            borderRadius="20px"
-          >
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Date</Th>
-                  <Th>User report</Th>
-                  <Th>Status</Th>
-                  <Th>Action</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr>
-                  <Td>1/1/2022</Td>
-                  <Td>Some one</Td>
-                  <Td bg="red">Pending</Td>
-                  <Td>
-                    <Flex>
-                      <BsPencil
-                        size={40}
-                        style={{
-                          background: "#28a745",
-                          padding: "10px",
-                          borderRadius: "5px",
-                          margin: "0 10px",
-                        }}
-                      />
-                      <RiDeleteBin5Fill
-                        size={40}
-                        style={{
-                          background: "#dc3545",
-                          padding: "10px",
-                          borderRadius: "5px",
-                        }}
-                      />
-                    </Flex>
-                  </Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Box>
+        <Report/>
       </Box>
     </Box>
   );
