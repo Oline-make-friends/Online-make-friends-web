@@ -14,7 +14,7 @@ import {
 import SendNoti from "../../components/SendNoti/SendNoti";
 import Noti from "../../components/SendNoti/Noti";
 import axios from "axios";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 const Notification = () => {
@@ -28,9 +28,8 @@ const Notification = () => {
     } catch (error) {
       toast.error("get notification  fail!");
     }
-  }
+  };
   useEffect(() => {
-
     handleGetAllNoti();
     // eslint-disable-next-line
   }, []);
@@ -38,11 +37,11 @@ const Notification = () => {
     <Box
       style={{
         overflow: "scroll",
-         height: "900px",
+        height: "900px",
         overflowX: "hidden",
         display: "flex",
         flexDirection: "column",
-        width: "100%"
+        width: "100%",
       }}
     >
       <Box
@@ -50,36 +49,37 @@ const Notification = () => {
           marginTop: "20px",
         }}
       >
-      <Text
-        fontSize="4xl"
-        style={{ fontWeight: "bold", color: "black" }}
-        ml="40px"
-      >
-        Manage Notification
-      </Text>
-      <SendNoti />
-      <TableContainer
-        style={{ color: "black" }}
-        bg="white"
-        m="4"
-        borderRadius="20px"
-      >
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Date</Th>
-              <Th>Created by</Th>
-              <Th>Tittle</Th>
-              <Th>Content</Th>
-              <Th>Action</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-          {notis?.map((noti)=>{return <Noti key={noti._id} noti={noti}/>})}
-          
-          </Tbody>
-        </Table>
-      </TableContainer>
+        <Text
+          fontSize="4xl"
+          style={{ fontWeight: "bold", color: "black" }}
+          ml="40px"
+        >
+          Manage Notification
+        </Text>
+        <SendNoti />
+        <TableContainer
+          style={{ color: "black" }}
+          bg="white"
+          m="4"
+          borderRadius="20px"
+        >
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Date</Th>
+                <Th>Created by</Th>
+                <Th>Tittle</Th>
+                <Th>Content</Th>
+                {/* <Th>Action</Th> */}
+              </Tr>
+            </Thead>
+            <Tbody>
+              {notis?.map((noti) => {
+                return <Noti key={noti._id} noti={noti} />;
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
       </Box>
     </Box>
   );

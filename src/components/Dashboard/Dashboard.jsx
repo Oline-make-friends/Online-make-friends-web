@@ -1,13 +1,41 @@
 import React from "react";
-import {
-  Flex,
-  Center,
-  Text,
-  Box,
-} from "@chakra-ui/react";
+import { Flex, Center, Text, Box } from "@chakra-ui/react";
 import Report from "./Report";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Dashboard = () => {
+  const [users, setUsers] = useState([]);
+  const [isActive, setIsActive] = useState([]);
+  const [male, setMale] = useState([]);
+  const [female, setFemale] = useState([]);
+  const handleGetAllUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/user/getAllUser");
+      toast.success("get user success!");
+      let isActive = 0;
+      let male = 0;
+      let female = 0;
+      setUsers(res.data);
+      res.data.map((user) => {
+        if (user.is_active === true) isActive++;
+        if (user.gender === "Male") male++;
+        return "";
+      });
+      female = res.data.length - male;
+      setIsActive(isActive);
+      setFemale(female);
+      setMale(male);
+
+      console.log(res.data);
+    } catch (error) {
+      toast.error("get notification  fail!");
+    }
+  };
+  useEffect(() => {
+    handleGetAllUser();
+  }, []);
   return (
     <Box w="100%">
       <Flex align="center" justify="start">
@@ -35,8 +63,7 @@ const Dashboard = () => {
           >
             <Center>
               <Text as="samp" fontSize="xl">
-                600
-                <br />
+                {users.length + " "}
                 User
               </Text>
             </Center>
@@ -52,9 +79,8 @@ const Dashboard = () => {
           >
             <Center>
               <Text as="samp" fontSize="xl">
-                600
-                <br />
-                Banned
+                {isActive + " "}
+                Is active
               </Text>
             </Center>
           </Box>
@@ -69,8 +95,7 @@ const Dashboard = () => {
           >
             <Center>
               <Text as="samp" fontSize="xl">
-                600
-                <br />
+                {male + " "}
                 Male
               </Text>
             </Center>
@@ -87,14 +112,13 @@ const Dashboard = () => {
           >
             <Center>
               <Text as="samp" fontSize="xl">
-                600
-                <br />
+                {female + " "}
                 Female
               </Text>
             </Center>
           </Box>
         </Flex>
-        <Report/>
+        <Report />
       </Box>
     </Box>
   );

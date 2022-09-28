@@ -29,6 +29,7 @@ export default function User() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userList = useSelector((state) => state.user.users.allUser);
+  console.log(userList);
 
   const handleGetUsers = () => {
     handleGetAllUser(dispatch, toast);

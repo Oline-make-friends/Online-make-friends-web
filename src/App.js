@@ -11,6 +11,7 @@ import Post from "./pages/Post/Post";
 import Message from "./pages/Message/Message";
 import RequireAuth from "./components/Auth/RequireAuth";
 import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const location = useLocation();
