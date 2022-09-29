@@ -68,37 +68,19 @@ export default function Report() {
             </Tr>
           </Thead>
           <Tbody>
-            <Tr>
-              <Td>1/1/2022</Td>
-              <Td>Some one</Td>
-              <Td>Content here</Td>
-              <Td bg="red">Pending</Td>
-              <Td>
-                <Flex>
-                  <BsPencil
-                    size={40}
-                    style={{
-                      background: "#28a745",
-                      padding: "10px",
-                      borderRadius: "5px",
-                      margin: "0 10px",
-                    }}
-                  />
-                  <RiDeleteBin5Fill
-                    size={40}
-                    style={{
-                      background: "#dc3545",
-                      padding: "10px",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </Flex>
-              </Td>
-            </Tr>
             {reports?.map((report) => {
+              var d = new Date(report?.createdAt);
+
+              var datestring =
+                d.getDate() +
+                "-" +
+                (d.getMonth() + 1) +
+                "-" +
+                d.getFullYear() +
+                " ";
               return (
                 <Tr key={report?._id}>
-                  <Td>{new Date(report?.createdAt).toDateString()}</Td>
+                  <Td>{datestring}</Td>
                   <Td>{report?.sent_by?.fullname}</Td>
                   <Td>{report.content}</Td>
                   {/* <Td>{report.status === true ? "Done" : "Pending"}</Td> */}

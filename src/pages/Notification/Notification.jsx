@@ -29,6 +29,16 @@ const Notification = () => {
       toast.error("get notification  fail!");
     }
   };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.post("http://localhost:8000/noti/delete/" + id);
+      toast.success("delete notification success!");
+      handleGetAllNoti();
+    } catch (error) {
+      toast.error("delete notification  fail!");
+    }
+  };
   useEffect(() => {
     handleGetAllNoti();
     // eslint-disable-next-line
@@ -66,16 +76,19 @@ const Notification = () => {
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th>Date</Th>
+                <Th>Date create</Th>
                 <Th>Created by</Th>
                 <Th>Tittle</Th>
                 <Th>Content</Th>
+                <Th>Action</Th>
                 {/* <Th>Action</Th> */}
               </Tr>
             </Thead>
             <Tbody>
               {notis?.map((noti) => {
-                return <Noti key={noti._id} noti={noti} />;
+                return (
+                  <Noti key={noti._id} noti={noti} deleteNoti={handleDelete} />
+                );
               })}
             </Tbody>
           </Table>

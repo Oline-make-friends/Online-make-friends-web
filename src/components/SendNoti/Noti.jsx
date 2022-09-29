@@ -1,14 +1,17 @@
 import React from "react";
 import { Tr, Td, Flex, Avatar, Center, Text } from "@chakra-ui/react";
 // import { AiFillSetting } from "react-icons/ai";
-// import { RiDeleteBin5Fill } from "react-icons/ri";
+import { RiDeleteBin5Fill } from "react-icons/ri";
 
 const Noti = (props) => {
   const noti = props.noti;
-  console.log(noti);
+  var d = new Date(noti?.createdAt);
+
+  var datestring =
+    d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " ";
   return (
     <Tr>
-      <Td>1/1/2022</Td>
+      <Td>{datestring}</Td>
       <Td>
         <Flex>
           <Avatar
@@ -25,9 +28,9 @@ const Noti = (props) => {
       </Td>
       <Td>{noti?.title}</Td>
       <Td>{noti?.content}</Td>
-      {/* <Td>
-                <Flex>
-                    <AiFillSetting
+      <Td>
+        <Flex>
+          {/* <AiFillSetting
                         size={40}
                         style={{
                             background: "#28a745",
@@ -35,17 +38,18 @@ const Noti = (props) => {
                             borderRadius: "5px",
                             margin: "0 10px",
                         }}
-                    />
-                    <RiDeleteBin5Fill
-                        size={40}
-                        style={{
-                            background: "#dc3545",
-                            padding: "10px",
-                            borderRadius: "5px",
-                        }}
-                    />
-                </Flex>
-            </Td> */}
+                    /> */}
+          <RiDeleteBin5Fill
+            onClick={() => props.deleteNoti(noti?._id)}
+            size={40}
+            style={{
+              background: "#dc3545",
+              padding: "10px",
+              borderRadius: "5px",
+            }}
+          />
+        </Flex>
+      </Td>
     </Tr>
   );
 };
