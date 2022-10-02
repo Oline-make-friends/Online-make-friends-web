@@ -12,6 +12,7 @@ import { FiMenu, FiUser, FiHome } from "react-icons/fi";
 import { VscDashboard } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { AiOutlineMessage } from "react-icons/ai";
+import { GrGroup } from "react-icons/gr";
 import NavItem from "./NavItem";
 import { useDispatch, useSelector } from "react-redux";
 import { logOutUser } from "../../redux/apiRequest";
@@ -74,6 +75,7 @@ export default function Sidebar() {
           title="Message"
           href="/message"
         />
+        <NavItem navSize={navSize} icon={GrGroup} title="Group" href="/group" />
       </Flex>
 
       <Flex

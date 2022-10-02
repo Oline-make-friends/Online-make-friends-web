@@ -11,7 +11,8 @@ import Post from "./pages/Post/Post";
 import Message from "./pages/Message/Message";
 import RequireAuth from "./components/Auth/RequireAuth";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+import Group from "./pages/Group/Group";
 
 function App() {
   const location = useLocation();
@@ -34,12 +35,12 @@ function App() {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/notification" element={<Notification />} />
           <Route path="/message" element={<Message />} />
+          <Route path="/group" element={<Group />} />
           <Route path="/post" element={<Post />} />
         </Route>
         <Route path="/" element={<Login />} />
       </Routes>
-      <ToastContainer position="top-center"
-      autoClose="1000" />
+      <ToastContainer position="top-center" autoClose="1000" />
     </div>
   );
 }

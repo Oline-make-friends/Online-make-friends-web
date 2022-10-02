@@ -16,15 +16,13 @@ const Home = () => {
       toast.success("get post success!");
       setPosts(res.data);
       console.log(res.data);
-
     } catch (error) {
       toast.error("get post fail!");
     }
-
-  }
+  };
   // setPosts("abds");
   useEffect(() => {
-    handleGetAllPost()
+    handleGetAllPost();
     // eslint-disable-next-line
   }, []);
   return (
@@ -36,7 +34,7 @@ const Home = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        width: "100%"
+        width: "100%",
       }}
     >
       <Box
@@ -45,66 +43,64 @@ const Home = () => {
           marginTop: "20px",
         }}
       >
-
         {/*  */}
         {posts?.map((post) => {
-          return (<Flex
-            direction="column"
-            align="start"
-            border="1px"
-            borderColor="black"
-            borderRadius="10px"
-            my="4"
-            bg="white"
-            key={post._id}
-          >
-            <Box my="2">
-              <Flex>
-                <Avatar
-                  m={[2, 2]}
-                  src={`${post.created_by.avatar_url}`}
+          return (
+            <Flex
+              direction="column"
+              align="start"
+              border="1px"
+              borderColor="black"
+              borderRadius="10px"
+              my="4"
+              bg="white"
+              key={post._id}
+            >
+              <Box my="2">
+                <Flex>
+                  <Avatar m={[2, 2]} src={`${post?.created_by?.avatar_url}`} />
+                  <Center style={{ display: "flex", flexDirection: "column" }}>
+                    <Text>
+                      <b>{post?.created_by?.fullname}</b>
+                    </Text>
+                    <Text>{post?.createdAt?.substring(0, 10)}</Text>
+                  </Center>
+                </Flex>
+              </Box>
+              <Box mx="2">
+                <Text>{post?.content}</Text>
+              </Box>
+              <Box>
+                <Image
+                  border="1px"
+                  borderColor="black"
+                  src={`${post?.imageUrl}`}
+                  alt="image"
                 />
-                <Center style={{ display: "flex", flexDirection: "column" }}>
-                  <Text>
-                    <b>{post.created_by.fullname}</b>
-                  </Text>
-                  <Text>{post.createdAt.substring(0, 10)}</Text>
-                </Center>
-              </Flex>
-            </Box>
-            <Box mx="2">
-              <Text>{post.content}</Text>
-            </Box>
-            <Box>
-              <Image
-                border="1px"
-                borderColor="black"
-                src={`${post.imageUrl}`}
-                alt="image"
-              />
-            </Box>
-            <Flex alignItems="start" my="2">
-              {/* <BiLike size={25} style={{ marginRight: "5px" }} />
+              </Box>
+              <Flex alignItems="start" my="2">
+                {/* <BiLike size={25} style={{ marginRight: "5px" }} />
               <BsFillChatLeftDotsFill size={25} />
 
               <Text mx="2">See comment</Text> */}
-              <Link mx="4" onClick={() => {
-                navigate("/post",{
-                  state:{
-                    post
-                  }
-                });
-              }}><b>Detail</b></Link>
+                <Link
+                  mx="4"
+                  onClick={() => {
+                    navigate("/post", {
+                      state: {
+                        post,
+                      },
+                    });
+                  }}
+                >
+                  <b>Detail</b>
+                </Link>
+              </Flex>
             </Flex>
-          </Flex>);
+          );
         })}
 
-
-
         {/*  */}
-
-
-
       </Box>
     </Box>
   );
