@@ -37,6 +37,17 @@ const Profile = () => {
       toast.error("get post user fail!");
     }
   };
+  const deletePost = async (id) => {
+    try {
+      await axios.post("http://localhost:8000/post/delete", {
+        id: id,
+      });
+      handleGetAllPost();
+      toast.success("delete post success!");
+    } catch (error) {
+      toast.error("delete post fail!");
+    }
+  };
 
   useEffect(() => {
     const fetchUser = () => {
@@ -170,6 +181,15 @@ const Profile = () => {
                   >
                     <b>Detail</b>
                   </Link>
+                  <Text
+                    color="red"
+                    cursor="pointer"
+                    onClick={() => {
+                      deletePost(post?._id);
+                    }}
+                  >
+                    Delete
+                  </Text>
                 </Flex>
               </Flex>
             );

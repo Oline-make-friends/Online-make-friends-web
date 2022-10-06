@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Avatar, Flex, Text, Center, Image, Link } from "@chakra-ui/react";
 // import { BiLike } from "react-icons/bi";
 // import { BsFillChatLeftDotsFill } from "react-icons/bs";
+
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -18,6 +19,17 @@ const Home = () => {
       console.log(res.data);
     } catch (error) {
       toast.error("get post fail!");
+    }
+  };
+  const deletePost = async (id) => {
+    try {
+      await axios.post("http://localhost:8000/post/delete", {
+        id: id,
+      });
+      handleGetAllPost();
+      toast.success("delete post success!");
+    } catch (error) {
+      toast.error("delete post fail!");
     }
   };
   // setPosts("abds");
@@ -95,6 +107,15 @@ const Home = () => {
                 >
                   <b>Detail</b>
                 </Link>
+                <Text
+                  color="red"
+                  cursor="pointer"
+                  onClick={() => {
+                    deletePost(post?._id);
+                  }}
+                >
+                  Delete
+                </Text>
               </Flex>
             </Flex>
           );
