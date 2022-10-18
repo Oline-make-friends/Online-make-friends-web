@@ -13,7 +13,7 @@ export const loginUser = async (user, dispatch, navigate, toast) => {
     const res = await axios.post("http://localhost:8000/auth/login", user);
     dispatch(loginSuccess(res.data));
     toast.success("Login success!");
-    navigate("/home");
+    navigate("/");
   } catch (error) {
     dispatch(loginFail());
     toast.error("Check username and password");
