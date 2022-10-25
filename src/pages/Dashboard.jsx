@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-import { Grid, Container, Typography } from '@mui/material';
+import { Grid, Container, Typography } from "@mui/material";
 
-import Page from '../components/Page';
-
-import AppWidgetSummary from '../components/Dashboard/AppWidgetSummary';
+import Page from "../components/Page";
+import DashboardReport from "../sections/dashboard/DashboardReport";
+import AppWidgetSummary from "../components/Dashboard/AppWidgetSummary";
+import Report from "./Report";
 
 export default function Dashboard() {
   const [users, setUsers] = useState([]);
@@ -49,19 +50,51 @@ export default function Dashboard() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total user" total={users.length + " "} icon="<FaUsers size={24}/>" />
+            <AppWidgetSummary
+              title="Total user"
+              total={users.length}
+              icon="<FaUsers size={24}/>"
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Is active" total={isActive + " "} color="info" icon={"<VscVmActive size{24}/>"} />
+            <AppWidgetSummary
+              title="Is active"
+              total={isActive}
+              color="info"
+              icon={"<VscVmActive size{24}/>"}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Male" total={male + " "} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary
+              title="Male"
+              total={male}
+              color="warning"
+              icon={"ant-design:windows-filled"}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Female" total={female + " "} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary
+              title="Female"
+              total={female + " "}
+              color="error"
+              icon={"ant-design:bug-filled"}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6} lg={8}>
+            <DashboardReport
+              title="Report"
+              list={[
+                { id: "1", label: "Create FireStone Logo" },
+                { id: "2", label: "Add SCSS and JS files if required" },
+                { id: "3", label: "Stakeholder Meeting" },
+                { id: "4", label: "Scoping & Estimations" },
+                { id: "5", label: "Sprint Showcase" },
+              ]}
+            />
           </Grid>
         </Grid>
       </Container>

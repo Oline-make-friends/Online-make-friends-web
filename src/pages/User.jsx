@@ -1,194 +1,165 @@
-import React from "react";
+import { filter } from 'lodash';
+import { sentenceCase } from 'change-case';
+import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { useSelector } from "react-redux";
+
 import {
-  Box,
-  Flex,
-  Text,
+  Card,
   Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
+  Stack,
   Avatar,
-  Center,
-  TableCaption,
-  Link,
-} from "@chakra-ui/react";
-import { TiDelete, TiTick } from "react-icons/ti";
-import { AiFillSetting } from "react-icons/ai";
-import { GrStatusGoodSmall } from "react-icons/gr";
-import { useEffect } from "react";
-import { handleGetAllUser } from "../redux/apiRequest";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+  Button,
+  TableRow,
+  TableBody,
+  TableCell,
+  Container,
+  Typography,
+  TableContainer,
+  TablePagination,
+} from '@mui/material';
+
+import { HiPlus } from "react-icons/hi";
+
+import Page from '../components/Page';
+import Label from '../components/Label';
+import Scrollbar from '../components/Scrollbar';
+import SearchNotFound from '../components/SearchNotFound';
+import { TableHeader, TableToolbar } from '../components/table';
+import UserMoreMenu from '../sections/user/UserMoreMenu';
+
+const TABLE_HEAD = [
+  { id: 'fullname', label: 'User', alignRight: false },
+  { id: 'is_admin', label: 'Role', alignRight: false },
+  { id: 'createAt', label: 'Created Day', alignRight: false },
+  { id: 'is_active', label: 'Status', alignRight: false },
+  { id: '' },
+];
+
+function applyFilter(array, query) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  if (query) {
+    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
 
 export default function User() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const userList = useSelector((state) => state.user.users.allUser);
-  console.log(userList);
 
-  const handleGetUsers = () => {
-    handleGetAllUser(dispatch, toast);
-  };
-  useEffect(() => {
-    handleGetUsers();
-    console.log(userList);
-    // eslint-disable-next-line
-  }, []);
+  const [page, setPage] = useState(0);
 
-  const handleStatusUser = (id) => {
-    try {
-      axios.post(`http://localhost:8000/user/blockUser/${id}`);
-      window.location.reload();
-    } catch (error) {
-      toast("check user information");
-    }
+  const [filterName, setFilterName] = useState('');
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleFilterByName = (event) => {
+    setFilterName(event.target.value);
+  };
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList.length) : 0;
+
+  const filteredUsers = applyFilter(userList, filterName);
+
+  const isUserNotFound = filteredUsers.length === 0;
+
   return (
-    <Box
-      style={{
-        overflow: "scroll",
-        height: "800px",
-        width: "100%",
-        color: "white",
-      }}
-    >
-      <Flex direction="row" align="center" justify="start" width="100%">
-        <Text
-          fontSize="4xl"
-          style={{ fontWeight: "bold", color: "black" }}
-          ml="40px"
-        >
-          Manage User
-        </Text>
-      </Flex>
-      <TableContainer
-        style={{ color: "black" }}
-        bg="white"
-        m="4"
-        borderRadius="20px"
-      >
-        <Table variant="simple">
-          <TableCaption>
-            <Flex justify="space-between">
-              <Text>Showing 5 out of 25 entris</Text>
-              <Flex justify="space-between">
-                <Text mx="2">Previous</Text>
-                <Box
-                  _hover={{ bg: "#0076f6" }}
-                  _focus={{ boxShadow: "outline" }}
-                  w="30px"
-                  h="30px"
-                >
-                  1
-                </Box>
-                <Box
-                  _hover={{ bg: "#0076f6" }}
-                  _focus={{ boxShadow: "outline" }}
-                  w="30px"
-                  h="30px"
-                >
-                  2
-                </Box>
-                <Box
-                  _hover={{ bg: "#0076f6" }}
-                  _focus={{ boxShadow: "outline" }}
-                  w="30px"
-                  h="30px"
-                >
-                  3
-                </Box>
+    <Page title="User">
+      <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4" gutterBottom>
+            User
+          </Typography>
+          <Button variant="contained" component={RouterLink} to="#" startIcon={<HiPlus/>}>
+            New User
+          </Button>
+        </Stack>
 
-                <Text mx="2">Next</Text>
-              </Flex>
-            </Flex>
-          </TableCaption>
-          <Thead>
-            <Tr>
-              <Th>#</Th>
-              <Th>Name</Th>
-              <Th>Date create</Th>
-              {/* <Th>Role</Th> */}
-              <Th>Status</Th>
-              <Th>Action</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {userList?.map((user, index) => {
-              return (
-                <Tr key={user._id}>
-                  <Td>{index + 1}</Td>
-                  <Td>
-                    <Flex>
-                      <Avatar
-                        m={[2, 2]}
-                        name="Dan Abrahmov"
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8kQL47PtECE3iRRjzyfgXbNcPgFX4txEG6w&usqp=CAU"
-                      />
-                      <Center
-                        style={{ display: "flex", flexDirection: "column" }}
-                      >
-                        <Text>
-                          <b>{user.fullname}</b>
-                        </Text>
-                      </Center>
-                    </Flex>
-                  </Td>
-                  <Td>{user.createdAt.substring(0, 10)}</Td>
-                  {/* <Td>{user.is_admin === true ? "Admin" : "User"}</Td> */}
-                  <Td>
-                    <Flex align="center">
-                      {user.is_active === true ? (
-                        <GrStatusGoodSmall
-                          size={12}
-                          style={{ color: "green" }}
-                        />
-                      ) : (
-                        <GrStatusGoodSmall size={12} style={{ color: "red" }} />
-                      )}
+        <Card>
+          <TableToolbar filterName={filterName} onFilterName={handleFilterByName} />
 
-                      <Text mx="1">
-                        {user.is_active === true ? "Active" : "Banned"}
-                      </Text>
-                    </Flex>
-                  </Td>
-                  <Td>
-                    <Flex>
-                      <Link>
-                        <AiFillSetting
-                          size={30}
-                          style={{ color: "#0076f6" }}
-                          onClick={() => {
-                            navigate("/profile/" + user._id);
-                          }}
-                        />
-                      </Link>
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 800 }}>
+              <Table>
+                <TableHeader
+                  headLabel={TABLE_HEAD}
+                  rowCount={userList.length}
+                />
+                <TableBody>
+                  {userList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { _id, avatar_url, fullname, is_admin, createdAt, is_active} = row;
 
-                      {user.is_active === true ? (
-                        <TiDelete
-                          size={30}
-                          style={{ color: "red" }}
-                          onClick={() => handleStatusUser(user._id)}
-                        />
-                      ) : (
-                        <TiTick
-                          size={30}
-                          style={{ color: "green" }}
-                          onClick={() => handleStatusUser(user._id)}
-                        />
-                      )}
-                    </Flex>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Box>
+                    return (
+                      <TableRow hover key={_id} tabIndex={-1}>
+                        <TableCell component="th" scope="row">
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <Avatar alt={fullname} src={avatar_url} />
+                            <Typography variant="subtitle2" noWrap>
+                              {fullname}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell align="left">{is_admin ? "Admin" : "Member"}</TableCell>
+                        <TableCell align="left">{createdAt}</TableCell>
+                        <TableCell align="left">
+                          <Label
+                            variant="ghost"
+                            color={is_active ? "success" : "error"}
+                          >
+                            {sentenceCase(is_active===true ? "active" : "banned")}
+                          </Label>
+                        </TableCell>
+
+                        <TableCell align="right">
+                          <UserMoreMenu userId={_id} banned={!is_active} />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+
+                {isUserNotFound && (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <SearchNotFound searchQuery={filterName} />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                )}
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={userList.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Card>
+      </Container>
+    </Page>
   );
 }

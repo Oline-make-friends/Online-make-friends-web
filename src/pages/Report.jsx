@@ -1,4 +1,5 @@
 import { filter } from 'lodash';
+import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { toast } from "react-toastify";
@@ -22,56 +23,64 @@ import {
 import { HiPlus, HiTrash } from "react-icons/hi";
 
 import Page from '../components/Page';
+import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { TableHeader, TableToolbar } from '../components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Title', alignRight: false },
+  { id: 'createdAt', label: 'Date', alignRight: false },
+  { id: 'sent_by', label: 'Reporter', alignRight: false },
   { id: 'content', label: 'Content', alignRight: false },
-  { id: 'createAt', label: 'Created Day', alignRight: false },
-  { id: 'user_id', label: 'Created By', alignRight: false },
+  { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
 
 function applyFilter(array, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   if (query) {
-    return filter(array, (noti) => noti.title.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (report) => report.content.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Notification() {
-  const [notis, setNotis] = useState([]);
-  const handleGetAllNoti = async () => {
+export default function Report() {
+  const [reports, setReports] = useState([]);
+  const handleGetAllReport = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/noti/getAll");
-      toast.success("get notification success!");
-      setNotis(res.data);
+      const res = await axios.get("http://localhost:8000/report/getAll");
+      toast.success("get report success!");
+      setReports(res.data);
       console.log(res.data);
     } catch (error) {
-      toast.error("get notification  fail!");
+      toast.error("get report fail!");
     }
   };
-
-  const handleDelete = async (id) => {
+  const handleDeleteReport = async (id) => {
     try {
-      await axios.post("http://localhost:8000/noti/delete/" + id);
-      toast.success("delete notification success!");
-      handleGetAllNoti();
+      await axios.post("http://localhost:8000/report/delete/" + id);
+      handleGetAllReport();
+      toast.success("Delete report success!");
     } catch (error) {
-      toast.error("delete notification  fail!");
+      toast.error("get report fail!");
+    }
+  };
+  const handleStatusReport = async (id) => {
+    try {
+      await axios.post("http://localhost:8000/report/updateStatus/" + id);
+      handleGetAllReport();
+      toast.success("Delete report success!");
+    } catch (error) {
+      toast.error("get report fail!");
     }
   };
   useEffect(() => {
-    handleGetAllNoti();
-    // eslint-disable-next-line
+    handleGetAllReport();
   }, []);
 
   const [page, setPage] = useState(0);
 
-  const [filterNoti, setFilterNoti] = useState('');
+  const [filterReport, setFilterReport] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -84,46 +93,44 @@ export default function Notification() {
     setPage(0);
   };
 
-  const handleFilterByTitle = (event) => {
-    setFilterNoti(event.target.value);
+  const handleFilterByContent = (event) => {
+    setFilterReport(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - notis.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reports.length) : 0;
 
-  const filteredNotiList = applyFilter(notis, filterNoti);
+  const filteredReportList = applyFilter(reports, filterReport);
 
-  const isNotiNotFound = filteredNotiList.length === 0;
+  const isReportNotFound = filteredReportList.length === 0;
 
   return (
-    <Page title="Notification">
+    <Page title="Report">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Notification
+            Report
           </Typography>
           <Button variant="contained" component={RouterLink} to="#" startIcon={<HiPlus/>}>
-            New Notification
+            New Report
           </Button>
         </Stack>
 
         <Card>
-          <TableToolbar filterName={filterNoti} onFilterName={handleFilterByTitle} />
+          <TableToolbar filterName={filterReport} onFilterName={handleFilterByContent} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <TableHeader
                   headLabel={TABLE_HEAD}
-                  rowCount={notis.length}
+                  rowCount={reports.length}
                 />
                 <TableBody>
-                  {notis.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { _id, user_id, title, content, createdAt } = row;
+                  {reports.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { _id, createdAt, sent_by, content, status } = row;
 
                     return (
                       <TableRow hover key={_id} tabIndex={-1}>
-                        <TableCell align="left">{title}</TableCell>
-                        <TableCell align="left">{content}</TableCell>
                         <TableCell align="left">{createdAt}</TableCell>
                         <TableCell component="th" scope="row">
                           <Stack
@@ -132,19 +139,28 @@ export default function Notification() {
                             spacing={2}
                           >
                             <Avatar
-                              alt={user_id.fullname}
-                              src={user_id.avatar_url}
+                              alt={sent_by.fullname}
+                              src={sent_by.avatar_url}
                             />
                             <Typography variant="subtitle2" noWrap>
-                              {user_id.fullname}
+                              {sent_by.fullname}
                             </Typography>
                           </Stack>
+                        </TableCell>
+                        <TableCell align="left">{content}</TableCell>
+                        <TableCell align="left">
+                          <Label
+                            variant="ghost"
+                            color={status ? "success" : "warning"}
+                          >
+                            {sentenceCase(status ? "Done" : "Pending")}
+                          </Label>
                         </TableCell>
                         <TableCell component="th" scope="row">
                           <Button
                           sx={{backgroundColor: "error"}}
                             variant="contained"
-                            onClick={handleDelete(_id)}
+                            onClick={handleDeleteReport(_id)}
                             startIcon={<HiTrash />}
                           >
                             Delete
@@ -160,11 +176,11 @@ export default function Notification() {
                   )}
                 </TableBody>
 
-                {isNotiNotFound && (
+                {isReportNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterNoti} />
+                        <SearchNotFound searchQuery={filterReport} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -176,7 +192,7 @@ export default function Notification() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={notis.length}
+            count={reports.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

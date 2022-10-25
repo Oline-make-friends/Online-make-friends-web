@@ -1,61 +1,88 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
+import { Link, Stack, IconButton, InputAdornment, TextField, Card, Container, Typography } from "@mui/material";
 import { styled } from '@mui/material/styles';
-import { Card, Link, Container, Typography } from '@mui/material';
+import { LoadingButton } from "@mui/lab";
 
-import useResponsive from '../hooks/useResponsive';
+import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 
-import Page from '../components/Page';
-import Logo from '../components/Logo';
+import {
+  loginUser,
+  handleSendEmailResetPassword,
+} from "../redux/apiRequest";
 
-import LoginForm from '../sections/auth/LoginForm';
-import AuthSocial from '../sections/AuthSocial';
+import useResponsive from "../hooks/useResponsive";
 
-const RootStyle = styled('div')(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'flex',
+import Page from "../components/Page";
+import Logo from "../components/Logo";
+
+const RootStyle = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
   },
 }));
 
-const HeaderStyle = styled('header')(({ theme }) => ({
+const HeaderStyle = styled("header")(({ theme }) => ({
   top: 0,
   zIndex: 9,
   lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  position: "absolute",
   padding: theme.spacing(3),
-  justifyContent: 'space-between',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
+  justifyContent: "space-between",
+  [theme.breakpoints.up("md")]: {
+    alignItems: "flex-start",
     padding: theme.spacing(7, 5, 0, 7),
   },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
   maxWidth: 464,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
   margin: theme.spacing(2, 0, 2, 2),
 }));
 
-const ContentStyle = styled('div')(({ theme }) => ({
+const ContentStyle = styled("div")(({ theme }) => ({
   maxWidth: 480,
-  margin: 'auto',
-  minHeight: '100vh',
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
+  margin: "auto",
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  flexDirection: "column",
   padding: theme.spacing(12, 0),
 }));
 
 export default function Login() {
-  const smUp = useResponsive('up', 'sm');
+  const mdUp = useResponsive("up", "md");
 
-  const mdUp = useResponsive('up', 'md');
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const logIn = async (e) => {
+    e.preventDefault();
+    const newUser = {
+      username: username,
+      password: password,
+    };
+    loginUser(newUser, dispatch, navigate, toast);
+  };
+
+  const handleSendEmailReset = () => {
+    handleSendEmailResetPassword(toast, username);
+  };
 
   return (
     <Page title="Login">
@@ -75,25 +102,71 @@ export default function Login() {
 
         <Container maxWidth="sm">
           <ContentStyle>
-
-            <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your details below.</Typography>
-
-            <AuthSocial />
-
             <Typography variant="h4" gutterBottom>
               Sign in to FStudy Admin
             </Typography>
 
-            <LoginForm />
+            <Typography sx={{ color: "text.secondary", mb: 5 }}>
+              Enter your details below.
+            </Typography>
 
-            {!smUp && (
-              <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                Don’t have an account?{' '}
-                <Link variant="subtitle2" component={RouterLink} to="/register">
-                  Get started
+            <form onSubmit={logIn}>
+              <Stack spacing={3}>
+                <TextField
+                  name="username"
+                  label="Username"
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <TextField
+                  name="password"
+                  label="Password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? (
+                            <BsFillEyeFill />
+                          ) : (
+                            <BsFillEyeSlashFill />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Stack>
+
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="end"
+                sx={{ my: 2 }}
+              >
+                <Link
+                  variant="subtitle2"
+                  underline="hover"
+                  onClick={handleSendEmailReset}
+                  style={{ cursor: "pointer" }}
+                >
+                  Send email reset password
                 </Link>
-              </Typography>
-            )}
+              </Stack>
+
+              <LoadingButton
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+              >
+                Login
+              </LoadingButton>
+            </form>
           </ContentStyle>
         </Container>
       </RootStyle>

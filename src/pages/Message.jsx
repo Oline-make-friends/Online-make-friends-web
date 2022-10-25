@@ -1,5 +1,6 @@
 import React from "react";
-import { Flex, Box, Text, Avatar, Center, Input } from "@chakra-ui/react";
+import { Flex, Box, Text, Center, Input } from "@chakra-ui/react";
+import { Avatar } from '@mui/material';
 import { IoMdSend } from "react-icons/io";
 
 export default function Message() {

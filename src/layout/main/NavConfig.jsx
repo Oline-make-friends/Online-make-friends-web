@@ -1,9 +1,6 @@
-// icon
-import { MdSpaceDashboard, MdArticle, MdGroupWork } from "react-icons/md";
+import { MdSpaceDashboard, MdArticle, MdGroupWork, MdReport } from "react-icons/md";
 import { FaHouseUser } from "react-icons/fa";
 import { RiNotificationBadgeFill, RiMessage2Fill } from "react-icons/ri";
-
-// ----------------------------------------------------------------------
 
 const navConfig = [
   {
@@ -35,6 +32,11 @@ const navConfig = [
     title: 'groups',
     path: '/groups',
     icon: <MdGroupWork size={22}/>,
+  },
+  {
+    title: 'reports',
+    path: '/reports',
+    icon: <MdReport size={22}/>,
   }
 ];
 

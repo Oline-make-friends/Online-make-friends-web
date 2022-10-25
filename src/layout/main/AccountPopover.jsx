@@ -9,19 +9,6 @@ import MenuPopover from '../../components/MenuPopover';
 
 import { logOutUser } from "../../redux/apiRequest";
 
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-    linkTo: '/',
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-    linkTo: '#',
-  }
-];
-
 export default function AccountPopover() {
   const user = useSelector((state) => state.auth?.login.currentUser);
   const dispatch = useDispatch();
@@ -49,13 +36,13 @@ export default function AccountPopover() {
         sx={{
           p: 0,
           ...(open && {
-            '&:before': {
+            "&:before": {
               zIndex: 1,
               content: "''",
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              position: 'absolute',
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              position: "absolute",
               bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
             },
           }),
@@ -72,8 +59,8 @@ export default function AccountPopover() {
           p: 0,
           mt: 1.5,
           ml: 0.75,
-          '& .MuiMenuItem-root': {
-            typography: 'body2',
+          "& .MuiMenuItem-root": {
+            typography: "body2",
             borderRadius: 0.75,
           },
         }}
@@ -82,19 +69,33 @@ export default function AccountPopover() {
           <Typography variant="subtitle2" noWrap>
             {user?.fullname}
           </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+            {user?.email}
+          </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
         <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} to={option.linkTo} component={RouterLink} onClick={handleClose}>
-              {option.label}
-            </MenuItem>
-          ))}
+          <MenuItem
+            key="Home"
+            to="/"
+            component={RouterLink}
+            onClick={handleClose}
+          >
+            Home
+          </MenuItem>
+          <MenuItem
+            key="Profile"
+            to={"/profile/" + user._id}
+            component={RouterLink}
+            onClick={handleClose}
+          >
+            Profile
+          </MenuItem>
         </Stack>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
         <MenuItem onClick={() => logOut()} sx={{ m: 1 }}>
           Logout

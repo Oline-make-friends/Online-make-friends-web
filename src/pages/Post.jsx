@@ -1,113 +1,63 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { Box, Avatar, Flex, Text, Center, Image } from "@chakra-ui/react";
-import Popup from "reactjs-popup";
-import "reactjs-popup/dist/index.css";
-import "./Post.css";
+import { useState, useEffect } from "react";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
+import axios from "axios";
 
-const Post = () => {
-  const { state } = useLocation();
-  const post = state.post;
-  console.log(post);
+import { HiPlus } from "react-icons/hi";
+
+import { Grid, Button, Container, Stack, Typography } from '@mui/material';
+
+import Page from '../components/Page';
+import { PostCard, PostsSort, PostsSearch } from '../sections/post';
+
+const SORT_OPTIONS = [
+  { value: 'latest', label: 'Latest' },
+  { value: 'popular', label: 'Popular' },
+  { value: 'oldest', label: 'Oldest' },
+];
+
+export default function Post() {
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const handleGetAllPost = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/post/getAll");
+      toast.success("get post success!");
+      setPosts(res.data);
+      console.log(res.data);
+    } catch (error) {
+      toast.error("get post fail!");
+    }
+  };
+
+  useEffect(() => {
+    handleGetAllPost();
+    // eslint-disable-next-line
+  }, []);
+
   return (
-    <Box
-      style={{
-        overflow: "scroll",
-        height: "900px",
-        overflowX: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100%",
-      }}
-    >
-      <Flex
-        direction="column"
-        align="start"
-        border="1px"
-        borderColor="black"
-        borderRadius="10px"
-        my="4"
-        bg="white"
-        key={post._id}
-      >
-        <Box my="2">
-          <Flex>
-            <Avatar m={[2, 2]} src={`${post.created_by?.avatar_url}`} />
-            <Center style={{ display: "flex", flexDirection: "column" }}>
-              <Text>
-                <b>{post.created_by.fullname}</b>
-              </Text>
-              <Text>{post.createdAt.substring(0, 10)}</Text>
-            </Center>
-          </Flex>
-        </Box>
-        <Box mx="2">
-          <Text>{post.content}</Text>
-        </Box>
-        <Box>
-          <Image
-            border="1px"
-            borderColor="black"
-            src={`${post.imageUrl}`}
-            alt="image"
-          />
-        </Box>
-        {/* hard code */}
-        <Box px="4" py="2">
-          <Popup
-            trigger={
-              <button>
-                <Text>
-                  <b>5 likes</b>
-                </Text>
-              </button>
-            }
-            modal
-            nested
-          >
-            {(close) => (
-              <div className="modal">
-                <button className="close" onClick={close}>
-                  &times;
-                </button>
-                <div className="header"> Likes </div>
-                <div className="content">
-                  <Flex>
-                    <Avatar m={[2, 2]} src={`${post.created_by?.avatar_url}`} />
-                    <Center
-                      style={{ display: "flex", flexDirection: "column" }}
-                    >
-                      <Text>
-                        <b>{post.created_by.fullname}</b>
-                      </Text>
-                    </Center>
-                  </Flex>
-                </div>
-                <div className="actions">
-                  <button
-                    className="button"
-                    onClick={() => {
-                      close();
-                    }}
-                  >
-                    CLOSE
-                  </button>
-                </div>
-              </div>
-            )}
-          </Popup>
-          <Flex alignItems="start">
-            <Text mr="2">
-              <b>An</b>
-            </Text>
-            <Text>Hehe</Text>
-          </Flex>
-          <Text style={{ color: "gray" }}>21 MINUTES AGO</Text>
-        </Box>
-      </Flex>
-    </Box>
-  );
-};
+    <Page title="Post">
+      <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4" gutterBottom>
+            Post
+          </Typography>
+          <Button variant="contained" component={RouterLink} to="#" startIcon={<HiPlus />}>
+            New Post
+          </Button>
+        </Stack>
 
-export default Post;
+        <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
+          <PostsSearch posts={posts} />
+          <PostsSort options={SORT_OPTIONS} />
+        </Stack>
+
+        <Grid container spacing={3}>
+          {posts.map((post, index) => (
+            <PostCard key={post._id} post={post} index={index} />
+          ))}
+        </Grid>
+      </Container>
+    </Page>
+  );
+}
