@@ -1,46 +1,42 @@
-import { filter } from "lodash";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-
 import {
+    Avatar,
   Card,
-  Table,
+  Container,
   Stack,
-  Avatar,
-  TableRow,
+  Table,
   TableBody,
   TableCell,
-  Container,
-  Typography,
   TableContainer,
   TablePagination,
+  TableRow,
+  Typography,
 } from "@mui/material";
+import axios from "axios";
+import { filter } from "lodash";
 
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+
+import { BsShieldFillCheck, BsShieldSlashFill } from "react-icons/bs";
+import LinkBar from "../components/LinkBar";
+import MoreMenu from "../components/MoreMenu";
 import Page from "../components/Page";
 import Scrollbar from "../components/Scrollbar";
 import SearchNotFound from "../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../components/table";
-import LinkBar from "../components/LinkBar";
-import axios from "axios";
-import MoreMenu from "../components/MoreMenu";
-import { HiTrash } from "react-icons/hi";
-
-const TABLE_HEAD = [
-  { id: "title", label: "Title", alignRight: false },
-  { id: "createdBy", label: "Created By", alignRight: false },
-  { id: "type", label: "Type", alignRight: false },
-  { id: "course", label: "Course", alignRight: false },
-  { id: "like", label: "Like", alignRight: false },
-  { id: "comment", label: "Comment", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "updatedAt", label: "Updated Day", alignRight: false },
-  { id: "" },
-];
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Posts", href: "#" },
+  { label: "Request", href: "#" },
+];
+
+const TABLE_HEAD = [
+  { id: "fullname", label: "User", alignRight: false },
+  { id: "email", label: "Email", alignRight: false },
+  { id: "gender", label: "Gender", alignRight: false },
+  { id: "createAt", label: "Created Day", alignRight: false },
+  { id: "updatedAt", label: "Updated Day", alignRight: false },
+  { id: "" },
 ];
 
 function applyFilter(array, query) {
@@ -48,35 +44,33 @@ function applyFilter(array, query) {
   if (query) {
     return filter(
       array,
-      (_post) => _post.name.to.indexOf(query.toLowerCase()) !== -1
+      (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Post() {
+export default function AccountRequest() {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
-  const handleGetAllPost = async () => {
+  const [requests, setRequests] = useState([]);
+  const [page, setPage] = useState(0);
+  const [filterName, setFilterName] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleGetAllRequest = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/post/getAll");
-      toast.success("get post success!");
-      setPosts(res.data);
-      console.log(res.data);
-    } catch (error) {
-      toast.error("get post fail!");
-    }
+      const rest = await axios.get(
+        "http://localhost:8000/user/getAllProveAccount"
+      );
+      setRequests(rest.data);
+      console.log(requests)
+    } catch (error) {}
   };
+
   useEffect(() => {
-    handleGetAllPost();
+    handleGetAllRequest();
     // eslint-disable-next-line
   }, []);
-
-  const [page, setPage] = useState(0);
-
-  const [filterName, setFilterName] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -91,27 +85,16 @@ export default function Post() {
     setFilterName(event.target.value);
   };
 
-  const handleDeletePost = async ({ _id }) => {
-    try {
-      await axios.post("http://localhost:8000/post/delete", {
-        id: _id,
-      });
-      window.location.reload();
-      toast.success("delete post success!");
-    } catch (error) {
-      toast.error("delete post fail!");
-    }
-  };
-
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - posts.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - requests.length) : 0;
 
-  const filteredPosts = applyFilter(posts, filterName);
+  const filteredUsers = applyFilter(requests, filterName);
 
-  const isPostNotFound = filteredPosts.length === 0;
+  const isUserNotFound = filteredUsers.length === 0;
+  console.log(requests);
 
   return (
-    <Page title="Posts">
+    <Page title="Users">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -121,7 +104,7 @@ export default function Post() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Post
+            Account Request
           </Typography>
         </Stack>
 
@@ -134,19 +117,20 @@ export default function Post() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader headLabel={TABLE_HEAD} rowCount={posts.length} />
+                <TableHeader
+                  headLabel={TABLE_HEAD}
+                  rowCount={requests.length}
+                />
                 <TableBody>
-                  {posts
+                  {requests
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
                         _id,
-                        created_by,
-                        content,
-                        type,
-                        course,
-                        likes,
-                        comments,
+                        avatar_url,
+                        fullname,
+                        username,
+                        gender,
                         createdAt,
                         updatedAt,
                       } = row;
@@ -154,21 +138,11 @@ export default function Post() {
                       return (
                         <TableRow hover key={_id} tabIndex={-1}>
                           <TableCell
-                            align="left"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              navigate("/post/" + _id);
-                            }}
-                          >
-                            {content}
-                          </TableCell>
-                          <TableCell
                             component="th"
                             scope="row"
                             style={{ cursor: "pointer" }}
                             onClick={() => {
-                              navigate("/user/" + created_by._id);
-                              window.location.reload();
+                              navigate("/request/" + _id);
                             }}
                           >
                             <Stack
@@ -176,19 +150,14 @@ export default function Post() {
                               alignItems="center"
                               spacing={2}
                             >
-                              <Avatar
-                                alt={created_by.fullname}
-                                src={created_by.avatar_url}
-                              />
+                              <Avatar alt={fullname} src={avatar_url} />
                               <Typography variant="subtitle2" noWrap>
-                                {created_by.fullname}
+                                {fullname}
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">{type}</TableCell>
-                          <TableCell align="left">{course}</TableCell>
-                          <TableCell align="left">{likes.length}</TableCell>
-                          <TableCell align="left">{comments.length}</TableCell>
+                          <TableCell align="left">{username}</TableCell>
+                          <TableCell align="left">{gender}</TableCell>
                           <TableCell align="left">
                             {createdAt.toString().substring(0, 10)}
                           </TableCell>
@@ -199,11 +168,15 @@ export default function Post() {
                             <MoreMenu
                               array={[
                                 {
-                                  id: _id,
-                                  title: "Delete",
-                                  icon: <HiTrash />,
-                                  action: { handleDeletePost },
+                                  title: "Prove",
+                                  icon: <BsShieldFillCheck />,
+                                  action: {  },
                                 },
+                                {
+                                  title: "Disprove",
+                                  icon: <BsShieldSlashFill />,
+                                  action: {  },
+                                }
                               ]}
                             />
                           </TableCell>
@@ -217,7 +190,7 @@ export default function Post() {
                   )}
                 </TableBody>
 
-                {isPostNotFound && (
+                {isUserNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -233,7 +206,7 @@ export default function Post() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={posts.length}
+            count={requests.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

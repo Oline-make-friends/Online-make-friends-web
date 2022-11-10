@@ -45,20 +45,6 @@ export default function UserMoreMenu({userId, banned, ...other}) {
             primaryTypographyProps={{ variant: "body2" }}
           />
         </MenuItem>
-
-        <MenuItem
-          component={RouterLink}
-          to={"/profile/" + userId}
-          sx={{ color: "text.secondary" }}
-        >
-          <ListItemIcon>
-            <MdEdit size={24} />
-          </ListItemIcon>
-          <ListItemText
-            primary="Edit"
-            primaryTypographyProps={{ variant: "body2" }}
-          />
-        </MenuItem>
       </Menu>
     </>
   );

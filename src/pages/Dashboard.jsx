@@ -7,7 +7,9 @@ import { Grid, Container, Typography } from "@mui/material";
 import Page from "../components/Page";
 import DashboardReport from "../sections/dashboard/DashboardReport";
 import AppWidgetSummary from "../components/Dashboard/AppWidgetSummary";
-import Report from "./Report";
+import LinkBar from "../components/LinkBar";
+
+const BREADCRUMBS = [{label: "Dashboard", href: "#"}];
 
 export default function Dashboard() {
   const [users, setUsers] = useState([]);
@@ -43,6 +45,7 @@ export default function Dashboard() {
 
   return (
     <Page title="Dashboard">
+    <LinkBar array={BREADCRUMBS}/>
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back

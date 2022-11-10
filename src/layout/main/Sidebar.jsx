@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { styled } from '@mui/material/styles';
 import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
-
-import account from '../../_mock/account';
 
 import useResponsive from '../../hooks/useResponsive';
 
@@ -32,12 +30,12 @@ const AccountStyle = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.grey[500_12],
 }));
 
-DashboardSidebar.propTypes = {
+Sidebar.propTypes = {
   isOpenSidebar: PropTypes.bool,
   onCloseSidebar: PropTypes.func,
 };
 
-export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
+export default function Sidebar({ isOpenSidebar, onCloseSidebar }) {
   const user = useSelector((state) => state.auth?.login.currentUser);
   
   const { pathname } = useLocation();
@@ -67,7 +65,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
       </Box>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline="none" component={RouterLink} to={"/profile/" + user._id}>
+        <Link underline="none" component={RouterLink} to={"/profile"}>
           <AccountStyle>
             <Avatar src={user?.avatar_url} alt="avatar" />
             <Box sx={{ ml: 2 }}>

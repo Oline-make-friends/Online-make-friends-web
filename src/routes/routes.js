@@ -4,8 +4,9 @@ import MainLayout from '../layout/main';
 import LogoOnlyLayout from '../layout/LogoOnlyLayout';
 
 import User from '../pages/User';
+import UserDetail from '../pages/UserDetail';
+import AccountRequest from '../pages/AccountRequest';
 import Notification from '../pages/Notification';
-import Message from '../pages/Message';
 import Group from '../pages/Group';
 import Post from '../pages/Post';
 import PostDetail from '../pages/PostDetail';
@@ -16,6 +17,10 @@ import Profile from '../pages/Profile'
 
 import RequireAuth from "../components/Auth/RequireAuth";
 import Report from '../pages/Report';
+import Event from '../pages/Event';
+import Course from '../pages/Course';
+import Major from '../pages/Major';
+import AccountRequestDetail from '../pages/AccountRequestDetail';
 
 export default function Router() {
   return useRoutes([
@@ -27,13 +32,18 @@ export default function Router() {
           { path: '', element: <Navigate to={'dashboard'}/>},
           { path: 'dashboard', element: <Dashboard />},
           { path: 'posts', element: <Post /> },
-          { path: 'postDetail/*', element: <PostDetail /> },
-          { path: 'users', element: <User /> },        
+          { path: 'post/:_id', element: <PostDetail /> },
+          { path: 'users', element: <User /> },
+          { path: 'user/:_id', element: <UserDetail/>},
+          { path: 'requests', element: <AccountRequest /> },  
+          { path: 'request/:_id', element: <AccountRequestDetail /> }, 
+          { path: 'events', element: <Event /> },     
           { path: 'notifications', element: <Notification /> },
-          { path: 'messages', element: <Message /> },
           { path: 'groups', element: <Group /> },
           { path: 'reports', element: <Report /> },
-          { path: 'profile/*', element: <Profile /> }
+          { path: 'majors', element: <Major /> },
+          { path: 'courses', element: <Course /> },
+          { path: 'profile', element: <Profile /> }
         ]}        
       ]
     },

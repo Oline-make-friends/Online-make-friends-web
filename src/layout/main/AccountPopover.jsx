@@ -87,7 +87,7 @@ export default function AccountPopover() {
           </MenuItem>
           <MenuItem
             key="Profile"
-            to={"/profile/" + user._id}
+            to={"/profile"}
             component={RouterLink}
             onClick={handleClose}
           >

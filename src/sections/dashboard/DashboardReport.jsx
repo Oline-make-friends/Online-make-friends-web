@@ -77,16 +77,6 @@ function TaskItem({ task, checked, onChange }) {
     console.log('MARK COMPLETE', task.id);
   };
 
-  const handleShare = () => {
-    handleCloseMenu();
-    console.log('SHARE', task.id);
-  };
-
-  const handleEdit = () => {
-    handleCloseMenu();
-    console.log('EDIT', task.id);
-  };
-
   const handleDelete = () => {
     handleCloseMenu();
     console.log('DELETE', task.id);

@@ -1,5 +1,4 @@
 import { filter } from "lodash";
-import { sentenceCase } from "change-case";
 import { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import axios from "axios";
@@ -9,7 +8,6 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
   Button,
   TableRow,
   TableBody,

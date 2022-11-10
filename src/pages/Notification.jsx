@@ -8,7 +8,6 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
   Button,
   TableRow,
   TableBody,
@@ -118,28 +117,14 @@ export default function Notification() {
                 />
                 <TableBody>
                   {notis.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { _id, user_id, title, content, createdAt } = row;
+                    const { _id, title, content, createdAt, updatedAt } = row;
 
                     return (
                       <TableRow hover key={_id} tabIndex={-1}>
                         <TableCell align="left">{title}</TableCell>
                         <TableCell align="left">{content}</TableCell>
                         <TableCell align="left">{createdAt}</TableCell>
-                        <TableCell component="th" scope="row">
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={2}
-                          >
-                            <Avatar
-                              alt={user_id.fullname}
-                              src={user_id.avatar_url}
-                            />
-                            <Typography variant="subtitle2" noWrap>
-                              {user_id.fullname}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
+                        <TableCell align="left">{updatedAt}</TableCell>
                         <TableCell component="th" scope="row">
                           <Button
                           sx={{backgroundColor: "error"}}

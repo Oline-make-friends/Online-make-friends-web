@@ -7,12 +7,13 @@ import { Toolbar, Tooltip, IconButton, OutlinedInput, InputAdornment } from '@mu
 const RootStyle = styled(Toolbar)(({ theme }) => ({
   height: 96,
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'left',
   padding: theme.spacing(0, 1, 0, 3),
 }));
 
 const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
   width: 240,
+  marginLeft: 10,
   transition: theme.transitions.create(['box-shadow', 'width'], {
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.shorter,
@@ -32,6 +33,12 @@ UserListToolbar.propTypes = {
 export default function UserListToolbar({ filterName, onFilterName }) {
   return (
     <RootStyle>
+      <Tooltip title="Filter list">
+        <IconButton>
+          <RiFilter2Fill />
+        </IconButton>
+      </Tooltip>
+
       <SearchStyle
         value={filterName}
         onChange={onFilterName}
@@ -42,12 +49,6 @@ export default function UserListToolbar({ filterName, onFilterName }) {
           </InputAdornment>
         }
       />
-
-      <Tooltip title="Filter list">
-        <IconButton>
-          <RiFilter2Fill />
-        </IconButton>
-      </Tooltip>
     </RootStyle>
   );
 }

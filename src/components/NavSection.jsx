@@ -35,7 +35,7 @@ function NavItem({ item, active }) {
 
   const isActiveRoot = active(item.path);
 
-  const { title, path, icon, info, children } = item;
+  const { title, path, icon, children  } = item;
 
   const [open, setOpen] = useState(isActiveRoot);
 
@@ -65,7 +65,6 @@ function NavItem({ item, active }) {
         >
           <ListItemIconStyle>{icon && icon}</ListItemIconStyle>
           <ListItemText disableTypography primary={title} />
-          {info && info}
           <MdArrowDownward size={16} style={{marginLeft:"1"}}/>
         </ListItemStyle>
 
@@ -123,7 +122,6 @@ function NavItem({ item, active }) {
     >
       <ListItemIconStyle>{icon && icon}</ListItemIconStyle>
       <ListItemText disableTypography primary={title} />
-      {info && info}
     </ListItemStyle>
   );
 }
