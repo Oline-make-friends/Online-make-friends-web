@@ -1,7 +1,7 @@
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { filter } from "lodash";
+import { sentenceCase } from "change-case";
+import { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -18,28 +18,33 @@ import {
   Typography,
   TableContainer,
   TablePagination,
-} from '@mui/material';
+} from "@mui/material";
 
-import { HiPlus, HiTrash } from "react-icons/hi";
+import { HiTrash } from "react-icons/hi";
+import { AiFillCheckCircle } from "react-icons/ai";
 
-import Page from '../components/Page';
-import Label from '../components/Label';
-import Scrollbar from '../components/Scrollbar';
-import SearchNotFound from '../components/SearchNotFound';
-import { TableHeader, TableToolbar } from '../components/table';
+import Page from "../components/Page";
+import Label from "../components/Label";
+import Scrollbar from "../components/Scrollbar";
+import SearchNotFound from "../components/SearchNotFound";
+import { TableHeader, TableToolbar } from "../components/table";
 
 const TABLE_HEAD = [
-  { id: 'createdAt', label: 'Date', alignRight: false },
-  { id: 'sent_by', label: 'Reporter', alignRight: false },
-  { id: 'content', label: 'Content', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
+  { id: "createdAt", label: "Date", alignRight: false },
+  { id: "sent_by", label: "Reporter", alignRight: false },
+  { id: "content", label: "Content", alignRight: false },
+  { id: "status", label: "Status", alignRight: false },
+  { id: "" },
 ];
 
 function applyFilter(array, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   if (query) {
-    return filter(array, (report) => report.content.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(
+      array,
+      (report) =>
+        report.content.toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -80,7 +85,7 @@ export default function Report() {
 
   const [page, setPage] = useState(0);
 
-  const [filterReport, setFilterReport] = useState('');
+  const [filterReport, setFilterReport] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -97,7 +102,8 @@ export default function Report() {
     setFilterReport(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reports.length) : 0;
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reports.length) : 0;
 
   const filteredReportList = applyFilter(reports, filterReport);
 
@@ -106,69 +112,93 @@ export default function Report() {
   return (
     <Page title="Report">
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={5}
+        >
           <Typography variant="h4" gutterBottom>
             Report
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<HiPlus/>}>
+          {/* <Button
+            variant="contained"
+            component={RouterLink}
+            to="#"
+            startIcon={<HiPlus />}
+          >
             New Report
-          </Button>
+          </Button> */}
         </Stack>
 
         <Card>
-          <TableToolbar filterName={filterReport} onFilterName={handleFilterByContent} />
+          {/* <TableToolbar
+            filterName={filterReport}
+            onFilterName={handleFilterByContent}
+          /> */}
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader
-                  headLabel={TABLE_HEAD}
-                  rowCount={reports.length}
-                />
+                <TableHeader headLabel={TABLE_HEAD} rowCount={reports.length} />
                 <TableBody>
-                  {reports.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { _id, createdAt, sent_by, content, status } = row;
+                  {reports
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      const { _id, createdAt, sent_by, content, status } = row;
 
-                    return (
-                      <TableRow hover key={_id} tabIndex={-1}>
-                        <TableCell align="left">{createdAt}</TableCell>
-                        <TableCell component="th" scope="row">
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={2}
-                          >
-                            <Avatar
-                              alt={sent_by.fullname}
-                              src={sent_by.avatar_url}
-                            />
-                            <Typography variant="subtitle2" noWrap>
-                              {sent_by.fullname}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="left">{content}</TableCell>
-                        <TableCell align="left">
-                          <Label
-                            variant="ghost"
-                            color={status ? "success" : "warning"}
-                          >
-                            {sentenceCase(status ? "Done" : "Pending")}
-                          </Label>
-                        </TableCell>
-                        <TableCell component="th" scope="row">
-                          <Button
-                          sx={{backgroundColor: "error"}}
-                            variant="contained"
-                            onClick={handleDeleteReport(_id)}
-                            startIcon={<HiTrash />}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                      return (
+                        <TableRow hover key={_id} tabIndex={-1}>
+                          <TableCell align="left">{createdAt}</TableCell>
+                          <TableCell component="th" scope="row">
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              spacing={2}
+                            >
+                              <Avatar
+                                alt={sent_by.fullname}
+                                src={sent_by.avatar_url}
+                              />
+                              <Typography variant="subtitle2" noWrap>
+                                {sent_by.fullname}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="left">{content}</TableCell>
+                          <TableCell align="left">
+                            <Label
+                              variant="ghost"
+                              color={status ? "success" : "warning"}
+                            >
+                              {sentenceCase(status ? "Done" : "Pending")}
+                            </Label>
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            <Button
+                              sx={{ backgroundColor: "error" }}
+                              variant="contained"
+                              onClick={() => {
+                                handleStatusReport(_id);
+                              }}
+                              startIcon={<AiFillCheckCircle />}
+                            >
+                              Check
+                            </Button>
+                            <Button
+                              sx={{ backgroundColor: "error" }}
+                              variant="contained"
+                              onClick={() => {
+                                handleDeleteReport(_id);
+                              }}
+                              startIcon={<HiTrash />}
+                            >
+                              Delete
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />

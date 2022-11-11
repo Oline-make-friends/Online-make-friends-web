@@ -27,6 +27,7 @@ import { TableHeader, TableToolbar } from "../components/table";
 import LinkBar from "../components/LinkBar";
 import UserMoreMenu from "../sections/user/UserMoreMenu";
 import { handleGetAllUser } from "../redux/apiRequest";
+import axios from "axios";
 
 const TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },
@@ -58,14 +59,23 @@ function applyFilter(array, query) {
 
 export default function User() {
   const navigate = useNavigate();
-  const userList = useSelector((state) => state?.user?.users?.allUser);
+  // const userList = useSelector((state) => state?.user?.users?.allUser);
+  const [userList, setUserList] = useState([]);
   const dispatch = useDispatch();
+  console.log(userList);
 
-  const handleGetUsers = () => {
-    handleGetAllUser(dispatch, toast);
+  const handleGetAllUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/user/getAllUser");
+      setUserList(res.data);
+    } catch (error) {}
   };
+
+  // const handleGetUsers = () => {
+  //   handleGetAllUser(dispatch, toast);
+  // };
   useEffect(() => {
-    handleGetUsers();
+    handleGetAllUser();
     // eslint-disable-next-line
   }, []);
 

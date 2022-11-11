@@ -7,12 +7,11 @@ import {
   Grid,
   Flex,
   Text,
-  Button,
   Input,
-  Center,
   Textarea,
 } from "@chakra-ui/react";
 import { Avatar } from "@mui/material";
+import { Button } from "@mui/material";
 // import AvatarUser from "../../components/AvatarUser";
 import { useNavigate } from "react-router";
 import axios from "axios";
@@ -73,7 +72,7 @@ export default function Course() {
     <Page title="Course">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       Hello Welcome to Course Page
-      <Box h="90vh" w="100vw" p="4" overflowY="scroll" bg="rgba(0,0,0,0.2)">
+      <Box w="100%" p="4">
         {/*  */}
         {/* <Center>
         <Flex width="50%" my="4">
@@ -96,8 +95,8 @@ export default function Course() {
         </Flex>
       </Center> */}
         {/*  */}
-        <Grid templateColumns="repeat(5, 1fr)" gap={6} color="black">
-          <GridItem w="100%" h="300px" bg="white" p="2" borderRadius="15px">
+        <Grid templateColumns="repeat(5, 1fr)" gap={6} color="black" w="100%">
+          {/* <GridItem w="100%" h="300px" bg="white" p="2" borderRadius="15px">
             <Flex w="100%" h="100%" direction="column">
               <Flex w="100%" h="80%" direction="column" p="2">
                 <Text as="b" fontSize="2xl">
@@ -115,16 +114,17 @@ export default function Course() {
                   onChange={(e) => setDescription(e.target.value)}
                 />
                 <Button
-                  bg="green.400"
                   onClick={() => {
                     handleCreateCourse();
                   }}
+                  variant="contained"
+                  color="success"
                 >
                   Add
                 </Button>
               </Flex>
             </Flex>
-          </GridItem>
+          </GridItem> */}
 
           {courses?.map((course) => {
             return (
@@ -135,7 +135,7 @@ export default function Course() {
                 p="2"
                 key={course?._id}
                 onClick={() =>
-                  navigate("/course", {
+                  navigate("/courseDetail", {
                     state: {
                       course,
                     },
@@ -155,10 +155,17 @@ export default function Course() {
                     <Text>{course?.description}</Text>
                     <Text color="gray">{course?.quizs.length} Questions</Text>
                   </Flex>
-                  <Avatar
-                    alt={course?.created_by?.fullname}
-                    src={course?.created_by?.avatar_url}
-                  />
+                  <p>Created by:</p>
+                  <Flex alignItems="center">
+                    <Avatar
+                      alt={course?.created_by?.fullname}
+                      src={course?.created_by?.avatar_url}
+                    />
+                    <Text color="black" mx="2">
+                      {course?.created_by?.fullname}
+                    </Text>
+                  </Flex>
+
                   {/* <A user={course?.created_by} /> */}
                 </Flex>
               </GridItem>

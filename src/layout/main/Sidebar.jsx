@@ -1,30 +1,30 @@
-import PropTypes from 'prop-types';
-import { useEffect } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import PropTypes from "prop-types";
+import { useEffect } from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { styled } from '@mui/material/styles';
-import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
+import { styled } from "@mui/material/styles";
+import { Box, Link, Drawer, Typography, Avatar } from "@mui/material";
 
-import useResponsive from '../../hooks/useResponsive';
+import useResponsive from "../../hooks/useResponsive";
 
-import Logo from '../../components/Logo';
-import Scrollbar from '../../components/Scrollbar';
-import NavSection from '../../components/NavSection';
-import navConfig from './NavConfig';
+import Logo from "../../components/Logo";
+import Scrollbar from "../../components/Scrollbar";
+import NavSection from "../../components/NavSection";
+import navConfig from "./NavConfig";
 
 const DRAWER_WIDTH = 280;
 
-const RootStyle = styled('div')(({ theme }) => ({
-  [theme.breakpoints.up('lg')]: {
+const RootStyle = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up("lg")]: {
     flexShrink: 0,
     width: DRAWER_WIDTH,
   },
 }));
 
-const AccountStyle = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+const AccountStyle = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
   padding: theme.spacing(2, 2.5),
   borderRadius: Number(theme.shape.borderRadius) * 1.5,
   backgroundColor: theme.palette.grey[500_12],
@@ -37,10 +37,10 @@ Sidebar.propTypes = {
 
 export default function Sidebar({ isOpenSidebar, onCloseSidebar }) {
   const user = useSelector((state) => state.auth?.login.currentUser);
-  
+
   const { pathname } = useLocation();
 
-  const isLargeScreen = useResponsive('up', 'lg');
+  const isLargeScreen = useResponsive("up", "lg");
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -105,8 +105,8 @@ export default function Sidebar({ isOpenSidebar, onCloseSidebar }) {
           PaperProps={{
             sx: {
               width: DRAWER_WIDTH,
-              bgcolor: 'background.default',
-              borderRightStyle: 'dashed',
+              bgcolor: "background.default",
+              borderRightStyle: "dashed",
             },
           }}
         >

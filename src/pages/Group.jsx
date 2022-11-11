@@ -24,6 +24,7 @@ import Page from "../components/Page";
 import Scrollbar from "../components/Scrollbar";
 import SearchNotFound from "../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../components/table";
+import AvatarUser from "../components/AvatarUser";
 
 const TABLE_HEAD = [
   { id: "name", label: "Name", alignRight: false },
@@ -129,8 +130,14 @@ export default function Group() {
                       return (
                         <TableRow hover onClick="#" key={_id} tabIndex={-1}>
                           <TableCell align="left">{name}</TableCell>
-                          <TableCell align="left">{admins.map(admin => admin.fullname + "\n")}</TableCell>
-                          <TableCell align="left">{createdAt}</TableCell>
+                          <TableCell align="left">
+                            {/* {admins.map((admin) => admin.fullname + "\n")} */}
+                            {/* {admins[0]} */}
+                            <AvatarUser id={admins[0]} />
+                          </TableCell>
+                          <TableCell align="left">
+                            {createdAt?.substring(0, 10)}
+                          </TableCell>
                           <TableCell align="left">{content}</TableCell>
                         </TableRow>
                       );
