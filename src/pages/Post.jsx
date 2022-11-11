@@ -30,7 +30,7 @@ const TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },
   { id: "createdBy", label: "Created By", alignRight: false },
   { id: "type", label: "Type", alignRight: false },
-  { id: "course", label: "Course", alignRight: false },
+  // { id: "course", label: "Course", alignRight: false },
   { id: "like", label: "Like", alignRight: false },
   { id: "comment", label: "Comment", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
@@ -144,7 +144,6 @@ export default function Post() {
                         created_by,
                         content,
                         type,
-                        course,
                         likes,
                         comments,
                         createdAt,
@@ -186,7 +185,6 @@ export default function Post() {
                             </Stack>
                           </TableCell>
                           <TableCell align="left">{type}</TableCell>
-                          <TableCell align="left">{course}</TableCell>
                           <TableCell align="left">{likes.length}</TableCell>
                           <TableCell align="left">{comments.length}</TableCell>
                           <TableCell align="left">

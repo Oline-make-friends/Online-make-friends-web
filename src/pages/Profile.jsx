@@ -268,17 +268,43 @@ function GeneralTab({ info }) {
 }
 
 function UpdatePasswordTab() {
+  const user = useSelector((state) => state.auth?.login?.currentUser);
   const [password, setPassword] = useState();
   const [newPassword, setNewPassword] = useState();
   const [confirm, setConfirm] = useState();
+  const [noti, setNoti] = useState();
 
   const [showPassword, setShowPassword] = useState();
   const [showNewPassword, setShowNewPassword] = useState();
   const [showConfirm, setShowConfirm] = useState();
+  console.log(user);
+
+  const updatePassword = async () => {
+    try {
+      if (password !== user.password) {
+        setNoti("Current password is wrong");
+        return;
+      }
+      if (newPassword !== confirm) {
+        setNoti("Confirm password is wrong");
+        return;
+      }
+      await axios.post(`http://localhost:8000/user/update/${user._id}`, {
+        password: newPassword,
+      });
+      setPassword("");
+      setNewPassword("");
+      setConfirm("");
+      setNoti("Update password success");
+    } catch (error) {
+      setNoti("Update password fail,check input");
+    }
+  };
 
   return (
     <form>
       <Stack direction="column" spacing={5} my={4} alignItems="start">
+        <b>{noti}</b>
         <TextField
           required
           fullWidth
@@ -286,6 +312,7 @@ function UpdatePasswordTab() {
           label="Current Password"
           onChange={(e) => setPassword(e.target.value)}
           type={showPassword ? "text" : "password"}
+          value={password}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -300,6 +327,7 @@ function UpdatePasswordTab() {
           }}
         />
         <TextField
+          value={newPassword}
           required
           fullWidth
           name="newPassword"
@@ -320,6 +348,7 @@ function UpdatePasswordTab() {
           }}
         />
         <TextField
+          value={confirm}
           required
           fullWidth
           name="confirm"
@@ -339,7 +368,14 @@ function UpdatePasswordTab() {
             ),
           }}
         />
-        <Button variant="contained">Update</Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            updatePassword();
+          }}
+        >
+          Update
+        </Button>
       </Stack>
     </form>
   );

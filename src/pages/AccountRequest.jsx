@@ -1,5 +1,5 @@
 import {
-    Avatar,
+  Avatar,
   Card,
   Container,
   Stack,
@@ -34,6 +34,7 @@ const TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },
   { id: "email", label: "Email", alignRight: false },
   { id: "gender", label: "Gender", alignRight: false },
+  { id: "status", label: "status", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
   { id: "" },
@@ -63,7 +64,6 @@ export default function AccountRequest() {
         "http://localhost:8000/user/getAllProveAccount"
       );
       setRequests(rest.data);
-      console.log(requests)
     } catch (error) {}
   };
 
@@ -109,10 +109,10 @@ export default function AccountRequest() {
         </Stack>
 
         <Card>
-          <TableToolbar
+          {/* <TableToolbar
             filterName={filterName}
             onFilterName={handleFilterByName}
-          />
+          /> */}
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -131,6 +131,7 @@ export default function AccountRequest() {
                         fullname,
                         username,
                         gender,
+                        is_active,
                         createdAt,
                         updatedAt,
                       } = row;
@@ -159,6 +160,9 @@ export default function AccountRequest() {
                           <TableCell align="left">{username}</TableCell>
                           <TableCell align="left">{gender}</TableCell>
                           <TableCell align="left">
+                            {is_active === true ? "Yes" : "Not yet"}
+                          </TableCell>
+                          <TableCell align="left">
                             {createdAt.toString().substring(0, 10)}
                           </TableCell>
                           <TableCell align="left">
@@ -170,13 +174,13 @@ export default function AccountRequest() {
                                 {
                                   title: "Prove",
                                   icon: <BsShieldFillCheck />,
-                                  action: {  },
+                                  action: {},
                                 },
                                 {
                                   title: "Disprove",
                                   icon: <BsShieldSlashFill />,
-                                  action: {  },
-                                }
+                                  action: {},
+                                },
                               ]}
                             />
                           </TableCell>

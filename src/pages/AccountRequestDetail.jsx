@@ -54,7 +54,14 @@ export default function AccountRequestDetail() {
         "http://localhost:8000/user/getUser/" + _id
       );
       setRequest(rest.data);
-      console.log(request);
+      console.log(rest.data);
+    } catch (error) {}
+  };
+  const handleStatusUser = async () => {
+    try {
+      await axios.post(`http://localhost:8000/user/blockUser/${_id}`);
+      await axios.post(`http://localhost:8000/user/proveUser/${_id}`);
+      handleGetRequestById();
     } catch (error) {}
   };
 
@@ -75,7 +82,7 @@ export default function AccountRequestDetail() {
 
         <Table sx={{ minWidth: 500 }}>
           <TableBody>
-          <InfoItem
+            <InfoItem
               title="Avatar"
               value={
                 <Avatar
@@ -112,6 +119,17 @@ export default function AccountRequestDetail() {
               }
               isRequired
             />
+            <InfoItem
+              title="status"
+              value={
+                <Label
+                  variant="ghost"
+                  color={request?.is_active ? "info" : "error"}
+                >
+                  {request?.is_active === true ? "Proved" : "Not yet"}
+                </Label>
+              }
+            />
           </TableBody>
         </Table>
       </TableContainer>
@@ -123,14 +141,33 @@ export default function AccountRequestDetail() {
 
         <Table sx={{ minWidth: 500 }}>
           <TableBody>
-            <InfoItem title="Create At" value={request?.createdAt} isRequired />
-            <InfoItem title="Update At" value={request?.updatedAt} />
+            <InfoItem
+              title="Create At"
+              value={request?.createdAt?.substring(0, 10)}
+              isRequired
+            />
+            <InfoItem
+              title="Update At"
+              value={request?.updatedAt?.substring(0, 10)}
+            />
           </TableBody>
         </Table>
       </TableContainer>
       <Stack direction="row" justifyContent="left">
-        <Button sx={{margin: 2, bgcolor: 'success.dark'}} variant="contained">Prove</Button>
-        <Button sx={{margin: 2, bgcolor: 'error.dark'}} variant="contained">Disprove</Button>
+        <Button
+          sx={{ margin: 2, bgcolor: "success.dark" }}
+          variant="contained"
+          onClick={() => handleStatusUser()}
+        >
+          Prove
+        </Button>
+        <Button
+          sx={{ margin: 2, bgcolor: "error.dark" }}
+          variant="contained"
+          onClick={() => handleStatusUser()}
+        >
+          Disprove
+        </Button>
       </Stack>
     </Page>
   );

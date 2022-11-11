@@ -93,8 +93,7 @@ function OverViewTab({
     try {
       axios.post(`http://localhost:8000/user/blockUser/${_id}`);
       window.location.reload();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
   return (
     <Grid container spacing={2}>
@@ -144,8 +143,12 @@ function OverViewTab({
 
           <Table sx={{ minWidth: 500 }}>
             <TableBody>
-              <InfoItem title="Create At" value={createdAt} isRequired />
-              <InfoItem title="Update At" value={updatedAt} />
+              <InfoItem
+                title="Create At"
+                value={createdAt?.substring(0, 10)}
+                isRequired
+              />
+              <InfoItem title="Update At" value={updatedAt?.substring(0, 10)} />
             </TableBody>
           </Table>
         </TableContainer>
@@ -322,9 +325,9 @@ function FriendsTab({ friendList }) {
   );
 }
 
-function FollowersTab({ followerList }) {
-  return <div>This is FollowersTab</div>;
-}
+// function FollowersTab({ followerList }) {
+//   return <div>This is FollowersTab</div>;
+// }
 
 function FollowingTab({ followingList }) {
   console.log(followingList);
@@ -367,7 +370,10 @@ function FollowingTab({ followingList }) {
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
-            <TableHeader headLabel={TABLE_HEAD} rowCount={followingList.length} />
+            <TableHeader
+              headLabel={TABLE_HEAD}
+              rowCount={followingList.length}
+            />
             <TableBody>
               {followingList
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -463,7 +469,7 @@ function PostsTab({ userId }) {
   const navigate = useNavigate();
 
   const [postList, setPostList] = useState([]);
-  
+
   const [page, setPage] = useState(0);
   const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -476,9 +482,7 @@ function PostsTab({ userId }) {
 
   const handleGetPostByUserId = async () => {
     try {
-      const rest = await axios.post(
-        "http://localhost:8000/post/get/" + userId
-      );
+      const rest = await axios.post("http://localhost:8000/post/get/" + userId);
       setPostList(rest.data);
     } catch (error) {}
   };
@@ -515,7 +519,10 @@ function PostsTab({ userId }) {
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
-            <TableHeader headLabel={POST_TABLE_HEAD} rowCount={postList.length} />
+            <TableHeader
+              headLabel={POST_TABLE_HEAD}
+              rowCount={postList.length}
+            />
             <TableBody>
               {postList
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -529,7 +536,6 @@ function PostsTab({ userId }) {
                     comments,
                     createdAt,
                     updatedAt,
-                    
                   } = row;
                   return (
                     <TableRow hover key={_id} tabIndex={-1}>
@@ -650,7 +656,7 @@ export default function UserDetail() {
               <TabList onChange={handleTab}>
                 <Tab value="overview" label="Overview" />
                 <Tab value="friends" label="Friends" />
-                <Tab value="followers" label="Followers" />
+                {/* <Tab value="followers" label="Followers" /> */}
                 <Tab value="followings" label="Followings" />
                 <Tab value="posts" label="Posts" />
               </TabList>
@@ -676,9 +682,9 @@ export default function UserDetail() {
             <TabPanel value="friends">
               <FriendsTab friendList={user?.friends} />
             </TabPanel>
-            <TabPanel value="followers">
+            {/* <TabPanel value="followers">
               <FollowersTab />
-            </TabPanel>
+            </TabPanel> */}
             <TabPanel value="followings">
               <FollowingTab followingList={user?.follows} />
             </TabPanel>
