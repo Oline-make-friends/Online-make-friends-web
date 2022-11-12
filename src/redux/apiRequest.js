@@ -6,14 +6,25 @@ import {
   getUserSuccess,
   getProfileSuccess,
 } from "./userSlice";
+import { CometChat } from "@cometchat-pro/chat";
+import * as CONSTANT from "../constans/constans";
 
 export const loginUser = async (user, dispatch, navigate, toast) => {
   dispatch(loginStart());
   try {
+    CometChat.login(`admin`, CONSTANT.AUTH_KEY)
+      .then(console.log("Login success"))
+      .catch(() => {
+        console.log("Login fail");
+        CometChat.createUser(`${res.data?._id}`, CONSTANT.AUTH_KEY).then(() => {
+          CometChat.login(`${res.data?._id}`, CONSTANT.AUTH_KEY);
+        });
+      });
     const res = await axios.post("http://localhost:8000/auth/login", user);
     dispatch(loginSuccess(res.data));
     toast.success("Login success!");
-    navigate("/home");
+
+    navigate("/");
   } catch (error) {
     dispatch(loginFail());
     toast.error("Check username and password");
@@ -24,6 +35,20 @@ export const logOutUser = (dispatch) => {
   try {
     dispatch(logOut());
   } catch (error) {}
+};
+
+export const loginByGmail = async (email, dispatch, navigate, toast) => {
+  dispatch(loginStart());
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/auth/loginByGmail/${email}`
+    );
+    dispatch(loginSuccess(res.data));
+    navigate("/profile");
+  } catch (error) {
+    dispatch(loginFail());
+    toast.error(error.message);
+  }
 };
 
 export const handleGetAllUser = async (dispatch, toast) => {
