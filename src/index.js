@@ -11,8 +11,9 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 import { persistor, store } from "./redux/store";
-import * as CONSTANT from "./constans/constans";
 import { CometChat } from "@cometchat-pro/chat";
+
+import * as CONSTANT from "./constans/constans";
 const appSetting = new CometChat.AppSettingsBuilder()
   .subscribePresenceForAllUsers()
   .setRegion(CONSTANT.APP_REGION)
@@ -27,6 +28,8 @@ CometChat.init(CONSTANT.APP_ID, appSetting).then(
     // Check the reason for error and take appropriate action.
   }
 );
+CometChat.login(`admin`, CONSTANT.AUTH_KEY);
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
