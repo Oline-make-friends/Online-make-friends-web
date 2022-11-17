@@ -155,14 +155,16 @@ export default function AccountRequestDetail() {
       </TableContainer>
       <Stack direction="row" justifyContent="left">
         <Button
-          sx={{ margin: 2, bgcolor: "success.dark" }}
+          sx={{ margin: 2 }}
+          color="success"
           variant="contained"
           onClick={() => handleStatusUser()}
         >
           Prove
         </Button>
         <Button
-          sx={{ margin: 2, bgcolor: "error.dark" }}
+          sx={{ margin: 2 }}
+          color="error"
           variant="contained"
           onClick={() => handleStatusUser()}
         >

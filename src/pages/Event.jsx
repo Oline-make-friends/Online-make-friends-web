@@ -5,6 +5,7 @@ import { filter } from "lodash";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import AvatarUser from "../components/AvatarUser";
 import Label from "../components/Label";
 
 import LinkBar from "../components/LinkBar";
@@ -92,7 +93,7 @@ export default function Event(){
             direction="row"
             alignItems="center"
             justifyContent="space-between"
-            mb={5}
+            mb={2}
           >
             <Typography variant="h4" gutterBottom>
               Event
@@ -144,17 +145,14 @@ export default function Event(){
                             <TableCell align="left">
                               {user_joined.length}
                             </TableCell>
-                            <TableCell align="left">
-                              <Stack
-                                direction="row"
-                                alignItems="center"
-                                spacing={2}
-                              >
-                                <Avatar alt={created_by.fullname} src={created_by.avatar_url} />
-                                <Typography variant="subtitle2" noWrap>
-                                  {created_by.fullname}
-                                </Typography>
-                              </Stack>
+                            <TableCell
+                              align="left"
+                              style={{cursor: "pointer"}}
+                              onClick={() => {
+                                navigate("/user/" + created_by._id);
+                              }}
+                            >
+                              <AvatarUser id={created_by._id} fullname={created_by.fullname} avatar={created_by.avatar_url}/>
                             </TableCell>
                             <TableCell align="left">
                               {createdAt.toString().substring(0, 10)}
