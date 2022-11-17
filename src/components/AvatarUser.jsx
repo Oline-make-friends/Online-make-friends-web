@@ -1,48 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { Avatar, Link, Flex, Text } from "@chakra-ui/react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Avatar, Stack, Typography } from "@mui/material";
 
-const AvatarUser = (props) => {
+const AvatarUser = ({id, fullname, avatar}) => {
   const navigate = useNavigate();
-  const id = props.id;
-  const [user, setUser] = useState(props.user);
-
-  const handleGetUser = async () => {
-    try {
-      if (id !== undefined) {
-        const res = await axios.post(
-          `http://localhost:8000/user/getUser/` + id
-        );
-        setUser(res.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    handleGetUser();
-    // eslint-disable-next-line
-  }, []);
 
   return (
-    <Flex
+    <Stack
+      direction="row"
       alignItems="center"
-      my="2"
+      spacing={2}
+      style={{cursor: "pointer"}}
       onClick={() => {
-        navigate(`/user/${id}`, {
-          state: {
-            user,
-          },
-        });
+        navigate("/user/" + id);
       }}
     >
-      <Avatar m={[2, 2]} src={user?.avatar_url} h="50px" w="50px" />
-      <Text>
-        <b>{user?.fullname}</b>
-      </Text>
-    </Flex>
+      <Avatar
+        alt={fullname}
+        src={avatar}
+      />
+      <Typography variant="subtitle2" noWrap>
+        {fullname}
+      </Typography>
+    </Stack>
   );
 };
 

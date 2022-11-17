@@ -18,6 +18,7 @@ import Profile from "../pages/Profile";
 import RequireAuth from "../components/Auth/RequireAuth";
 import Report from "../pages/Report";
 import Event from "../pages/Event";
+import EventDetail from "../pages/EventDetail";
 import Course from "../pages/Course";
 import Major from "../pages/Major";
 import AccountRequestDetail from "../pages/AccountRequestDetail";
@@ -43,11 +44,12 @@ export default function Router() {
             { path: "requests", element: <AccountRequest /> },
             { path: "request/:_id", element: <AccountRequestDetail /> },
             { path: "events", element: <Event /> },
+            { path: "event/:_id", element: <EventDetail /> },
             { path: "notifications", element: <Notification /> },
             { path: "groups", element: <Group /> },
             { path: "reports", element: <Report /> },
             { path: "majors", element: <Major /> },
-            { path: "courses", element: <Course /> },
+            { path: "sources", element: <Course /> },
             { path: "courseDetail", element: <CourseDetail /> },
             { path: "profile", element: <Profile /> },
             { path: "chat", element: <CometChat /> },

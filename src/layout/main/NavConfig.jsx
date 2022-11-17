@@ -4,9 +4,10 @@ import {
   MdGroupWork,
   MdReport,
 } from "react-icons/md";
+import { GiBookshelf } from "react-icons/gi";
 import { FaHouseUser } from "react-icons/fa";
-import { AiFillSetting } from "react-icons/ai";
-import { RiNotificationBadgeFill, RiCalendarEventFill } from "react-icons/ri";
+import { AiFillBell, AiFillSetting } from "react-icons/ai";
+import { RiCalendarEventFill } from "react-icons/ri";
 import { BsFillChatFill } from "react-icons/bs";
 
 const navConfig = [
@@ -33,6 +34,11 @@ const navConfig = [
     title: "posts",
     path: "/posts",
     icon: <MdArticle size={22} />,
+  },  
+  {
+    title: "sources",
+    path: "/sources",
+    icon: <GiBookshelf size={22} />,
   },
   {
     title: "groups",
@@ -45,14 +51,19 @@ const navConfig = [
     icon: <RiCalendarEventFill size={22} />,
   },
   {
-    title: "Chat",
-    path: "/chat",
-    icon: <BsFillChatFill size={22} />,
-  },
-  {
     title: "reports",
     path: "/reports",
     icon: <MdReport size={22} />,
+  },
+  {
+    title: "notifications",
+    path: "/notifications",
+    icon: <AiFillBell size={22} />,
+  },
+  {
+    title: "Chat",
+    path: "/chat",
+    icon: <BsFillChatFill size={22} />,
   },
   {
     title: "configuration",
@@ -61,10 +72,6 @@ const navConfig = [
       {
         title: "majors",
         path: "/majors",
-      },
-      {
-        title: "courses",
-        path: "/courses",
       },
     ],
   },
