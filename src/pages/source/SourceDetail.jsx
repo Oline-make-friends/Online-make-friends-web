@@ -2,10 +2,25 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Button, Card, Container, Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
-import Page from "../components/Page";
-import LinkBar from "../components/LinkBar";
-import AvatarUser from "../components/AvatarUser";
+import {
+  Card,
+  Container,
+  Divider,
+  Grid,
+  IconButton,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import Page from "../../components/Page";
+import LinkBar from "../../components/LinkBar";
+import AvatarUser from "../../components/AvatarUser";
+import { HiTrash } from "react-icons/hi";
+import { MdEdit } from "react-icons/md";
 
 function InfoItem({ title, value, isRequired }) {
   return (
@@ -30,16 +45,12 @@ function InfoItem({ title, value, isRequired }) {
 export default function SourceDetail() {
   const navigate = useNavigate();
   const { _id } = useParams();
-  console.log(_id);
 
   const [source, setSource] = useState();
 
   const handleGetSourceById = async () => {
     try {
-      console.log("handleGetSourceById");
-      const rest = await axios.get(
-        "http://localhost:8000/course/get/" + _id
-      );
+      const rest = await axios.get("http://localhost:8000/course/get/" + _id);
       setSource(rest.data);
       console.log(rest.data);
     } catch (error) {}
@@ -52,8 +63,8 @@ export default function SourceDetail() {
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Sources", href: "/sourses" },
-    { label: source.name, href: "#" }
+    { label: "Source", href: "/sources" },
+    { label: source?.name, href: "#" },
   ];
 
   const deleteSourse = async () => {
@@ -61,17 +72,6 @@ export default function SourceDetail() {
       await axios.get(`http://localhost:8000/course/delete/${_id}`);
       toast.success("deleted course");
       navigate("/sources");
-    } catch (error) {
-      console.log(error.message);
-      toast.error("check connection");
-    }
-  };
-
-  const deleteQuiz = async (quizid) => {
-    try {
-      await axios.get(`http://localhost:8000/quiz/delete/${quizid}`);
-      toast.success("deleted that");
-      window.location.reload();
     } catch (error) {
       console.log(error.message);
       toast.error("check connection");
@@ -91,9 +91,11 @@ export default function SourceDetail() {
           <Typography variant="h4" gutterBottom>
             {source?.name}
           </Typography>
-          <Button variant="contained" color="error">
-            Delete Source
-          </Button>
+          <Stack direction="row">
+            <IconButton color="error" onClick={() => deleteSourse}>
+              <HiTrash />
+            </IconButton>
+          </Stack>
         </Stack>
         <Grid container spacing={1}>
           <Grid item xs={6} md={8}>
@@ -139,8 +141,43 @@ export default function SourceDetail() {
             </Card>
           </Grid>
         </Grid>
-        <Card></Card>
+      </Container>
+      <Container>
+        {source?.quizs.map((row, counter) => {
+          const { _id, question, options, answer } = row;
+          return (
+            <Card sx={{ p: 2, mb: 2 }}>
+              <Stack mb={2}>
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography variant="subtitle1" gutterBottom>
+                    Question {counter + 1}
+                  </Typography>
+                </Stack>
+                <Divider />
+              </Stack>
+              <Grid container spacing={2}>
+                <Grid item xs={6} md={8}>
+                  <Typography variant="body2">{question}</Typography>
+                </Grid>
+                <Grid item xs={6} md={4}>
+                  <Stack direction="column">
+                    {options.map((op, i) => {
+                      return (
+                        <Typography
+                          variant="body2"
+                          color={op === answer ? "success.dark" : ""}
+                        >
+                          Option {i + 1}: {op}
+                        </Typography>
+                      );
+                    })}
+                  </Stack>
+                </Grid>
+              </Grid>
+            </Card>
+          );
+        })}
       </Container>
     </Page>
   );
-};
+}

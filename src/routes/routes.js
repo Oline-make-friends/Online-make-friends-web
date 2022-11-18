@@ -15,14 +15,14 @@ import Login from "../pages/Login";
 import NotFound from "../pages/Page404";
 import Profile from "../pages/Profile";
 
-import RequireAuth from "../components/Auth/RequireAuth";
+import RequireAuth from "../components/auth/RequireAuth";
 import Report from "../pages/Report";
 import Event from "../pages/Event";
 import EventDetail from "../pages/EventDetail";
-import Course from "../pages/Course";
+import Source from "../pages/source/Source";
+import SourceDetail from "../pages/source/SourceDetail";
 import Major from "../pages/Major";
 import AccountRequestDetail from "../pages/AccountRequestDetail";
-import CourseDetail from "../pages/CourseDetail";
 import CometChat from "../pages/Chat";
 
 export default function Router() {
@@ -49,9 +49,9 @@ export default function Router() {
             { path: "groups", element: <Group /> },
             { path: "reports", element: <Report /> },
             { path: "majors", element: <Major /> },
-            { path: "sources", element: <Course /> },
-            { path: "courseDetail", element: <CourseDetail /> },
-            { path: "profile", element: <Profile /> },
+            { path: "sources", element: <Source /> },
+            { path: "source/:_id", element: <SourceDetail /> },
+            { path: "profile" , element: <Profile /> },
             { path: "chat", element: <CometChat /> },
           ],
         },

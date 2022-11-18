@@ -23,7 +23,7 @@ import MoreMenu from "../components/MoreMenu";
 import Page from "../components/Page";
 import Scrollbar from "../components/Scrollbar";
 import SearchNotFound from "../components/SearchNotFound";
-import { TableHeader, TableToolbar } from "../components/table";
+import { TableHeader } from "../components/table";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },

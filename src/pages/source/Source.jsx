@@ -141,14 +141,12 @@ export default function Source() {
                             </TableCell>
                             <TableCell align="left">{description}</TableCell>
                             <TableCell align="center">{quizs.length}</TableCell>
-                            <TableCell
-                              align="left"
-                              style={{cursor: "pointer"}}
-                              onClick={() => {
-                                navigate("/user/" + created_by._id);
-                              }}
-                            >
-                              <AvatarUser id={created_by._id} fullname={created_by.fullname} avatar={created_by.avatar_url}/>
+                            <TableCell align="left">
+                              <AvatarUser
+                                id={created_by._id}
+                                fullname={created_by.fullname}
+                                avatar={created_by.avatar_url}
+                              />
                             </TableCell>
                             <TableCell align="left">
                               {createdAt.toString().substring(0, 10)}
