@@ -6,7 +6,7 @@ import { Grid, Container, Typography } from "@mui/material";
 
 import Page from "../components/Page";
 import DashboardReport from "../sections/dashboard/DashboardReport";
-import AppWidgetSummary from "../components/Dashboard/AppWidgetSummary";
+import AppWidgetSummary from "../components/dashboard/AppWidgetSummary";
 import LinkBar from "../components/LinkBar";
 
 const BREADCRUMBS = [{label: "Dashboard", href: "#"}];
