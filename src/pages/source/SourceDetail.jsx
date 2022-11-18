@@ -3,11 +3,11 @@ import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
+  Button,
   Card,
   Container,
   Divider,
   Grid,
-  IconButton,
   Stack,
   Table,
   TableBody,
@@ -20,7 +20,6 @@ import Page from "../../components/Page";
 import LinkBar from "../../components/LinkBar";
 import AvatarUser from "../../components/AvatarUser";
 import { HiTrash } from "react-icons/hi";
-import { MdEdit } from "react-icons/md";
 
 function InfoItem({ title, value, isRequired }) {
   return (
@@ -91,11 +90,14 @@ export default function SourceDetail() {
           <Typography variant="h4" gutterBottom>
             {source?.name}
           </Typography>
-          <Stack direction="row">
-            <IconButton color="error" onClick={() => deleteSourse}>
-              <HiTrash />
-            </IconButton>
-          </Stack>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<HiTrash />}
+            onClick={() => deleteSourse}
+          >
+            Delete
+          </Button>
         </Stack>
         <Grid container spacing={1}>
           <Grid item xs={6} md={8}>
@@ -144,7 +146,7 @@ export default function SourceDetail() {
       </Container>
       <Container>
         {source?.quizs.map((row, counter) => {
-          const { _id, question, options, answer } = row;
+          const { question, options, answer } = row;
           return (
             <Card sx={{ p: 2, mb: 2 }}>
               <Stack mb={2}>

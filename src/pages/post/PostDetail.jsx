@@ -3,6 +3,12 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import axios from "axios";
+
+import { HiTrash } from "react-icons/hi";
+import { AiFillDislike, AiFillLike, AiFillMessage } from "react-icons/ai";
+import { MdShare } from "react-icons/md";
+import "reactjs-popup/dist/index.css";
+
 import {
   Card,
   CardHeader,
@@ -15,14 +21,9 @@ import {
   Box,
 } from "@mui/material";
 
-import "reactjs-popup/dist/index.css";
-import MoreMenu from "../components/MoreMenu";
-import { HiTrash } from "react-icons/hi";
-import { AiFillDislike, AiFillLike, AiFillMessage } from "react-icons/ai";
-import { MdShare } from "react-icons/md";
-
-import LinkBar from "../components/LinkBar";
-import Page from "../components/Page";
+import MoreMenu from "../../components/MoreMenu";
+import LinkBar from "../../components/LinkBar";
+import Page from "../../components/Page";
 
 export default function PostDetail() {
   const navigate = useNavigate();

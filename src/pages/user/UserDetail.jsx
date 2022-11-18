@@ -21,16 +21,16 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { filter } from "lodash";
+import { sentenceCase } from "change-case";
 
 import { AiFillLock, AiFillUnlock } from "react-icons/ai";
 
-import LinkBar from "../components/LinkBar";
-import Page from "../components/Page";
-import Label from "../components/Label";
-import { sentenceCase } from "change-case";
-import { TableHeader, TableToolbar } from "../components/table";
-import Scrollbar from "../components/Scrollbar";
-import SearchNotFound from "../components/SearchNotFound";
+import LinkBar from "../../components/LinkBar";
+import Page from "../../components/Page";
+import Label from "../../components/Label";
+import { TableHeader, TableToolbar } from "../../components/table";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
 
 const TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },

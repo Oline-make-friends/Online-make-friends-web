@@ -2,8 +2,6 @@ import { filter } from "lodash";
 import { sentenceCase } from "change-case";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 
 import {
   Card,
@@ -24,14 +22,13 @@ import {
   Radio,
 } from "@mui/material";
 
-import Page from "../components/Page";
-import Label from "../components/Label";
-import Scrollbar from "../components/Scrollbar";
-import SearchNotFound from "../components/SearchNotFound";
-import { TableHeader, TableToolbar } from "../components/table";
-import LinkBar from "../components/LinkBar";
-import UserMoreMenu from "../sections/user/UserMoreMenu";
-import { handleGetAllUser } from "../redux/apiRequest";
+import Page from "../../components/Page";
+import Label from "../../components/Label";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
+import { TableHeader, TableToolbar } from "../../components/table";
+import LinkBar from "../../components/LinkBar";
+import UserMoreMenu from "../../components/UserMoreMenu";
 import axios from "axios";
 
 const TABLE_HEAD = [
@@ -120,7 +117,6 @@ export default function User() {
   const navigate = useNavigate();
   // const userList = useSelector((state) => state?.user?.users?.allUser);
   const [userList, setUserList] = useState([]);
-  const dispatch = useDispatch();
   console.log(userList);
 
   const handleGetAllUser = async () => {

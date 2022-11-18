@@ -1,29 +1,28 @@
 import { Navigate, useRoutes } from "react-router-dom";
 
-import MainLayout from "../layout/main";
+import MainLayout from "../layout/MainLayout";
 import LogoOnlyLayout from "../layout/LogoOnlyLayout";
 
-import User from "../pages/User";
-import UserDetail from "../pages/UserDetail";
-import AccountRequest from "../pages/AccountRequest";
-import Notification from "../pages/Notification";
-import Group from "../pages/Group";
-import Post from "../pages/Post";
-import PostDetail from "../pages/PostDetail";
+import User from "../pages/user/User";
+import UserDetail from "../pages/user/UserDetail";
+import AccountRequest from "../pages/accountRequest/AccountRequest";
+import AccountRequestDetail from "../pages/accountRequest/AccountRequestDetail";
+import Notification from "../pages/notification/Notification";
+import Group from "../pages/group/Group";
+import Post from "../pages/post/Post";
+import PostDetail from "../pages/post/PostDetail";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import NotFound from "../pages/Page404";
 import Profile from "../pages/Profile";
-
-import RequireAuth from "../components/auth/RequireAuth";
-import Report from "../pages/Report";
-import Event from "../pages/Event";
-import EventDetail from "../pages/EventDetail";
+import Report from "../pages/report/Report";
+import Event from "../pages/event/Event";
+import EventDetail from "../pages/event/EventDetail";
 import Source from "../pages/source/Source";
 import SourceDetail from "../pages/source/SourceDetail";
-import Major from "../pages/Major";
-import AccountRequestDetail from "../pages/AccountRequestDetail";
 import CometChat from "../pages/Chat";
+
+import RequireAuth from "../components/auth/RequireAuth";
 
 export default function Router() {
   return useRoutes([
@@ -48,7 +47,6 @@ export default function Router() {
             { path: "notifications", element: <Notification /> },
             { path: "groups", element: <Group /> },
             { path: "reports", element: <Report /> },
-            { path: "majors", element: <Major /> },
             { path: "sources", element: <Source /> },
             { path: "source/:_id", element: <SourceDetail /> },
             { path: "profile" , element: <Profile /> },
