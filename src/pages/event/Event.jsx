@@ -1,19 +1,27 @@
-import { Avatar, Card, Container, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Typography } from "@mui/material";
 import axios from "axios";
-import { sentenceCase } from "change-case";
 import { filter } from "lodash";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import AvatarUser from "../components/AvatarUser";
-import Label from "../components/Label";
 
-import LinkBar from "../components/LinkBar";
-import Page from "../components/Page";
-import Scrollbar from "../components/Scrollbar";
-import SearchNotFound from "../components/SearchNotFound";
-import { TableHeader, TableToolbar } from "../components/table";
-import UserMoreMenu from "../sections/user/UserMoreMenu";
+import {
+  Card,
+  Container,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TablePagination,
+  TableRow,
+  Typography,
+} from "@mui/material";
+
+import AvatarUser from "../../components/AvatarUser";
+import LinkBar from "../../components/LinkBar";
+import Page from "../../components/Page";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
+import { TableHeader, TableToolbar } from "../../components/table";
 
 const TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },

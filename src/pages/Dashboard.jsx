@@ -5,7 +5,7 @@ import axios from "axios";
 import { Grid, Container, Typography } from "@mui/material";
 
 import Page from "../components/Page";
-import DashboardReport from "../sections/dashboard/DashboardReport";
+import DashboardReport from "../components/dashboard/DashboardReport";
 import AppWidgetSummary from "../components/dashboard/AppWidgetSummary";
 import LinkBar from "../components/LinkBar";
 
@@ -81,7 +81,7 @@ export default function Dashboard() {
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary
               title="Female"
-              total={female + " "}
+              total={female}
               color="error"
               icon={"ant-design:bug-filled"}
             />

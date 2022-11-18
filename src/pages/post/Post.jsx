@@ -1,43 +1,46 @@
+import { filter } from "lodash";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import {
-  Avatar,
   Card,
-  Container,
-  Stack,
   Table,
+  Stack,
+  Avatar,
+  TableRow,
   TableBody,
   TableCell,
+  Container,
+  Typography,
   TableContainer,
   TablePagination,
-  TableRow,
-  Typography,
 } from "@mui/material";
+
+import Page from "../../components/Page";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
+import { TableHeader, TableToolbar } from "../../components/table";
+import LinkBar from "../../components/LinkBar";
 import axios from "axios";
-import { filter } from "lodash";
-
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-
-import { BsShieldFillCheck, BsShieldSlashFill } from "react-icons/bs";
-import LinkBar from "../components/LinkBar";
-import MoreMenu from "../components/MoreMenu";
-import Page from "../components/Page";
-import Scrollbar from "../components/Scrollbar";
-import SearchNotFound from "../components/SearchNotFound";
-import { TableHeader } from "../components/table";
-
-const BREADCRUMBS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Request", href: "#" },
-];
+import MoreMenu from "../../components/MoreMenu";
+import { HiTrash } from "react-icons/hi";
 
 const TABLE_HEAD = [
-  { id: "fullname", label: "User", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "gender", label: "Gender", alignRight: false },
-  { id: "status", label: "status", alignRight: false },
+  { id: "title", label: "Title", alignRight: false },
+  { id: "createdBy", label: "Created By", alignRight: false },
+  { id: "type", label: "Type", alignRight: false },
+  // { id: "course", label: "Course", alignRight: false },
+  { id: "like", label: "Like", alignRight: false },
+  { id: "comment", label: "Comment", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
   { id: "" },
+];
+
+const BREADCRUMBS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Posts", href: "#" },
 ];
 
 function applyFilter(array, query) {
@@ -45,32 +48,35 @@ function applyFilter(array, query) {
   if (query) {
     return filter(
       array,
-      (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
+      (_post) => _post.name.to.indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function AccountRequest() {
+export default function Post() {
   const navigate = useNavigate();
-  const [requests, setRequests] = useState([]);
-  const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleGetAllRequest = async () => {
+  const [posts, setPosts] = useState([]);
+  const handleGetAllPost = async () => {
     try {
-      const rest = await axios.get(
-        "http://localhost:8000/user/getAllProveAccount"
-      );
-      setRequests(rest.data);
-    } catch (error) {}
+      const res = await axios.get("http://localhost:8000/post/getAll");
+      toast.success("get post success!");
+      setPosts(res.data);
+      console.log(res.data);
+    } catch (error) {
+      toast.error("get post fail!");
+    }
   };
-
   useEffect(() => {
-    handleGetAllRequest();
+    handleGetAllPost();
     // eslint-disable-next-line
   }, []);
+
+  const [page, setPage] = useState(0);
+
+  const [filterName, setFilterName] = useState("");
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -85,16 +91,27 @@ export default function AccountRequest() {
     setFilterName(event.target.value);
   };
 
+  const handleDeletePost = async ({ _id }) => {
+    try {
+      await axios.post("http://localhost:8000/post/delete", {
+        id: _id,
+      });
+      window.location.reload();
+      toast.success("delete post success!");
+    } catch (error) {
+      toast.error("delete post fail!");
+    }
+  };
+
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - requests.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - posts.length) : 0;
 
-  const filteredUsers = applyFilter(requests, filterName);
+  const filteredPosts = applyFilter(posts, filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
-  console.log(requests);
+  const isPostNotFound = filteredPosts.length === 0;
 
   return (
-    <Page title="Users">
+    <Page title="Posts">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -104,34 +121,31 @@ export default function AccountRequest() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Account Request
+            Post
           </Typography>
         </Stack>
 
         <Card>
-          {/* <TableToolbar
+          <TableToolbar
             filterName={filterName}
             onFilterName={handleFilterByName}
-          /> */}
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader
-                  headLabel={TABLE_HEAD}
-                  rowCount={requests.length}
-                />
+                <TableHeader headLabel={TABLE_HEAD} rowCount={posts.length} />
                 <TableBody>
-                  {requests
+                  {posts
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
                         _id,
-                        avatar_url,
-                        fullname,
-                        username,
-                        gender,
-                        is_active,
+                        created_by,
+                        content,
+                        type,
+                        likes,
+                        comments,
                         createdAt,
                         updatedAt,
                       } = row;
@@ -139,11 +153,21 @@ export default function AccountRequest() {
                       return (
                         <TableRow hover key={_id} tabIndex={-1}>
                           <TableCell
+                            align="left"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              navigate("/post/" + _id);
+                            }}
+                          >
+                            {content}
+                          </TableCell>
+                          <TableCell
                             component="th"
                             scope="row"
                             style={{ cursor: "pointer" }}
                             onClick={() => {
-                              navigate("/request/" + _id);
+                              navigate("/user/" + created_by._id);
+                              window.location.reload();
                             }}
                           >
                             <Stack
@@ -151,17 +175,18 @@ export default function AccountRequest() {
                               alignItems="center"
                               spacing={2}
                             >
-                              <Avatar alt={fullname} src={avatar_url} />
+                              <Avatar
+                                alt={created_by.fullname}
+                                src={created_by.avatar_url}
+                              />
                               <Typography variant="subtitle2" noWrap>
-                                {fullname}
+                                {created_by.fullname}
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">{username}</TableCell>
-                          <TableCell align="left">{gender}</TableCell>
-                          <TableCell align="left">
-                            {is_active === true ? "Yes" : "Not yet"}
-                          </TableCell>
+                          <TableCell align="left">{type}</TableCell>
+                          <TableCell align="left">{likes.length}</TableCell>
+                          <TableCell align="left">{comments.length}</TableCell>
                           <TableCell align="left">
                             {createdAt.toString().substring(0, 10)}
                           </TableCell>
@@ -172,14 +197,10 @@ export default function AccountRequest() {
                             <MoreMenu
                               array={[
                                 {
-                                  title: "Prove",
-                                  icon: <BsShieldFillCheck />,
-                                  action: {},
-                                },
-                                {
-                                  title: "Disprove",
-                                  icon: <BsShieldSlashFill />,
-                                  action: {},
+                                  id: _id,
+                                  title: "Delete",
+                                  icon: <HiTrash />,
+                                  action: { handleDeletePost },
                                 },
                               ]}
                             />
@@ -194,7 +215,7 @@ export default function AccountRequest() {
                   )}
                 </TableBody>
 
-                {isUserNotFound && (
+                {isPostNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -210,7 +231,7 @@ export default function AccountRequest() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={requests.length}
+            count={posts.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

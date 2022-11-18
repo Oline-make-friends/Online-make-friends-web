@@ -20,11 +20,11 @@ import {
 
 import { HiPlus } from "react-icons/hi";
 
-import Page from "../components/Page";
-import Scrollbar from "../components/Scrollbar";
-import SearchNotFound from "../components/SearchNotFound";
-import { TableHeader, TableToolbar } from "../components/table";
-import AvatarUser from "../components/AvatarUser";
+import Page from "../../components/Page";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
+import { TableHeader, TableToolbar } from "../../components/table";
+import AvatarUser from "../../components/AvatarUser";
 
 const TABLE_HEAD = [
   { id: "name", label: "Name", alignRight: false },

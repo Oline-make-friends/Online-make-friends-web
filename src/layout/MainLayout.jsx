@@ -3,8 +3,8 @@ import { Outlet } from "react-router-dom";
 
 import { styled } from "@mui/material/styles";
 
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Header from "../components/header/Header";
+import Sidebar from "../components/sidebar/Sidebar";
 
 const APP_BAR_SMALLSCREEN = 64;
 const APP_BAR_LARGESCREEN = 92;

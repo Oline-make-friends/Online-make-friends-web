@@ -37,23 +37,6 @@ const BREADCRUMBS = [
 
 const genders = ["Male", "Female"];
 
-const majors = [
-  "Digital Marketing",
-  "International Business",
-  "Hospitality Management",
-  "Tourism and Hospitality Management",
-  "Multimedia",
-  "Finance",
-  "Software Engineering",
-  "Infosmation System",
-  "Artificial Intelligence",
-  "Information Assurance",
-  "Digital Art & Design",
-  "English Language",
-  "Japanese Language",
-  "Korea Language",
-];
-
 function GeneralTab({ info }) {
   const dispatch = useDispatch();
 
@@ -101,14 +84,9 @@ function GeneralTab({ info }) {
   const uploadImage = (e) => {
     e.preventDefault();
     if (image) {
-      // Tạo một form data chứa dữ liệu gửi lên
       const formData = new FormData();
-      // Hình ảnh cần upload
       formData.append("file", image);
-      // Tên preset vừa tạo ở bước 1
       formData.append("upload_preset", "oi7qyalz");
-      // Tải ảnh lên cloudinary
-      // API: https://api.cloudinary.com/v1_1/{Cloudinary-Name}/image/upload
       setLoading(true);
       axios
         .post(
@@ -227,16 +205,14 @@ function GeneralTab({ info }) {
             setChange(true);
           }}
         />
-        <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          options={majors}
+        <TextField
+          name="major"
+          label="Major"
           value={major}
-          onChange={(event, newValue) => {
-            setMajor(newValue);
+          onChange={(e) => {
+            setMajor(e.target.value);
             setChange(true);
           }}
-          renderInput={(params) => <TextField {...params} label="Major" />}
         />
         <TextField
           multiline

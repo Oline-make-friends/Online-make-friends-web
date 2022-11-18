@@ -20,10 +20,10 @@ import {
 
 import { HiPlus, HiTrash } from "react-icons/hi";
 
-import Page from '../components/Page';
-import Scrollbar from '../components/Scrollbar';
-import SearchNotFound from '../components/SearchNotFound';
-import { TableHeader, TableToolbar } from '../components/table';
+import Page from '../../components/Page';
+import Scrollbar from '../../components/Scrollbar';
+import SearchNotFound from '../../components/SearchNotFound';
+import { TableHeader, TableToolbar } from '../../components/table';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title', alignRight: false },

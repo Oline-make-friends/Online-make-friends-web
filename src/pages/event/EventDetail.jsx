@@ -15,10 +15,11 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { HiTrash } from "react-icons/hi";
 import { useParams } from "react-router";
-import AvatarUser from "../components/AvatarUser";
-import LinkBar from "../components/LinkBar";
-import Page from "../components/Page";
+import AvatarUser from "../../components/AvatarUser";
+import LinkBar from "../../components/LinkBar";
+import Page from "../../components/Page";
 
 function InfoItem({ title, value, isRequired }) {
   return (
@@ -79,8 +80,12 @@ export default function AccountRequestDetail() {
           <Typography variant="h4" gutterBottom>
             {event?.title}
           </Typography>
-          <Button variant="contained" color="error">
-            Delete Event
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<HiTrash />}
+          >
+            Delete
           </Button>
         </Stack>
         <Grid container spacing={1}>

@@ -14,9 +14,9 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import Label from "../components/Label";
-import LinkBar from "../components/LinkBar";
-import Page from "../components/Page";
+import Label from "../../components/Label";
+import LinkBar from "../../components/LinkBar";
+import Page from "../../components/Page";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -120,7 +120,7 @@ export default function AccountRequestDetail() {
               isRequired
             />
             <InfoItem
-              title="status"
+              title="Status"
               value={
                 <Label
                   variant="ghost"

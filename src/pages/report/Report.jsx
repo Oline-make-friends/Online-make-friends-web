@@ -1,7 +1,6 @@
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
 import { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -23,11 +22,11 @@ import {
 import { HiTrash } from "react-icons/hi";
 import { AiFillCheckCircle } from "react-icons/ai";
 
-import Page from "../components/Page";
-import Label from "../components/Label";
-import Scrollbar from "../components/Scrollbar";
-import SearchNotFound from "../components/SearchNotFound";
-import { TableHeader, TableToolbar } from "../components/table";
+import Page from "../../components/Page";
+import Label from "../../components/Label";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
+import { TableHeader } from "../../components/table";
 
 const TABLE_HEAD = [
   { id: "createdAt", label: "Date", alignRight: false },
@@ -121,14 +120,6 @@ export default function Report() {
           <Typography variant="h4" gutterBottom>
             Report
           </Typography>
-          {/* <Button
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<HiPlus />}
-          >
-            New Report
-          </Button> */}
         </Stack>
 
         <Card>
