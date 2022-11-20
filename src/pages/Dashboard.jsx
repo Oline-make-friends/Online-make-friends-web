@@ -9,7 +9,7 @@ import DashboardReport from "../components/dashboard/DashboardReport";
 import AppWidgetSummary from "../components/dashboard/AppWidgetSummary";
 import LinkBar from "../components/LinkBar";
 
-const BREADCRUMBS = [{label: "Dashboard", href: "#"}];
+const BREADCRUMBS = [{ label: "Dashboard", href: "#" }];
 
 export default function Dashboard() {
   const [users, setUsers] = useState([]);
@@ -45,7 +45,7 @@ export default function Dashboard() {
 
   return (
     <Page title="Dashboard">
-    <LinkBar array={BREADCRUMBS}/>
+      <LinkBar array={BREADCRUMBS} />
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
