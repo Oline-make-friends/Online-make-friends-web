@@ -2,6 +2,7 @@ import {
   Avatar,
   Button,
   Card,
+  Container,
   Divider,
   Stack,
   Table,
@@ -17,6 +18,7 @@ import { useParams } from "react-router";
 import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
+import Image from "../../components/Image"
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -72,7 +74,7 @@ export default function AccountRequestDetail() {
 
   return (
     <Page title="Request">
-      <LinkBar array={BREADCRUMBS}></LinkBar>
+      <LinkBar array={BREADCRUMBS} />
 
       <TableContainer component={Card} sx={{ padding: 2, mb: 2 }}>
         <Typography variant="subtitle1" mb={2}>
@@ -85,11 +87,10 @@ export default function AccountRequestDetail() {
             <InfoItem
               title="Avatar"
               value={
-                <Avatar
-                  variant="square"
-                  sx={{ borderRadius: 1, width: 122, height: 122 }}
+                <Image
+                  images={[request?.avatar_url]}
                   alt={request?.fullname}
-                  src={request?.avatar_url}
+                  style={{ borderRadius: 10, width: 122, height: 122 }}
                 />
               }
               isRequired
@@ -110,11 +111,10 @@ export default function AccountRequestDetail() {
             <InfoItem
               title="Prove Image"
               value={
-                <Avatar
-                  variant="square"
-                  sx={{ borderRadius: 1, width: 122, height: 122 }}
+                <Image
+                  images={[request?.proveImage_url]}
                   alt="prove_image"
-                  src={request?.proveImage_url}
+                  style={{ borderRadius: 10, width: 122, height: 122 }}
                 />
               }
               isRequired
@@ -133,7 +133,7 @@ export default function AccountRequestDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <TableContainer component={Card} sx={{ padding: 2 }}>
+      <TableContainer component={Card} sx={{ padding: 2, zIndex: "-1" }}>
         <Typography variant="subtitle1" mb={2}>
           Account Configuration
         </Typography>
@@ -153,7 +153,7 @@ export default function AccountRequestDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Stack direction="row" justifyContent="left">
+      <Stack direction="row" justifyContent="left" sx={{zIndex: "-1"}}>
         <Button
           sx={{ margin: 2 }}
           color="success"

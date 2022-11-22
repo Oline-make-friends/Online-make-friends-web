@@ -27,7 +27,6 @@ const RootStyle = styled("div")(({ theme }) => ({
 
 const HeaderStyle = styled("header")(({ theme }) => ({
   top: 0,
-  zIndex: 9,
   lineHeight: 0,
   width: "100%",
   display: "flex",
