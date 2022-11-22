@@ -24,6 +24,7 @@ import Page from "../../components/Page";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader } from "../../components/table";
+import AvatarUser from "../../components/AvatarUser";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -146,16 +147,11 @@ export default function AccountRequest() {
                               navigate("/request/" + _id);
                             }}
                           >
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <Avatar alt={fullname} src={avatar_url} />
-                              <Typography variant="subtitle2" noWrap>
-                                {fullname}
-                              </Typography>
-                            </Stack>
+                            <AvatarUser
+                              id={_id}
+                              fullname={fullname}
+                              avatar={avatar_url}
+                            />
                           </TableCell>
                           <TableCell align="left">{username}</TableCell>
                           <TableCell align="left">{gender}</TableCell>

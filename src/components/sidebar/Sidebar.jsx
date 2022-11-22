@@ -16,6 +16,7 @@ import navConfig from "../../components/sidebar/NavConfig";
 const DRAWER_WIDTH = 280;
 
 const RootStyle = styled("div")(({ theme }) => ({
+  zIndex: 0,
   [theme.breakpoints.up("lg")]: {
     flexShrink: 0,
     width: DRAWER_WIDTH,

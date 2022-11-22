@@ -31,6 +31,8 @@ import Label from "../../components/Label";
 import { TableHeader, TableToolbar } from "../../components/table";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
+import Image from "../../components/Image";
+import AvatarUser from "../../components/AvatarUser";
 
 const TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },
@@ -161,11 +163,9 @@ function OverViewTab({
           <Stack direction="column" spacing={2}>
             <Stack direction="row" spacing={2}>
               <Typography variant="subtitle2">Prove Image:</Typography>
-              <Avatar
-                variant="square"
-                sx={{ borderRadius: 1, width: 122, height: 122 }}
-                alt="prove_image"
-                src={proveImage}
+              <Image
+                style={{ borderRadius: 10, width: 122, height: 122 }}
+                images={[proveImage]}
               />
             </Stack>
             <Stack direction="row" spacing={2}>
@@ -262,12 +262,7 @@ function FriendsTab({ friendList }) {
                           window.location.reload();
                         }}
                       >
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                          <Avatar alt={fullname} src={avatar_url} />
-                          <Typography variant="subtitle2" noWrap>
-                            {fullname}
-                          </Typography>
-                        </Stack>
+                        <AvatarUser id={_id} fullname={fullname} avatar={avatar_url}/>                        
                       </TableCell>
                       <TableCell align="left">{username}</TableCell>
                       <TableCell align="left">{gender}</TableCell>
@@ -402,12 +397,7 @@ function FollowingTab({ followingList }) {
                           window.location.reload();
                         }}
                       >
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                          <Avatar alt={fullname} src={avatar_url} />
-                          <Typography variant="subtitle2" noWrap>
-                            {fullname}
-                          </Typography>
-                        </Stack>
+                        <AvatarUser id={_id} fullname={fullname} avatar={avatar_url}/>
                       </TableCell>
                       <TableCell align="left">{username}</TableCell>
                       <TableCell align="left">{gender}</TableCell>
@@ -635,11 +625,10 @@ export default function UserDetail() {
             justifyContent="space-between"
           >
             <Stack direction="row" spacing={2}>
-              <Avatar
-                variant="square"
-                sx={{ borderRadius: 1, width: 122, height: 122 }}
+              <Image
+                images={[user?.avatar_url]}
                 alt={user?.fullname}
-                src={user?.avatar_url}
+                style={{ borderRadius: 10, width: 122, height: 122 }}
               />
               <Stack direction="column">
                 <Typography variant="subtitle1" noWrap>
