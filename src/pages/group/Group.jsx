@@ -58,6 +58,18 @@ export default function Group() {
       toast.error("get all group  fail!");
     }
   };
+  const deleteGroup = async (id) => {
+    try {
+      const res = await axios.post("http://localhost:8000/group/delete", {
+        _id: id,
+      });
+      console.log(res.data);
+      handleGetAllGroup();
+    } catch (error) {
+      toast.error("Send noti fail!");
+    }
+  };
+
   useEffect(() => {
     handleGetAllGroup();
     // eslint-disable-next-line
@@ -139,6 +151,21 @@ export default function Group() {
                             {createdAt?.substring(0, 10)}
                           </TableCell>
                           <TableCell align="left">{content}</TableCell>
+                          {/* <TableCell
+                            component="th"
+                            scope="row"
+                            onClick={() => deleteGroup(_id)}
+                          >
+                            <Button
+                              sx={{ backgroundColor: "error" }}
+                              variant="contained"
+                              onClick={() => {
+                                deleteGroup(_id);
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </TableCell> */}
                         </TableRow>
                       );
                     })}

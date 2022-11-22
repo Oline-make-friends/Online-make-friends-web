@@ -3,16 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
-import { Link, Stack, IconButton, InputAdornment, TextField, Card, Container, Typography } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import {
+  Link,
+  Stack,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Card,
+  Container,
+  Typography,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { LoadingButton } from "@mui/lab";
 
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 
-import {
-  loginUser,
-  handleSendEmailResetPassword,
-} from "../redux/apiRequest";
+import { loginUser, handleSendEmailResetPassword } from "../redux/apiRequest";
 
 import useResponsive from "../hooks/useResponsive";
 
@@ -69,14 +75,27 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+  const [err, setError] = useState("");
 
   const logIn = async (e) => {
-    e.preventDefault();
-    const newUser = {
-      username: username,
-      password: password,
-    };
-    loginUser(newUser, dispatch, navigate, toast);
+    try {
+      e.preventDefault();
+      const newUser = {
+        username: username,
+        password: password,
+      };
+      loginUser(newUser, dispatch, navigate, toast);
+      if (
+        (await loginUser(newUser, dispatch, navigate, toast)) ===
+        "Your are not admin"
+      ) {
+        setError("Your are not admin");
+      } else {
+        setError("Username or password is wrong");
+      }
+    } catch (error) {
+      setError("Username or password is wrong");
+    }
   };
 
   const handleSendEmailReset = () => {
@@ -115,11 +134,13 @@ export default function Login() {
                   name="username"
                   label="Username"
                   onChange={(e) => setUsername(e.target.value)}
+                  required
                 />
 
                 <TextField
                   name="password"
                   label="Password"
+                  required
                   onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
                   InputProps={{
@@ -153,7 +174,8 @@ export default function Login() {
                   onClick={handleSendEmailReset}
                   style={{ cursor: "pointer" }}
                 >
-                  Send email reset password
+                  {/* Send email reset password */}
+                  {err}
                 </Link>
               </Stack>
 

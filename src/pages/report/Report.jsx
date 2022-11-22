@@ -140,7 +140,9 @@ export default function Report() {
 
                       return (
                         <TableRow hover key={_id} tabIndex={-1}>
-                          <TableCell align="left">{createdAt}</TableCell>
+                          <TableCell align="left">
+                            {createdAt?.substring(0, 10)}
+                          </TableCell>
                           <TableCell component="th" scope="row">
                             <Stack
                               direction="row"
