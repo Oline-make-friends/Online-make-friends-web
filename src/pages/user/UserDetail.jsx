@@ -1,6 +1,5 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -48,7 +47,6 @@ const TABLE_HEAD = [
 const POST_TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },
   { id: "type", label: "Type", alignRight: false },
-  { id: "course", label: "Course", alignRight: false },
   { id: "like", label: "Like", alignRight: false },
   { id: "comment", label: "Comment", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
@@ -521,7 +519,6 @@ function PostsTab({ userId }) {
                     _id,
                     content,
                     type,
-                    course,
                     likes,
                     comments,
                     createdAt,
@@ -539,7 +536,6 @@ function PostsTab({ userId }) {
                         {content}
                       </TableCell>
                       <TableCell align="left">{type}</TableCell>
-                      <TableCell align="left">{course}</TableCell>
                       <TableCell align="left">{likes.length}</TableCell>
                       <TableCell align="left">{comments.length}</TableCell>
                       <TableCell align="left">

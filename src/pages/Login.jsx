@@ -20,12 +20,14 @@ import Page from "../components/Page";
 import Logo from "../components/Logo";
 
 const RootStyle = styled("div")(({ theme }) => ({
+  display: "flex",
   [theme.breakpoints.up("md")]: {
     display: "flex",
   },
 }));
 
 const HeaderStyle = styled("header")(({ theme }) => ({
+  zIndex: 9,
   top: 0,
   lineHeight: 0,
   width: "100%",
@@ -95,7 +97,7 @@ export default function Login() {
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
             </Typography>
-            <img src="/illustrations/illustration_login.png" alt="login" />
+            <img src="/illustrations/login.png" alt="login" width="80%" style={{alignSelf: "center"}}/>
           </SectionStyle>
         )}
 

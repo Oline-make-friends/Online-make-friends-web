@@ -23,19 +23,15 @@ import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
 import axios from "axios";
-import MoreMenu from "../../components/MoreMenu";
-import { HiTrash } from "react-icons/hi";
 
 const TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },
   { id: "createdBy", label: "Created By", alignRight: false },
   { id: "type", label: "Type", alignRight: false },
-  // { id: "course", label: "Course", alignRight: false },
   { id: "like", label: "Like", alignRight: false },
   { id: "comment", label: "Comment", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
-  { id: "" },
 ];
 
 const BREADCRUMBS = [
@@ -89,18 +85,6 @@ export default function Post() {
 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
-  };
-
-  const handleDeletePost = async ({ _id }) => {
-    try {
-      await axios.post("http://localhost:8000/post/delete", {
-        id: _id,
-      });
-      window.location.reload();
-      toast.success("delete post success!");
-    } catch (error) {
-      toast.error("delete post fail!");
-    }
   };
 
   const emptyRows =
@@ -192,18 +176,6 @@ export default function Post() {
                           </TableCell>
                           <TableCell align="left">
                             {updatedAt.toString().substring(0, 10)}
-                          </TableCell>
-                          <TableCell align="right">
-                            <MoreMenu
-                              array={[
-                                {
-                                  id: _id,
-                                  title: "Delete",
-                                  icon: <HiTrash />,
-                                  action: { handleDeletePost },
-                                },
-                              ]}
-                            />
                           </TableCell>
                         </TableRow>
                       );

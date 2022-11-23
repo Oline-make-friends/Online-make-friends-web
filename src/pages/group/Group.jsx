@@ -1,6 +1,6 @@
 import { filter } from "lodash";
 import { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -29,8 +29,9 @@ import AvatarUser from "../../components/AvatarUser";
 const TABLE_HEAD = [
   { id: "name", label: "Name", alignRight: false },
   { id: "admin", label: "Admin", alignRight: false },
-  { id: "createdAt", label: "Date Create", alignRight: false },
   { id: "content", label: "Content", alignRight: false },
+  { id: "createdAt", label: "Created At", alignRight: false },
+  { id: "updatedAt", label: "Updated At", alignRight: false },
   { id: "" },
 ];
 
@@ -46,6 +47,7 @@ function applyFilter(array, query) {
 }
 
 export default function Group() {
+  const navigate = useNavigate();
   const [groups, setGroup] = useState([]);
   const handleGetAllGroup = async () => {
     try {
@@ -125,20 +127,31 @@ export default function Group() {
                   {groups
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, name, admins, createdAt, content } = row;
-
+                      const { _id, name, admins, content, createdAt, updatedAt } = row;
+                      console.log(_id)
                       return (
-                        <TableRow hover onClick="#" key={_id} tabIndex={-1}>
-                          <TableCell align="left">{name}</TableCell>
+                        <TableRow hover key={_id} tabIndex={-1}>
+                          <TableCell
+                            align="left"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                                navigate("/group/" + _id);
+                              }}
+                          >
+                            {name}
+                          </TableCell>                          
                           <TableCell align="left">
                             {/* {admins.map((admin) => admin.fullname + "\n")} */}
                             {/* {admins[0]} */}
                             <AvatarUser id={admins[0]} />
                           </TableCell>
+                          <TableCell align="left">{content}</TableCell>
                           <TableCell align="left">
                             {createdAt?.substring(0, 10)}
                           </TableCell>
-                          <TableCell align="left">{content}</TableCell>
+                          <TableCell align="left">
+                            {updatedAt?.substring(0, 10)}
+                          </TableCell>
                         </TableRow>
                       );
                     })}

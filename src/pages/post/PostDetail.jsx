@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-import { HiTrash } from "react-icons/hi";
 import { AiFillDislike, AiFillLike, AiFillMessage } from "react-icons/ai";
 import { MdShare } from "react-icons/md";
 import "reactjs-popup/dist/index.css";
@@ -16,12 +15,10 @@ import {
   CardContent,
   CardActions,
   Avatar,
-  IconButton,
   Typography,
   Box,
 } from "@mui/material";
 
-import MoreMenu from "../../components/MoreMenu";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 
@@ -89,13 +86,14 @@ export default function PostDetail() {
         <CardHeader
           style={{ cursor: "pointer" }}
           avatar={<Avatar src={post?.created_by.avatar_url} alt="avatar" />}
-          action={
-            <IconButton aria-label="settings">
-              <MoreMenu
-                array={[{ title: "Delete", icon: <HiTrash />, action: "" }]}
-              />
-            </IconButton>
-          }
+          // action={
+          //   <IconButton aria-label="settings">
+          //     <MoreMenu
+          //       array={[{ title: "Delete", icon: <HiTrash />, action: "" }]}
+          //     />
+          //   </IconButton>
+          //   <Button>Delete</Button>
+          // }
           title={post?.created_by.fullname}
           subheader={post?.createdAt}
           onClick={() => {
@@ -126,15 +124,6 @@ export default function PostDetail() {
               <Typography variant="caption">{info.number}</Typography>
             </Box>
           ))}
-          <MoreMenu
-            array={[
-              {
-                title: "Delete",
-                icon: <HiTrash />,
-                action: { handleDeletePost },
-              },
-            ]}
-          />
         </CardActions>
       </Card>
     </Page>
