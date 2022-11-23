@@ -12,15 +12,10 @@ import * as CONSTANT from "../constans/constans";
 export const loginUser = async (user, dispatch, navigate, toast) => {
   dispatch(loginStart());
   try {
-    CometChat.login(`admin`, CONSTANT.AUTH_KEY)
-      .then(console.log("Login success"))
-      .catch(() => {
-        console.log("Login fail");
-        CometChat.createUser(`${res.data?._id}`, CONSTANT.AUTH_KEY).then(() => {
-          CometChat.login(`${res.data?._id}`, CONSTANT.AUTH_KEY);
-        });
-      });
-    const res = await axios.post("http://localhost:8000/auth/login", user);
+    const res = await axios.post("http://localhost:8000/auth/loginAdmin", user);
+    if (res.data === "Your are not admin") {
+      return "Your are not admin";
+    }
     dispatch(loginSuccess(res.data));
     toast.success("Login success!");
 

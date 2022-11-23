@@ -114,9 +114,8 @@ export default function SourceDetail() {
                     title="Created By"
                     value={
                       <AvatarUser
-                        id={source?.created_by._id}
-                        fullname={source?.created_by.fullname}
-                        avatar={source?.created_by.avatar_url}
+                        id={source?.created_by?._id}
+                        url={source?.created_by?.avatar_url}
                       />
                     }
                   />

@@ -57,59 +57,78 @@ function applyFilter(array, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export const FILTER_GENDER_OPTIONS = ['Men', 'Women', 'Kids'];
-export const FILTER_CATEGORY_OPTIONS = ['All', 'Shose', 'Apparel', 'Accessories'];
+export const FILTER_GENDER_OPTIONS = ["Men", "Women", "Kids"];
+export const FILTER_CATEGORY_OPTIONS = [
+  "All",
+  "Shose",
+  "Apparel",
+  "Accessories",
+];
 export const FILTER_PRICE_OPTIONS = [
-  { value: 'below', label: 'Below $25' },
-  { value: 'between', label: 'Between $25 - $75' },
-  { value: 'above', label: 'Above $75' },
+  { value: "below", label: "Below $25" },
+  { value: "between", label: "Between $25 - $75" },
+  { value: "above", label: "Above $75" },
 ];
 
-function FilterOption(){
+function FilterOption() {
   return (
     <Scrollbar>
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
-                Gender
-              </Typography>
-              <FormGroup>
-                {FILTER_GENDER_OPTIONS.map((item) => (
-                  <FormControlLabel key={item} control={<Checkbox />} label={item} />
-                ))}
-              </FormGroup>
-            </div>
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <div>
+          <Typography variant="subtitle1" gutterBottom>
+            Gender
+          </Typography>
+          <FormGroup>
+            {FILTER_GENDER_OPTIONS.map((item) => (
+              <FormControlLabel
+                key={item}
+                control={<Checkbox />}
+                label={item}
+              />
+            ))}
+          </FormGroup>
+        </div>
 
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
-                Category
-              </Typography>
-              <RadioGroup>
-                {FILTER_CATEGORY_OPTIONS.map((item) => (
-                  <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
-                ))}
-              </RadioGroup>
-            </div>
+        <div>
+          <Typography variant="subtitle1" gutterBottom>
+            Category
+          </Typography>
+          <RadioGroup>
+            {FILTER_CATEGORY_OPTIONS.map((item) => (
+              <FormControlLabel
+                key={item}
+                value={item}
+                control={<Radio />}
+                label={item}
+              />
+            ))}
+          </RadioGroup>
+        </div>
 
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
-                Price
-              </Typography>
-              <RadioGroup>
-                {FILTER_PRICE_OPTIONS.map((item) => (
-                  <FormControlLabel key={item.value} value={item.value} control={<Radio />} label={item.label} />
-                ))}
-              </RadioGroup>
-            </div>
+        <div>
+          <Typography variant="subtitle1" gutterBottom>
+            Price
+          </Typography>
+          <RadioGroup>
+            {FILTER_PRICE_OPTIONS.map((item) => (
+              <FormControlLabel
+                key={item.value}
+                value={item.value}
+                control={<Radio />}
+                label={item.label}
+              />
+            ))}
+          </RadioGroup>
+        </div>
 
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
-                Rating
-              </Typography>
-            </div>
-          </Stack>
-        </Scrollbar>
-  )
+        <div>
+          <Typography variant="subtitle1" gutterBottom>
+            Rating
+          </Typography>
+        </div>
+      </Stack>
+    </Scrollbar>
+  );
 }
 export default function User() {
   const navigate = useNavigate();
@@ -177,7 +196,7 @@ export default function User() {
           <TableToolbar
             filterName={filterName}
             onFilterName={handleFilterByName}
-            FilterOption={<FilterOption/>}
+            FilterOption={<FilterOption />}
           />
 
           <Scrollbar>

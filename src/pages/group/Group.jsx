@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 import {
   Card,
@@ -60,6 +61,18 @@ export default function Group() {
       toast.error("get all group  fail!");
     }
   };
+  const deleteGroup = async (id) => {
+    try {
+      const res = await axios.post("http://localhost:8000/group/delete", {
+        _id: id,
+      });
+      console.log(res.data);
+      handleGetAllGroup();
+    } catch (error) {
+      toast.error("Send noti fail!");
+    }
+  };
+
   useEffect(() => {
     handleGetAllGroup();
     // eslint-disable-next-line
@@ -103,21 +116,21 @@ export default function Group() {
           <Typography variant="h4" gutterBottom>
             Group
           </Typography>
-          <Button
+          {/* <Button
             variant="contained"
             component={RouterLink}
             to="#"
             startIcon={<HiPlus />}
           >
             New Group
-          </Button>
+          </Button> */}
         </Stack>
 
         <Card>
-          <TableToolbar
+          {/* <TableToolbar
             filterName={filterName}
             onFilterName={handleFilterByName}
-          />
+          /> */}
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

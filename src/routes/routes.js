@@ -53,6 +53,7 @@ export default function Router() {
             { path: "source/:_id", element: <SourceDetail /> },
             { path: "profile", element: <Profile /> },
             { path: "chat", element: <CometChat /> },
+            { path: "group/:_id", element: <GroupDetail /> },
           ],
         },
       ],

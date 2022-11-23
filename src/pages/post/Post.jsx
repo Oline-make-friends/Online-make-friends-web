@@ -140,7 +140,10 @@ export default function Post() {
                             align="left"
                             style={{ cursor: "pointer" }}
                             onClick={() => {
-                              navigate("/post/" + _id);
+                              // navigate("/post/" + _id);
+                              navigate("/post/" + _id, {
+                                state: { isGroup: false },
+                              });
                             }}
                           >
                             {content}
