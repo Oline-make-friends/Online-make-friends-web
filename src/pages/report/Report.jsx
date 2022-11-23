@@ -28,11 +28,12 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader } from "../../components/table";
 
-const TABLE_HEAD = [
-  { id: "createdAt", label: "Date", alignRight: false },
+const TABLE_HEAD = [  
   { id: "sent_by", label: "Reporter", alignRight: false },
   { id: "content", label: "Content", alignRight: false },
   { id: "status", label: "Status", alignRight: false },
+  { id: "createdAt", label: "Created At", alignRight: false },
+  { id: "updatedAt", label: "Updated At", alignRight: false },
   { id: "" },
 ];
 
@@ -136,13 +137,10 @@ export default function Report() {
                   {reports
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, createdAt, sent_by, content, status } = row;
+                      const { _id, sent_by, content, status, createdAt, updatedAt } = row;
 
                       return (
-                        <TableRow hover key={_id} tabIndex={-1}>
-                          <TableCell align="left">
-                            {createdAt?.substring(0, 10)}
-                          </TableCell>
+                        <TableRow hover key={_id} tabIndex={-1}>                          
                           <TableCell component="th" scope="row">
                             <Stack
                               direction="row"
@@ -166,6 +164,12 @@ export default function Report() {
                             >
                               {sentenceCase(status ? "Done" : "Pending")}
                             </Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            {createdAt.toString().substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="left">
+                            {updatedAt.toString().substring(0, 10)}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <Button

@@ -28,7 +28,6 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
-import UserMoreMenu from "../../components/UserMoreMenu";
 import axios from "axios";
 
 const TABLE_HEAD = [
@@ -40,7 +39,6 @@ const TABLE_HEAD = [
   { id: "is_admin", label: "Role", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "is_active", label: "Status", alignRight: false },
-  { id: "" },
 ];
 
 const BREADCRUMBS = [
@@ -265,10 +263,6 @@ export default function User() {
                                 is_active === true ? "active" : "banned"
                               )}
                             </Label>
-                          </TableCell>
-
-                          <TableCell align="right">
-                            <UserMoreMenu userId={_id} banned={!is_active} />
                           </TableCell>
                         </TableRow>
                       );

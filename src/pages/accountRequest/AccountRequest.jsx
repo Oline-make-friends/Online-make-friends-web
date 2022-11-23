@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Card,
   Container,
   Stack,
@@ -17,9 +16,7 @@ import { filter } from "lodash";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-import { BsShieldFillCheck, BsShieldSlashFill } from "react-icons/bs";
 import LinkBar from "../../components/LinkBar";
-import MoreMenu from "../../components/MoreMenu";
 import Page from "../../components/Page";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
@@ -38,7 +35,6 @@ const TABLE_HEAD = [
   { id: "status", label: "Status", alignRight: false },
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
-  { id: "" },
 ];
 
 function applyFilter(array, query) {
@@ -163,22 +159,6 @@ export default function AccountRequest() {
                           </TableCell>
                           <TableCell align="left">
                             {updatedAt.toString().substring(0, 10)}
-                          </TableCell>
-                          <TableCell align="right">
-                            <MoreMenu
-                              array={[
-                                {
-                                  title: "Prove",
-                                  icon: <BsShieldFillCheck />,
-                                  action: {},
-                                },
-                                {
-                                  title: "Disprove",
-                                  icon: <BsShieldSlashFill />,
-                                  action: {},
-                                },
-                              ]}
-                            />
                           </TableCell>
                         </TableRow>
                       );

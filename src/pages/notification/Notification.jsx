@@ -129,7 +129,6 @@ export default function Notification() {
                           <Button
                           sx={{backgroundColor: "error"}}
                             variant="contained"
-                            onClick={handleDelete(_id)}
                             startIcon={<HiTrash />}
                           >
                             Delete
