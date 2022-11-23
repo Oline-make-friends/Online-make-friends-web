@@ -54,15 +54,15 @@ function applyFilter(array, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Post() {
+export default function Post({ id }) {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const handleGetAllPost = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/post/getAll");
+      const res = await axios.get(`http://localhost:8000/group/get/${id}`);
       toast.success("get post success!");
-      setPosts(res.data);
-      console.log(res.data);
+      setPosts(res.data?.posts);
+      console.log(res.data?.posts);
     } catch (error) {
       toast.error("get post fail!");
     }
@@ -112,7 +112,6 @@ export default function Post() {
 
   return (
     <Page title="Posts">
-      <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
           direction="row"
@@ -126,11 +125,6 @@ export default function Post() {
         </Stack>
 
         <Card>
-          <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -148,68 +142,72 @@ export default function Post() {
                         comments,
                         createdAt,
                         updatedAt,
+                        is_deleted,
                       } = row;
-
-                      return (
-                        <TableRow hover key={_id} tabIndex={-1}>
-                          <TableCell
-                            align="left"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              // navigate("/post/" + _id);
-                              navigate("/post/" + _id, {
-                                state: { isGroup: false },
-                              });
-                            }}
-                          >
-                            {content}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              navigate("/user/" + created_by._id);
-                              window.location.reload();
-                            }}
-                          >
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={2}
+                      if (is_deleted === false) {
+                        return (
+                          <TableRow hover key={_id} tabIndex={-1}>
+                            <TableCell
+                              align="left"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                // navigate("/post/" + _id);
+                                navigate("/post/" + _id, {
+                                  state: { isGroup: true },
+                                });
+                              }}
                             >
-                              <Avatar
-                                alt={created_by.fullname}
-                                src={created_by.avatar_url}
+                              {content}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                navigate("/user/" + created_by._id);
+                                window.location.reload();
+                              }}
+                            >
+                              <Stack
+                                direction="row"
+                                alignItems="center"
+                                spacing={2}
+                              >
+                                <Avatar
+                                  alt={created_by.fullname}
+                                  src={created_by.avatar_url}
+                                />
+                                <Typography variant="subtitle2" noWrap>
+                                  {created_by.fullname}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell align="left">{type}</TableCell>
+                            <TableCell align="left">{likes.length}</TableCell>
+                            <TableCell align="left">
+                              {comments.length}
+                            </TableCell>
+                            <TableCell align="left">
+                              {createdAt.toString().substring(0, 10)}
+                            </TableCell>
+                            <TableCell align="left">
+                              {updatedAt.toString().substring(0, 10)}
+                            </TableCell>
+                            <TableCell align="right">
+                              <MoreMenu
+                                array={[
+                                  {
+                                    id: _id,
+                                    title: "Delete",
+                                    icon: <HiTrash />,
+                                    action: { handleDeletePost },
+                                  },
+                                ]}
                               />
-                              <Typography variant="subtitle2" noWrap>
-                                {created_by.fullname}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="left">{type}</TableCell>
-                          <TableCell align="left">{likes.length}</TableCell>
-                          <TableCell align="left">{comments.length}</TableCell>
-                          <TableCell align="left">
-                            {createdAt.toString().substring(0, 10)}
-                          </TableCell>
-                          <TableCell align="left">
-                            {updatedAt.toString().substring(0, 10)}
-                          </TableCell>
-                          <TableCell align="right">
-                            <MoreMenu
-                              array={[
-                                {
-                                  id: _id,
-                                  title: "Delete",
-                                  icon: <HiTrash />,
-                                  action: { handleDeletePost },
-                                },
-                              ]}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      );
+                            </TableCell>
+                          </TableRow>
+                        );
+                      } else return <></>;
                     })}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
@@ -217,16 +215,6 @@ export default function Post() {
                     </TableRow>
                   )}
                 </TableBody>
-
-                {isPostNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
               </Table>
             </TableContainer>
           </Scrollbar>

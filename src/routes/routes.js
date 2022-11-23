@@ -23,6 +23,7 @@ import SourceDetail from "../pages/source/SourceDetail";
 import CometChat from "../pages/Chat";
 
 import RequireAuth from "../components/Auth/RequireAuth";
+import GroupDetail from "../pages/group/GroupDetail";
 
 export default function Router() {
   return useRoutes([
@@ -51,6 +52,7 @@ export default function Router() {
             { path: "source/:_id", element: <SourceDetail /> },
             { path: "profile", element: <Profile /> },
             { path: "chat", element: <CometChat /> },
+            { path: "group/:_id", element: <GroupDetail /> },
           ],
         },
       ],

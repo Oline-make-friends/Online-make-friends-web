@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 import {
   Card,
@@ -46,6 +47,7 @@ function applyFilter(array, query) {
 }
 
 export default function Group() {
+  const navigate = useNavigate();
   const [groups, setGroup] = useState([]);
   const handleGetAllGroup = async () => {
     try {
@@ -113,21 +115,21 @@ export default function Group() {
           <Typography variant="h4" gutterBottom>
             Group
           </Typography>
-          <Button
+          {/* <Button
             variant="contained"
             component={RouterLink}
             to="#"
             startIcon={<HiPlus />}
           >
             New Group
-          </Button>
+          </Button> */}
         </Stack>
 
         <Card>
-          <TableToolbar
+          {/* <TableToolbar
             filterName={filterName}
             onFilterName={handleFilterByName}
-          />
+          /> */}
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -141,7 +143,9 @@ export default function Group() {
 
                       return (
                         <TableRow hover onClick="#" key={_id} tabIndex={-1}>
-                          <TableCell align="left">{name}</TableCell>
+                          <TableCell align="left">
+                            <a href={`/group/${_id}`}>{name}</a>
+                          </TableCell>
                           <TableCell align="left">
                             {/* {admins.map((admin) => admin.fullname + "\n")} */}
                             {/* {admins[0]} */}

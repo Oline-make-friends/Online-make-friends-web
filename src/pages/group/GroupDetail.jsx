@@ -20,6 +20,7 @@ import Page from "../../components/Page";
 import LinkBar from "../../components/LinkBar";
 import AvatarUser from "../../components/AvatarUser";
 import { HiTrash } from "react-icons/hi";
+import Post from "./Post";
 
 function InfoItem({ title, value, isRequired }) {
   return (
@@ -41,42 +42,40 @@ function InfoItem({ title, value, isRequired }) {
   );
 }
 
-export default function SourceDetail() {
+const GroupDetail = () => {
+  const deleteGroup = async () => {
+    try {
+      await axios.post("http://localhost:8000/group/delete", {
+        _id: _id,
+      });
+      navigate("/groups");
+    } catch (error) {
+      toast.error("Send noti fail!");
+    }
+  };
   const navigate = useNavigate();
   const { _id } = useParams();
 
-  const [source, setSource] = useState();
+  const [group, setGroup] = useState();
 
-  const handleGetSourceById = async () => {
+  const handleGetGroup = async () => {
     try {
-      const rest = await axios.get("http://localhost:8000/course/get/" + _id);
-      setSource(rest.data);
-      console.log(rest.data);
+      const res = await axios.get(`http://localhost:8000/group/get/${_id}`);
+      setGroup(res.data);
+      console.log(res.data?.posts);
     } catch (error) {}
   };
 
   useEffect(() => {
-    handleGetSourceById();
+    handleGetGroup();
     // eslint-disable-next-line
   }, []);
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Source", href: "/sources" },
-    { label: source?.name, href: "#" },
+    { label: "Groups", href: "/groups" },
+    { label: "Group detail", href: "/groupDetail" },
   ];
-
-  const deleteSourse = async () => {
-    try {
-      await axios.get(`http://localhost:8000/course/delete/${_id}`);
-      toast.success("deleted course");
-      navigate("/sources");
-    } catch (error) {
-      console.log(error.message);
-      toast.error("check connection");
-    }
-  };
-
   return (
     <Page title="EventDetail">
       <LinkBar array={BREADCRUMBS}></LinkBar>
@@ -88,13 +87,13 @@ export default function SourceDetail() {
           mb={2}
         >
           <Typography variant="h4" gutterBottom>
-            {source?.name}
+            Group Detail
           </Typography>
           <Button
             variant="outlined"
             color="error"
             startIcon={<HiTrash />}
-            onClick={() => deleteSourse}
+            onClick={() => deleteGroup()}
           >
             Delete
           </Button>
@@ -108,15 +107,17 @@ export default function SourceDetail() {
               <Divider />
               <Table>
                 <TableBody>
-                  <InfoItem title="Title" value={source?.name} isRequired />
-                  <InfoItem title="Description" value={source?.description} />
+                  <InfoItem title="Group name" value={group?.name} isRequired />
+                  <InfoItem title="Description" value={group?.content} />
                   <InfoItem
                     title="Created By"
                     value={
                       <AvatarUser
-                        id={source?.created_by?._id}
-                        url={source?.created_by?.avatar_url}
+                        id={group?.admins[0]?._id}
+                        url={group?.admins[0]?.avatar_url}
                       />
+                      // fullname={source?.created_by.fullname}
+                      // avatar={source?.created_by.avatar_url}
                     }
                   />
                 </TableBody>
@@ -126,59 +127,29 @@ export default function SourceDetail() {
           <Grid item xs={6} md={4}>
             <Card sx={{ p: 2, mb: 2 }}>
               <Typography variant="subtitle1" mb={2}>
-                Source Configuration
+                Group Configuration
               </Typography>
               <Divider />
 
               <InfoItem
                 title="Create At"
-                value={source?.createdAt?.substring(0, 10)}
+                value={group?.createdAt?.substring(0, 10)}
                 isRequired
               />
               <InfoItem
                 title="Update At"
-                value={source?.updatedAt?.substring(0, 10)}
+                value={group?.updatedAt?.substring(0, 10)}
               />
             </Card>
           </Grid>
         </Grid>
-      </Container>
-      <Container>
-        {source?.quizs.map((row, counter) => {
-          const { question, options, answer } = row;
-          return (
-            <Card sx={{ p: 2, mb: 2 }}>
-              <Stack mb={2}>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="subtitle1" gutterBottom>
-                    Question {counter + 1}
-                  </Typography>
-                </Stack>
-                <Divider />
-              </Stack>
-              <Grid container spacing={2}>
-                <Grid item xs={6} md={8}>
-                  <Typography variant="body2">{question}</Typography>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  <Stack direction="column">
-                    {options.map((op, i) => {
-                      return (
-                        <Typography
-                          variant="body2"
-                          color={op === answer ? "success.dark" : ""}
-                        >
-                          Option {i + 1}: {op}
-                        </Typography>
-                      );
-                    })}
-                  </Stack>
-                </Grid>
-              </Grid>
-            </Card>
-          );
-        })}
+
+        {/* //////////////? */}
+        <Post id={_id} />
+        {/* //////////////////// */}
       </Container>
     </Page>
   );
-}
+};
+
+export default GroupDetail;

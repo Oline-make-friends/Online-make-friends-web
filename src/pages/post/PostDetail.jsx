@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -19,6 +19,7 @@ import {
   IconButton,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 
 import MoreMenu from "../../components/MoreMenu";
@@ -26,8 +27,16 @@ import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 
 export default function PostDetail() {
+  const styles = {
+    media: {
+      maxHeight: "580px",
+    },
+  };
+  const { state } = useLocation();
+  const { isGroup } = state;
   const navigate = useNavigate();
   const { _id } = useParams();
+  // const { isGroup } = useLocation();
   const [post, setPost] = useState();
 
   const handleGetPostById = async () => {
@@ -72,10 +81,12 @@ export default function PostDetail() {
 
   const handleDeletePost = async () => {
     try {
-      await axios.post("http://localhost:8000/post/delete", {
-        id: _id,
-      });
-      window.location.reload();
+      await axios.post(`http://localhost:8000/post/delete/` + _id);
+      if (isGroup === true) {
+        navigate(-1);
+        return;
+      }
+      navigate("/posts");
       toast.success("delete post success!");
     } catch (error) {
       toast.error("delete post fail!");
@@ -97,13 +108,18 @@ export default function PostDetail() {
             </IconButton>
           }
           title={post?.created_by.fullname}
-          subheader={post?.createdAt}
+          subheader={post?.createdAt?.substring(0, 10)}
           onClick={() => {
             navigate("/user/" + post?.created_by._id);
           }}
         />
         {post?.imageUrl !== "" && (
-          <CardMedia component="img" height="400" image={post?.imageUrl} />
+          <CardMedia
+            component="img"
+            height="400"
+            image={post?.imageUrl}
+            style={styles.media}
+          />
         )}
 
         <CardContent>
@@ -135,6 +151,14 @@ export default function PostDetail() {
               },
             ]}
           />
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<HiTrash />}
+            onClick={() => handleDeletePost()}
+          >
+            Delete
+          </Button>
         </CardActions>
       </Card>
     </Page>
