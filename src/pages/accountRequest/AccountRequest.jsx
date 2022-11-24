@@ -22,6 +22,7 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
+import Label from "../../components/Label";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -128,7 +129,7 @@ export default function AccountRequest() {
                         fullname,
                         username,
                         gender,
-                        is_active,
+                        is_prove,
                         createdAt,
                         updatedAt,
                       } = row;
@@ -152,7 +153,12 @@ export default function AccountRequest() {
                           <TableCell align="left">{username}</TableCell>
                           <TableCell align="left">{gender}</TableCell>
                           <TableCell align="left">
-                            {is_active === true ? "Yes" : "Not yet"}
+                            <Label
+                              variant="ghost"
+                              color={is_prove ? "info" : "error"}
+                            >
+                              {is_prove === true ? "Proved" : "Not yet"}
+                            </Label>
                           </TableCell>
                           <TableCell align="left">
                             {createdAt.toString().substring(0, 10)}

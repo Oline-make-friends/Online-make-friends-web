@@ -20,10 +20,10 @@ const MainStyle = styled("div")(({ theme }) => ({
   flexGrow: 1,
   overflow: "auto",
   minHeight: "100%",
-  marginTop: APP_BAR_SMALLSCREEN + 24,
+  marginTop: APP_BAR_SMALLSCREEN,
   paddingBottom: theme.spacing(10),
   [theme.breakpoints.up("lg")]: {
-    marginTop: APP_BAR_LARGESCREEN + 24,
+    marginTop: APP_BAR_LARGESCREEN,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
   },

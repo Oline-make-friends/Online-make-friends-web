@@ -124,9 +124,9 @@ export default function AccountRequestDetail() {
               value={
                 <Label
                   variant="ghost"
-                  color={request?.is_active ? "info" : "error"}
+                  color={request?.is_prove ? "info" : "error"}
                 >
-                  {request?.is_active === true ? "Proved" : "Not yet"}
+                  {request?.is_prove === true ? "Proved" : "Not yet"}
                 </Label>
               }
             />

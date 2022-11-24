@@ -29,6 +29,7 @@ import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
 import axios from "axios";
+import InviteAdmin from "./InviteAdmin";
 
 const TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },
@@ -130,6 +131,7 @@ function FilterOption() {
     </Scrollbar>
   );
 }
+
 export default function User() {
   const navigate = useNavigate();
   // const userList = useSelector((state) => state?.user?.users?.allUser);
@@ -190,6 +192,7 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
+          <InviteAdmin/>
         </Stack>
 
         <Card>

@@ -8,8 +8,6 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
-  Button,
   TableRow,
   TableBody,
   TableCell,
@@ -19,22 +17,27 @@ import {
   TablePagination,
 } from "@mui/material";
 
-import { HiTrash } from "react-icons/hi";
-import { AiFillCheckCircle } from "react-icons/ai";
-
 import Page from "../../components/Page";
 import Label from "../../components/Label";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader } from "../../components/table";
+import AvatarUser from "../../components/AvatarUser";
+import { useNavigate } from "react-router";
+import LinkBar from "../../components/LinkBar";
 
 const TABLE_HEAD = [  
-  { id: "sent_by", label: "Reporter", alignRight: false },
   { id: "content", label: "Content", alignRight: false },
+  { id: "sent_by", label: "Reporter", alignRight: false },  
   { id: "status", label: "Status", alignRight: false },
   { id: "createdAt", label: "Created At", alignRight: false },
   { id: "updatedAt", label: "Updated At", alignRight: false },
   { id: "" },
+];
+
+const BREADCRUMBS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Report", href: "#" },
 ];
 
 function applyFilter(array, query) {
@@ -50,6 +53,7 @@ function applyFilter(array, query) {
 }
 
 export default function Report() {
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const handleGetAllReport = async () => {
     try {
@@ -61,24 +65,7 @@ export default function Report() {
       toast.error("get report fail!");
     }
   };
-  const handleDeleteReport = async (id) => {
-    try {
-      await axios.post("http://localhost:8000/report/delete/" + id);
-      handleGetAllReport();
-      toast.success("Delete report success!");
-    } catch (error) {
-      toast.error("get report fail!");
-    }
-  };
-  const handleStatusReport = async (id) => {
-    try {
-      await axios.post("http://localhost:8000/report/updateStatus/" + id);
-      handleGetAllReport();
-      toast.success("Delete report success!");
-    } catch (error) {
-      toast.error("get report fail!");
-    }
-  };
+
   useEffect(() => {
     handleGetAllReport();
   }, []);
@@ -111,6 +98,7 @@ export default function Report() {
 
   return (
     <Page title="Report">
+    <LinkBar array={BREADCRUMBS}/>
       <Container>
         <Stack
           direction="row"
@@ -140,23 +128,19 @@ export default function Report() {
                       const { _id, sent_by, content, status, createdAt, updatedAt } = row;
 
                       return (
-                        <TableRow hover key={_id} tabIndex={-1}>                          
-                          <TableCell component="th" scope="row">
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <Avatar
-                                alt={sent_by.fullname}
-                                src={sent_by.avatar_url}
-                              />
-                              <Typography variant="subtitle2" noWrap>
-                                {sent_by.fullname}
-                              </Typography>
-                            </Stack>
+                        <TableRow hover key={_id} tabIndex={-1}>
+                          <TableCell
+                            align="left"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              navigate("/report/" + sent_by._id);
+                            }}
+                          >
+                            {content}
                           </TableCell>
-                          <TableCell align="left">{content}</TableCell>
+                          <TableCell component="th" scope="row">
+                            <AvatarUser id={sent_by._id} />
+                          </TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -170,28 +154,6 @@ export default function Report() {
                           </TableCell>
                           <TableCell align="left">
                             {updatedAt.toString().substring(0, 10)}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            <Button
-                              sx={{ backgroundColor: "error" }}
-                              variant="contained"
-                              onClick={() => {
-                                handleStatusReport(_id);
-                              }}
-                              startIcon={<AiFillCheckCircle />}
-                            >
-                              Check
-                            </Button>
-                            <Button
-                              sx={{ backgroundColor: "error" }}
-                              variant="contained"
-                              onClick={() => {
-                                handleDeleteReport(_id);
-                              }}
-                              startIcon={<HiTrash />}
-                            >
-                              Delete
-                            </Button>
                           </TableCell>
                         </TableRow>
                       );
