@@ -8,6 +8,7 @@ import Page from "../components/Page";
 import DashboardReport from "../components/dashboard/DashboardReport";
 import AppWidgetSummary from "../components/dashboard/AppWidgetSummary";
 import LinkBar from "../components/LinkBar";
+import AccountRequest from "../components/dashboard/AccountRequest";
 
 const BREADCRUMBS = [{ label: "Dashboard", href: "#" }];
 
@@ -87,17 +88,11 @@ export default function Dashboard() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
-            <DashboardReport
-              title="Report"
-              list={[
-                { id: "1", label: "Create FireStone Logo" },
-                { id: "2", label: "Add SCSS and JS files if required" },
-                { id: "3", label: "Stakeholder Meeting" },
-                { id: "4", label: "Scoping & Estimations" },
-                { id: "5", label: "Sprint Showcase" },
-              ]}
-            />
+          <Grid item xs={12} md={6} lg={7}>
+            <DashboardReport/>
+          </Grid>
+          <Grid item xs={12} md={6} lg={5}>
+            <AccountRequest/>
           </Grid>
         </Grid>
       </Container>

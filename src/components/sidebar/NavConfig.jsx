@@ -64,17 +64,7 @@ const navConfig = [
     title: "Chat",
     path: "/chat",
     icon: <BsFillChatFill size={22} />,
-  },
-  {
-    title: "configuration",
-    icon: <AiFillSetting size={22} />,
-    children: [
-      {
-        title: "majors",
-        path: "/majors",
-      },
-    ],
-  },
+  }
 ];
 
 export default navConfig;

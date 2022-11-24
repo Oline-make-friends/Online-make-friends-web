@@ -14,10 +14,12 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import { sentenceCase } from "change-case";
 import { useEffect, useState } from "react";
 import { HiTrash } from "react-icons/hi";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import AvatarUser from "../../components/AvatarUser";
+import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 
@@ -41,34 +43,50 @@ function InfoItem({ title, value, isRequired }) {
   );
 }
 
-export default function EventDetail() {
+export default function ReportDetail() {
+  const navigate = useNavigate();
   const { _id } = useParams();
 
-  const [event, setEvent] = useState();
+  const [report, setReport] = useState();
 
-  const handleGetEventById = async () => {
+  const handleGetReportById = async () => {
     try {
       const rest = await axios.get(
-        "http://localhost:8000/event/getEvent/" + _id
+        "http://localhost:8000/report/getUser/" + _id
       );
-      setEvent(rest.data);
+      setReport(rest.data);
       console.log(rest.data);
     } catch (error) {}
   };
 
+  const handleDeleteReport = async (id) => {
+    try {
+      await axios.post("http://localhost:8000/report/delete/" + id);
+      navigate("/reports")
+    } catch (error) {
+    }
+  };
+  const handleStatusReport = async (id) => {
+    try {
+      await axios.post("http://localhost:8000/report/updateStatus/" + id);
+      handleGetReportById();
+    } catch (error) {
+    }
+  };
+
   useEffect(() => {
-    handleGetEventById();
+    handleGetReportById();
     // eslint-disable-next-line
   }, []);
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Event", href: "/events" },
-    { label: event?.title, href: "#" },
+    { label: "Report", href: "/reports" },
+    { label: "Report Detail", href: "#" },
   ];
 
   return (
-    <Page title="Event">
+    <Page title="Report">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -78,12 +96,14 @@ export default function EventDetail() {
           mb={2}
         >
           <Typography variant="h4" gutterBottom>
-            {event?.title}
+            Report Detail
           </Typography>
           <Button
-            variant="outlined"
+            sx={{ margin: 2 }}
             color="error"
+            variant="outlined"
             startIcon={<HiTrash />}
+            onClick={() => handleDeleteReport()}
           >
             Delete
           </Button>
@@ -97,74 +117,63 @@ export default function EventDetail() {
               <Divider />
               <Table>
                 <TableBody>
-                  <InfoItem title="Title" value={event?.title} isRequired />
-                  <InfoItem title="Type" value={event?.type} isRequired />
-                  <InfoItem title="Description" value={event?.description} />
                   <InfoItem
-                    title="Organization Day"
-                    value={event?.date_time}
+                    title="Content"
+                    value={report?.content}
                     isRequired
                   />
                   <InfoItem
-                    title="Created By"
+                    title="Reporter"
+                    value={<AvatarUser />}
+                    isRequired
+                  />
+                  <InfoItem
+                    title="Status"
                     value={
-                      <AvatarUser
-                        id={event?.created_by._id}
-                        fullname={event?.created_by.fullname}
-                        avatar={event?.created_by.avatar_url}
-                      />
+                      <Label
+                        variant="ghost"
+                        color={report?.status ? "success" : "warning"}
+                      >
+                        {sentenceCase(report?.status ? "Done" : "Pending")}
+                      </Label>
                     }
                     isRequired
                   />
                 </TableBody>
               </Table>
             </TableContainer>
-            <Card sx={{ p: 2, mb: 2, width: "100%" }}>
-              <Typography variant="subtitle1" mb={2}>
-                Joiners
-              </Typography>
-              <Divider />
-              <Box
-                sx={{
-                  mt: 2,
-                  display: "grid",
-                  gap: 2,
-                  gridTemplateColumns: "repeat(2, 1fr)",
-                }}
-              >
-                {event?.user_joined.map((row) => {
-                  return (
-                    <Card sx={{p: 2}}>
-                      <AvatarUser
-                        id={row._id}
-                        fullname={row.fullname}
-                        avatar={row.avatar_url}
-                      />
-                    </Card>
-                  );
-                })}
-              </Box>
-            </Card>
           </Grid>
           <Grid item xs={6} md={4}>
             <Card sx={{ p: 2, mb: 2 }}>
               <Typography variant="subtitle1" mb={2}>
-                Account Configuration
+                Report Configuration
               </Typography>
               <Divider />
 
               <InfoItem
                 title="Create At"
-                value={event?.createdAt?.substring(0, 10)}
+                value={report?.createdAt?.substring(0, 10)}
                 isRequired
               />
               <InfoItem
                 title="Update At"
-                value={event?.updatedAt?.substring(0, 10)}
+                value={report?.updatedAt?.substring(0, 10)}
               />
             </Card>
           </Grid>
         </Grid>
+        <Stack direction="row" justifyContent="left" sx={{ zIndex: "-1" }}>
+          {!report?.status && (
+            <Button
+              sx={{ margin: 2 }}
+              color="success"
+              variant="contained"
+              onClick={() => handleStatusReport()}
+            >
+              Mark done
+            </Button>
+          )}
+        </Stack>
       </Container>
     </Page>
   );

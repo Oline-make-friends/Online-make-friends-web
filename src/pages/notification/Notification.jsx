@@ -1,6 +1,6 @@
 import { filter } from 'lodash';
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -8,7 +8,6 @@ import {
   Card,
   Table,
   Stack,
-  Button,
   TableRow,
   TableBody,
   TableCell,
@@ -18,19 +17,25 @@ import {
   TablePagination,
 } from '@mui/material';
 
-import { HiPlus, HiTrash } from "react-icons/hi";
-
 import Page from '../../components/Page';
 import Scrollbar from '../../components/Scrollbar';
 import SearchNotFound from '../../components/SearchNotFound';
 import { TableHeader, TableToolbar } from '../../components/table';
+import LinkBar from '../../components/LinkBar';
+import NewNotification from './NewNotification';
+import AvatarUser from '../../components/AvatarUser';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Title', alignRight: false },
-  { id: 'content', label: 'Content', alignRight: false },
-  { id: 'createAt', label: 'Created Day', alignRight: false },
-  { id: 'user_id', label: 'Created By', alignRight: false },
-  { id: '' },
+  { id: "title", label: "Title", alignRight: false },
+  { id: "content", label: "Content", alignRight: false },
+  { id: "receiver", label: "Receiver", alignRight: false },
+  { id: "createAt", label: "Created At", alignRight: false },
+  { id: "updatedAt", label: "Updated At", alignRight: false },
+];
+
+const BREADCRUMBS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Notification", href: "#" },
 ];
 
 function applyFilter(array, query) {
@@ -42,6 +47,7 @@ function applyFilter(array, query) {
 }
 
 export default function Notification() {
+  const navigate = useNavigate();
   const [notis, setNotis] = useState([]);
   const handleGetAllNoti = async () => {
     try {
@@ -54,15 +60,6 @@ export default function Notification() {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.post("http://localhost:8000/noti/delete/" + id);
-      toast.success("delete notification success!");
-      handleGetAllNoti();
-    } catch (error) {
-      toast.error("delete notification  fail!");
-    }
-  };
   useEffect(() => {
     handleGetAllNoti();
     // eslint-disable-next-line
@@ -95,14 +92,13 @@ export default function Notification() {
 
   return (
     <Page title="Notification">
+    <LinkBar array={BREADCRUMBS}/>
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Notification
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<HiPlus/>}>
-            New Notification
-          </Button>
+          <NewNotification/>
         </Stack>
 
         <Card>
@@ -117,22 +113,32 @@ export default function Notification() {
                 />
                 <TableBody>
                   {notis.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { _id, title, content, createdAt, updatedAt } = row;
+                    const { _id, title, content, user_id, createdAt, updatedAt } = row;
 
                     return (
                       <TableRow hover key={_id} tabIndex={-1}>
-                        <TableCell align="left">{title}</TableCell>
-                        <TableCell align="left">{content}</TableCell>
-                        <TableCell align="left">{createdAt}</TableCell>
-                        <TableCell align="left">{updatedAt}</TableCell>
-                        <TableCell component="th" scope="row">
-                          <Button
-                          sx={{backgroundColor: "error"}}
-                            variant="contained"
-                            startIcon={<HiTrash />}
-                          >
-                            Delete
-                          </Button>
+                        <TableCell
+                          align="left"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            navigate("/notification/" + _id);
+                          }}
+                        >
+                          {title}
+                        </TableCell>
+
+                        <TableCell align="left">
+                          {content?.substring(0, 30)}
+                          {content?.length > 30 ? "..." : ""}
+                        </TableCell>
+                        <TableCell align="left">
+                          <AvatarUser id={user_id._id} />
+                        </TableCell>
+                        <TableCell align="left">
+                          {createdAt?.substring(0, 10)}
+                        </TableCell>
+                        <TableCell align="left">
+                          {updatedAt?.substring(0, 10)}
                         </TableCell>
                       </TableRow>
                     );

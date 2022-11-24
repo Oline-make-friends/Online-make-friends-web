@@ -24,6 +24,8 @@ import CometChat from "../pages/Chat";
 
 import RequireAuth from "../components/auth/RequireAuth";
 import GroupDetail from "../pages/group/GroupDetail";
+import ReportDetail from "../pages/report/ReportDetail";
+import NotificationDetail from "../pages/notification/NotificationDetail";
 
 export default function Router() {
   return useRoutes([
@@ -46,14 +48,15 @@ export default function Router() {
             { path: "events", element: <Event /> },
             { path: "event/:_id", element: <EventDetail /> },
             { path: "notifications", element: <Notification /> },
+            { path: "notification/:_id", element: <NotificationDetail /> },
             { path: "groups", element: <Group /> },
             { path: "group/:_id", element: <GroupDetail /> },
             { path: "reports", element: <Report /> },
+            { path: "report/:_id", element: <ReportDetail /> },
             { path: "sources", element: <Source /> },
             { path: "source/:_id", element: <SourceDetail /> },
             { path: "profile", element: <Profile /> },
             { path: "chat", element: <CometChat /> },
-            { path: "group/:_id", element: <GroupDetail /> },
           ],
         },
       ],

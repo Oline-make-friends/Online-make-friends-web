@@ -11,7 +11,7 @@ import useResponsive from "../../hooks/useResponsive";
 import Logo from "../../components/Logo";
 import Scrollbar from "../../components/Scrollbar";
 import NavSection from "./NavSection";
-import navConfig from "../../components/sidebar/NavConfig";
+import navConfig from "./NavConfig";
 
 const DRAWER_WIDTH = 280;
 

@@ -16,7 +16,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { HiTrash } from "react-icons/hi";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import AvatarUser from "../../components/AvatarUser";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
@@ -41,34 +41,42 @@ function InfoItem({ title, value, isRequired }) {
   );
 }
 
-export default function EventDetail() {
+export default function NotificationDetail() {
+  const navigate = useNavigate();
   const { _id } = useParams();
+  const [notification, setNotification] = useState();
 
-  const [event, setEvent] = useState();
-
-  const handleGetEventById = async () => {
+  const handleGetNotificationById = async () => {
     try {
       const rest = await axios.get(
-        "http://localhost:8000/event/getEvent/" + _id
+        "http://localhost:8000/notification/getNotification/" + _id
       );
-      setEvent(rest.data);
+      setNotification(rest.data);
       console.log(rest.data);
     } catch (error) {}
   };
 
   useEffect(() => {
-    handleGetEventById();
+    handleGetNotificationById();
     // eslint-disable-next-line
   }, []);
 
+  const handleDelete = async () => {
+    try {
+      await axios.post("http://localhost:8000/noti/delete/" + _id);
+      navigate("/notifications");
+    } catch (error) {
+    }
+  };
+
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Event", href: "/events" },
-    { label: event?.title, href: "#" },
+    { label: "Notification", href: "/notifications" },
+    { label: "Notification Detail", href: "#" },
   ];
 
   return (
-    <Page title="Event">
+    <Page title="Notification">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -78,12 +86,13 @@ export default function EventDetail() {
           mb={2}
         >
           <Typography variant="h4" gutterBottom>
-            {event?.title}
+            {notification?.title}
           </Typography>
           <Button
             variant="outlined"
             color="error"
             startIcon={<HiTrash />}
+            onClick={handleDelete}
           >
             Delete
           </Button>
@@ -97,21 +106,21 @@ export default function EventDetail() {
               <Divider />
               <Table>
                 <TableBody>
-                  <InfoItem title="Title" value={event?.title} isRequired />
-                  <InfoItem title="Type" value={event?.type} isRequired />
-                  <InfoItem title="Description" value={event?.description} />
+                  <InfoItem title="Title" value={notification?.title} isRequired />
+                  <InfoItem title="Type" value={notification?.type} isRequired />
+                  <InfoItem title="Description" value={notification?.description} />
                   <InfoItem
                     title="Organization Day"
-                    value={event?.date_time}
+                    value={notification?.date_time}
                     isRequired
                   />
                   <InfoItem
                     title="Created By"
                     value={
                       <AvatarUser
-                        id={event?.created_by._id}
-                        fullname={event?.created_by.fullname}
-                        avatar={event?.created_by.avatar_url}
+                        id={notification?.created_by._id}
+                        fullname={notification?.created_by.fullname}
+                        avatar={notification?.created_by.avatar_url}
                       />
                     }
                     isRequired
@@ -132,7 +141,7 @@ export default function EventDetail() {
                   gridTemplateColumns: "repeat(2, 1fr)",
                 }}
               >
-                {event?.user_joined.map((row) => {
+                {notification?.user_joined.map((row) => {
                   return (
                     <Card sx={{p: 2}}>
                       <AvatarUser
@@ -155,12 +164,12 @@ export default function EventDetail() {
 
               <InfoItem
                 title="Create At"
-                value={event?.createdAt?.substring(0, 10)}
+                value={notification?.createdAt?.substring(0, 10)}
                 isRequired
               />
               <InfoItem
                 title="Update At"
-                value={event?.updatedAt?.substring(0, 10)}
+                value={notification?.updatedAt?.substring(0, 10)}
               />
             </Card>
           </Grid>
