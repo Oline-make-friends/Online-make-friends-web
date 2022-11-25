@@ -16,7 +16,7 @@ const AvatarUser = ({ id, url }) => {
   useEffect(() => {
     handleGetUser();
     // eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   return (
     <Stack

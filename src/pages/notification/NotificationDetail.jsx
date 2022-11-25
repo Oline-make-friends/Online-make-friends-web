@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   Container,
@@ -48,11 +47,9 @@ export default function NotificationDetail() {
 
   const handleGetNotificationById = async () => {
     try {
-      const rest = await axios.get(
-        "http://localhost:8000/notification/getNotification/" + _id
-      );
-      setNotification(rest.data);
-      console.log(rest.data);
+      const res = await axios.get("http://localhost:8000/noti/getById/" + _id);
+      setNotification(res.data);
+      console.log(res.data);
     } catch (error) {}
   };
 
@@ -65,8 +62,7 @@ export default function NotificationDetail() {
     try {
       await axios.post("http://localhost:8000/noti/delete/" + _id);
       navigate("/notifications");
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const BREADCRUMBS = [
@@ -106,54 +102,21 @@ export default function NotificationDetail() {
               <Divider />
               <Table>
                 <TableBody>
-                  <InfoItem title="Title" value={notification?.title} isRequired />
-                  <InfoItem title="Type" value={notification?.type} isRequired />
-                  <InfoItem title="Description" value={notification?.description} />
                   <InfoItem
-                    title="Organization Day"
-                    value={notification?.date_time}
+                    title="Title"
+                    value={notification?.title}
                     isRequired
                   />
+
+                  <InfoItem title="Content" value={notification?.content} />
                   <InfoItem
                     title="Created By"
-                    value={
-                      <AvatarUser
-                        id={notification?.created_by._id}
-                        fullname={notification?.created_by.fullname}
-                        avatar={notification?.created_by.avatar_url}
-                      />
-                    }
+                    value={<AvatarUser id={notification?.user_id} />}
                     isRequired
                   />
                 </TableBody>
               </Table>
             </TableContainer>
-            <Card sx={{ p: 2, mb: 2, width: "100%" }}>
-              <Typography variant="subtitle1" mb={2}>
-                Joiners
-              </Typography>
-              <Divider />
-              <Box
-                sx={{
-                  mt: 2,
-                  display: "grid",
-                  gap: 2,
-                  gridTemplateColumns: "repeat(2, 1fr)",
-                }}
-              >
-                {notification?.user_joined.map((row) => {
-                  return (
-                    <Card sx={{p: 2}}>
-                      <AvatarUser
-                        id={row._id}
-                        fullname={row.fullname}
-                        avatar={row.avatar_url}
-                      />
-                    </Card>
-                  );
-                })}
-              </Box>
-            </Card>
           </Grid>
           <Grid item xs={6} md={4}>
             <Card sx={{ p: 2, mb: 2 }}>

@@ -52,7 +52,7 @@ export default function ReportDetail() {
   const handleGetReportById = async () => {
     try {
       const rest = await axios.get(
-        "http://localhost:8000/report/getUser/" + _id
+        "http://localhost:8000/report/getReport/" + _id
       );
       setReport(rest.data);
       console.log(rest.data);
@@ -61,17 +61,15 @@ export default function ReportDetail() {
 
   const handleDeleteReport = async (id) => {
     try {
-      await axios.post("http://localhost:8000/report/delete/" + id);
-      navigate("/reports")
-    } catch (error) {
-    }
+      await axios.post("http://localhost:8000/report/delete/" + _id);
+      navigate("/reports");
+    } catch (error) {}
   };
   const handleStatusReport = async (id) => {
     try {
-      await axios.post("http://localhost:8000/report/updateStatus/" + id);
+      await axios.post("http://localhost:8000/report/updateStatus/" + _id);
       handleGetReportById();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -124,7 +122,7 @@ export default function ReportDetail() {
                   />
                   <InfoItem
                     title="Reporter"
-                    value={<AvatarUser />}
+                    value={<AvatarUser id={report?.sent_by?._id} />}
                     isRequired
                   />
                   <InfoItem

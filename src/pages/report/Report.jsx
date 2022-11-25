@@ -26,9 +26,9 @@ import AvatarUser from "../../components/AvatarUser";
 import { useNavigate } from "react-router";
 import LinkBar from "../../components/LinkBar";
 
-const TABLE_HEAD = [  
+const TABLE_HEAD = [
   { id: "content", label: "Content", alignRight: false },
-  { id: "sent_by", label: "Reporter", alignRight: false },  
+  { id: "sent_by", label: "Reporter", alignRight: false },
   { id: "status", label: "Status", alignRight: false },
   { id: "createdAt", label: "Created At", alignRight: false },
   { id: "updatedAt", label: "Updated At", alignRight: false },
@@ -98,7 +98,7 @@ export default function Report() {
 
   return (
     <Page title="Report">
-    <LinkBar array={BREADCRUMBS}/>
+      <LinkBar array={BREADCRUMBS} />
       <Container>
         <Stack
           direction="row"
@@ -125,7 +125,14 @@ export default function Report() {
                   {reports
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, sent_by, content, status, createdAt, updatedAt } = row;
+                      const {
+                        _id,
+                        sent_by,
+                        content,
+                        status,
+                        createdAt,
+                        updatedAt,
+                      } = row;
 
                       return (
                         <TableRow hover key={_id} tabIndex={-1}>
@@ -133,7 +140,7 @@ export default function Report() {
                             align="left"
                             style={{ cursor: "pointer" }}
                             onClick={() => {
-                              navigate("/report/" + sent_by._id);
+                              navigate("/report/" + _id);
                             }}
                           >
                             {content}

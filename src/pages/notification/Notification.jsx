@@ -1,6 +1,6 @@
-import { filter } from 'lodash';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { filter } from "lodash";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -15,15 +15,15 @@ import {
   Typography,
   TableContainer,
   TablePagination,
-} from '@mui/material';
+} from "@mui/material";
 
-import Page from '../../components/Page';
-import Scrollbar from '../../components/Scrollbar';
-import SearchNotFound from '../../components/SearchNotFound';
-import { TableHeader, TableToolbar } from '../../components/table';
-import LinkBar from '../../components/LinkBar';
-import NewNotification from './NewNotification';
-import AvatarUser from '../../components/AvatarUser';
+import Page from "../../components/Page";
+import Scrollbar from "../../components/Scrollbar";
+import SearchNotFound from "../../components/SearchNotFound";
+import { TableHeader, TableToolbar } from "../../components/table";
+import LinkBar from "../../components/LinkBar";
+import NewNotification from "./NewNotification";
+import AvatarUser from "../../components/AvatarUser";
 
 const TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },
@@ -41,7 +41,10 @@ const BREADCRUMBS = [
 function applyFilter(array, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   if (query) {
-    return filter(array, (noti) => noti.title.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(
+      array,
+      (noti) => noti.title.toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -49,14 +52,32 @@ function applyFilter(array, query) {
 export default function Notification() {
   const navigate = useNavigate();
   const [notis, setNotis] = useState([]);
+  // const handleGetAllNoti = async () => {
+  //   try {
+  //     const res = await axios.get("http://localhost:8000/noti/getAll");
+  //     toast.success("get notification success!");
+  //     setNotis(res.data);
+  //     console.log(res.data);
+  //   } catch (error) {
+  //     toast.error("get notification  fail!");
+  //   }
+  // };
+
   const handleGetAllNoti = async () => {
     try {
       const res = await axios.get("http://localhost:8000/noti/getAll");
-      toast.success("get notification success!");
-      setNotis(res.data);
-      console.log(res.data);
+      ///
+      let temp = [];
+
+      for (let i = 0; i < res.data.length; i++) {
+        if (res.data[i]?.user_id?.is_admin === true) {
+          temp.push(res.data[i]);
+        }
+      }
+      //////
+      setNotis(temp);
     } catch (error) {
-      toast.error("get notification  fail!");
+      toast.error("get notification fail");
     }
   };
 
@@ -67,7 +88,7 @@ export default function Notification() {
 
   const [page, setPage] = useState(0);
 
-  const [filterNoti, setFilterNoti] = useState('');
+  const [filterNoti, setFilterNoti] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -84,7 +105,8 @@ export default function Notification() {
     setFilterNoti(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - notis.length) : 0;
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - notis.length) : 0;
 
   const filteredNotiList = applyFilter(notis, filterNoti);
 
@@ -92,57 +114,71 @@ export default function Notification() {
 
   return (
     <Page title="Notification">
-    <LinkBar array={BREADCRUMBS}/>
+      <LinkBar array={BREADCRUMBS} />
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={5}
+        >
           <Typography variant="h4" gutterBottom>
             Notification
           </Typography>
-          <NewNotification/>
+          <NewNotification />
         </Stack>
 
         <Card>
-          <TableToolbar filterName={filterNoti} onFilterName={handleFilterByTitle} />
+          <TableToolbar
+            filterName={filterNoti}
+            onFilterName={handleFilterByTitle}
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader
-                  headLabel={TABLE_HEAD}
-                  rowCount={notis.length}
-                />
+                <TableHeader headLabel={TABLE_HEAD} rowCount={notis.length} />
                 <TableBody>
-                  {notis.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { _id, title, content, user_id, createdAt, updatedAt } = row;
+                  {notis
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      const {
+                        _id,
+                        title,
+                        content,
+                        user_id,
+                        createdAt,
+                        updatedAt,
+                      } = row;
 
-                    return (
-                      <TableRow hover key={_id} tabIndex={-1}>
-                        <TableCell
-                          align="left"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            navigate("/notification/" + _id);
-                          }}
-                        >
-                          {title}
-                        </TableCell>
+                      return (
+                        <TableRow hover key={_id} tabIndex={-1}>
+                          <TableCell
+                            align="left"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              navigate("/notification/" + _id);
+                            }}
+                          >
+                            {title}
+                          </TableCell>
 
-                        <TableCell align="left">
-                          {content?.substring(0, 30)}
-                          {content?.length > 30 ? "..." : ""}
-                        </TableCell>
-                        <TableCell align="left">
-                          <AvatarUser id={user_id._id} />
-                        </TableCell>
-                        <TableCell align="left">
-                          {createdAt?.substring(0, 10)}
-                        </TableCell>
-                        <TableCell align="left">
-                          {updatedAt?.substring(0, 10)}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                          <TableCell align="left">
+                            {content?.substring(0, 30)}
+                            {content?.length > 30 ? "..." : ""}
+                          </TableCell>
+                          <TableCell align="left">
+                            <AvatarUser id={user_id._id} />
+                          </TableCell>
+                          <TableCell align="left">
+                            {createdAt?.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="left">
+                            {updatedAt?.substring(0, 10)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
