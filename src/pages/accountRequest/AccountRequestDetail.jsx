@@ -1,8 +1,7 @@
 import {
-  Avatar,
+  Modal,
   Button,
   Card,
-  Container,
   Divider,
   Stack,
   Table,
@@ -11,6 +10,7 @@ import {
   TableContainer,
   TableRow,
   Typography,
+  Box,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ import { useParams } from "react-router";
 import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
-import Image from "../../components/Image"
+import Image from "../../components/Image";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -49,6 +49,22 @@ export default function AccountRequestDetail() {
   const { _id } = useParams();
 
   const [request, setRequest] = useState();
+  const [image, setImage] = useState();
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 500,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
 
   const handleGetRequestById = async () => {
     try {
@@ -74,6 +90,25 @@ export default function AccountRequestDetail() {
 
   return (
     <Page title="Request">
+      {/*  */}
+      <Button
+        onClick={() => {
+          handleOpen();
+          setImage(request?.avatar_url);
+        }}
+      >
+        Open modal
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <img src={image} width="500px" height="500" />
+        </Box>
+      </Modal>
       <LinkBar array={BREADCRUMBS} />
 
       <TableContainer component={Card} sx={{ padding: 2, mb: 2 }}>
@@ -87,10 +122,18 @@ export default function AccountRequestDetail() {
             <InfoItem
               title="Avatar"
               value={
-                <Image
-                  images={[request?.avatar_url]}
-                  alt={request?.fullname}
+                // <Image
+                //   images={[request?.avatar_url]}
+                //   alt={request?.fullname}
+                //   style={{ borderRadius: 10, width: 122, height: 122 }}
+                // />
+                <img
+                  src={request?.avatar_url}
                   style={{ borderRadius: 10, width: 122, height: 122 }}
+                  onClick={() => {
+                    handleOpen();
+                    setImage(request?.avatar_url);
+                  }}
                 />
               }
               isRequired
@@ -111,10 +154,18 @@ export default function AccountRequestDetail() {
             <InfoItem
               title="Prove Image"
               value={
-                <Image
-                  images={[request?.proveImage_url]}
-                  alt="prove_image"
+                // <Image
+                //   images={[request?.proveImage_url]}
+                //   alt="prove_image"
+                //   style={{ borderRadius: 10, width: 122, height: 122 }}
+                // />
+                <img
+                  src={request?.proveImage_url}
                   style={{ borderRadius: 10, width: 122, height: 122 }}
+                  onClick={() => {
+                    handleOpen();
+                    setImage(request?.proveImage_url);
+                  }}
                 />
               }
               isRequired
@@ -153,7 +204,7 @@ export default function AccountRequestDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Stack direction="row" justifyContent="left" sx={{zIndex: "-1"}}>
+      <Stack direction="row" justifyContent="left" sx={{ zIndex: "-1" }}>
         <Button
           sx={{ margin: 2 }}
           color="success"
