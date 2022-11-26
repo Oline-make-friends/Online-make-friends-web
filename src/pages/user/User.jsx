@@ -15,11 +15,6 @@ import {
   Typography,
   TableContainer,
   TablePagination,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  RadioGroup,
-  Radio,
 } from "@mui/material";
 
 import Page from "../../components/Page";
@@ -30,113 +25,65 @@ import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
 import axios from "axios";
 import InviteAdmin from "./InviteAdmin";
-
-const TABLE_HEAD = [
-  { id: "fullname", label: "User", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "gender", label: "Gender", alignRight: false },
-  { id: "location", label: "Location", alignRight: false },
-  { id: "major", label: "Major", alignRight: false },
-  { id: "is_admin", label: "Role", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "is_active", label: "Status", alignRight: false },
-];
+import { FILTER_GENDER_OPTIONS, FILTER_STATUS_OPTIONS, USER_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Users", href: "#" },
 ];
 
-function applyFilter(array, query) {
+function applyFilter(array, searchQuery, genderQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  console.log(filteredList);
+  if (searchQuery || genderQuery || statusQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) =>
+          _user.fullname.trim().toLowerCase().indexOf(searchQuery.trim().toLowerCase()) !== -1||
+          _user.username.trim().toLowerCase().indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (genderQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) =>
+          _user.gender.toLowerCase() === genderQuery.toLowerCase()
+      );
+    }
+    if (statusQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) =>
+          _user.is_active.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export const FILTER_GENDER_OPTIONS = ["Men", "Women", "Kids"];
-export const FILTER_CATEGORY_OPTIONS = [
-  "All",
-  "Shose",
-  "Apparel",
-  "Accessories",
-];
-export const FILTER_PRICE_OPTIONS = [
-  { value: "below", label: "Below $25" },
-  { value: "between", label: "Between $25 - $75" },
-  { value: "above", label: "Above $75" },
-];
-
-function FilterOption() {
-  return (
-    <Scrollbar>
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <div>
-          <Typography variant="subtitle1" gutterBottom>
-            Gender
-          </Typography>
-          <FormGroup>
-            {FILTER_GENDER_OPTIONS.map((item) => (
-              <FormControlLabel
-                key={item}
-                control={<Checkbox />}
-                label={item}
-              />
-            ))}
-          </FormGroup>
-        </div>
-
-        <div>
-          <Typography variant="subtitle1" gutterBottom>
-            Category
-          </Typography>
-          <RadioGroup>
-            {FILTER_CATEGORY_OPTIONS.map((item) => (
-              <FormControlLabel
-                key={item}
-                value={item}
-                control={<Radio />}
-                label={item}
-              />
-            ))}
-          </RadioGroup>
-        </div>
-
-        <div>
-          <Typography variant="subtitle1" gutterBottom>
-            Price
-          </Typography>
-          <RadioGroup>
-            {FILTER_PRICE_OPTIONS.map((item) => (
-              <FormControlLabel
-                key={item.value}
-                value={item.value}
-                control={<Radio />}
-                label={item.label}
-              />
-            ))}
-          </RadioGroup>
-        </div>
-
-        <div>
-          <Typography variant="subtitle1" gutterBottom>
-            Rating
-          </Typography>
-        </div>
-      </Stack>
-    </Scrollbar>
-  );
-}
-
 export default function User() {
   const navigate = useNavigate();
-  // const userList = useSelector((state) => state?.user?.users?.allUser);
   const [userList, setUserList] = useState([]);
-  console.log(userList);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderQuery, setGenderQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+
+  const filteredUsers = applyFilter(
+    userList,
+    searchQuery,
+    genderQuery,
+    statusQuery
+  );
+
+  const isUserNotFound = filteredUsers.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0;
 
   const handleGetAllUser = async () => {
     try {
@@ -145,19 +92,10 @@ export default function User() {
     } catch (error) {}
   };
 
-  // const handleGetUsers = () => {
-  //   handleGetAllUser(dispatch, toast);
-  // };
   useEffect(() => {
     handleGetAllUser();
     // eslint-disable-next-line
   }, []);
-
-  const [page, setPage] = useState(0);
-
-  const [filterName, setFilterName] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -168,16 +106,43 @@ export default function User() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList.length) : 0;
+  const handleGenderQuery = (event) => {
+    setGenderQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredUsers = applyFilter(userList, filterName);
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Fullname, Email...",
+      onChange: handleSearchQuery
+    },
+    {
+      type: "select",
+      query: genderQuery,
+      label: "Gender",
+      onChange: handleGenderQuery,
+      items: FILTER_GENDER_OPTIONS
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_STATUS_OPTIONS
+    }
+  ];
 
   return (
     <Page title="Users">
@@ -192,25 +157,23 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
-          <InviteAdmin/>
+          <InviteAdmin />
         </Stack>
 
         <Card>
           <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-            FilterOption={<FilterOption />}
+            conditions={FILTER_CONDITIONS}
           />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <TableHeader
-                  headLabel={TABLE_HEAD}
-                  rowCount={userList.length}
+                  headLabel={USER_TABLE_HEAD}
+                  rowCount={filteredUsers.length}
                 />
                 <TableBody>
-                  {userList
+                  {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
@@ -221,9 +184,10 @@ export default function User() {
                         gender,
                         location,
                         major,
-                        is_admin,
-                        createdAt,
+                        //is_admin,
                         is_active,
+                        createdAt,
+                        updatedAt,
                       } = row;
 
                       return (
@@ -251,12 +215,9 @@ export default function User() {
                           <TableCell align="left">{gender}</TableCell>
                           <TableCell align="left">{location}</TableCell>
                           <TableCell align="left">{major}</TableCell>
-                          <TableCell align="left">
+                          {/* <TableCell align="left">
                             {is_admin ? "Admin" : "Member"}
-                          </TableCell>
-                          <TableCell align="left">
-                            {createdAt.toString().substring(0, 10)}
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -266,6 +227,12 @@ export default function User() {
                                 is_active === true ? "active" : "banned"
                               )}
                             </Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            {createdAt.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="left">
+                            {updatedAt.substring(0, 10)}
                           </TableCell>
                         </TableRow>
                       );
@@ -281,7 +248,7 @@ export default function User() {
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -293,7 +260,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={userList.length}
+            count={filteredUsers.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

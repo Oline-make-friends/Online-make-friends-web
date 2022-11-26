@@ -17,9 +17,7 @@ export default function InviteAdmin(){
 
       const handleInviteAdmin = async () => {
         try {
-          await axios.post("http://localhost:8000/auth/inviteAdmin",{
-            email: email
-          });
+          await axios.post("http://localhost:8000/auth/inviteAdmin/" + email);
           setOpen(false);
         } catch (error) {
         }
@@ -47,7 +45,7 @@ export default function InviteAdmin(){
           </DialogContent>
           <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleInviteAdmin}>Send Notification</Button>
+          <Button onClick={handleInviteAdmin}>Invite</Button>
         </DialogActions>
         </Dialog>
       </div>

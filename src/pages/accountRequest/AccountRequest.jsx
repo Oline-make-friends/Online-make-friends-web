@@ -20,9 +20,10 @@ import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
-import { TableHeader } from "../../components/table";
+import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
 import Label from "../../components/Label";
+import { FILTER_GENDER_OPTIONS } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -38,13 +39,46 @@ const TABLE_HEAD = [
   { id: "updatedAt", label: "Updated Day", alignRight: false },
 ];
 
-function applyFilter(array, query) {
+export const FILTER_STATUS_OPTIONS = [
+  { value: "", display: "All" },
+  { value: "true", display: "Proved" },
+  { value: "false", display: "Not Proved" },
+];
+
+function applyFilter(array, searchQuery, genderQuery, statusQuery) {
+  console.log("applyFilter");
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  console.log(filteredList);
+  if (searchQuery || genderQuery || statusQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_request) =>
+          _request.fullname &&
+          (_request.fullname
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1 ||
+            _request.username
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1)
+      );
+    }
+    if (genderQuery) {
+      filteredList = filter(
+        filteredList,
+        (_request) => _request.gender && _request.gender.toLowerCase() === genderQuery.toLowerCase()
+      );
+    }
+    if (statusQuery) {
+      filteredList = filter(
+        filteredList,
+        (_request) =>_request.is_prove.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -53,8 +87,24 @@ export default function AccountRequest() {
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderQuery, setGenderQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+
+  const filteredRequests = applyFilter(
+    requests,
+    searchQuery,
+    genderQuery,
+    statusQuery
+  );
+
+  const isRequestNotFound = filteredRequests.length === 0;
+
+  const emptyRows =
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - filteredRequests.length)
+      : 0;
 
   const handleGetAllRequest = async () => {
     try {
@@ -79,17 +129,43 @@ export default function AccountRequest() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - requests.length) : 0;
+  const handleGenderQuery = (event) => {
+    setGenderQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredUsers = applyFilter(requests, filterName);
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
 
-  const isUserNotFound = filteredUsers.length === 0;
-  console.log(requests);
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Fullname, Email...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: genderQuery,
+      label: "Gender",
+      onChange: handleGenderQuery,
+      items: FILTER_GENDER_OPTIONS,
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_STATUS_OPTIONS,
+    },
+  ];
 
   return (
     <Page title="Users">
@@ -107,20 +183,17 @@ export default function AccountRequest() {
         </Stack>
 
         <Card>
-          {/* <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          /> */}
+          <TableToolbar conditions={FILTER_CONDITIONS} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <TableHeader
                   headLabel={TABLE_HEAD}
-                  rowCount={requests.length}
+                  rowCount={filteredRequests.length}
                 />
                 <TableBody>
-                  {requests
+                  {filteredRequests
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
@@ -157,7 +230,7 @@ export default function AccountRequest() {
                               variant="ghost"
                               color={is_prove ? "info" : "error"}
                             >
-                              {is_prove === true ? "Proved" : "Not yet"}
+                              {is_prove === true ? "Proved" : "Not proved"}
                             </Label>
                           </TableCell>
                           <TableCell align="left">
@@ -176,11 +249,11 @@ export default function AccountRequest() {
                   )}
                 </TableBody>
 
-                {isUserNotFound && (
+                {isRequestNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -192,7 +265,7 @@ export default function AccountRequest() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={requests.length}
+            count={filteredRequests.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
