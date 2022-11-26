@@ -1,16 +1,12 @@
 import {
-  Modal,
   Button,
   Card,
   Divider,
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableRow,
   Typography,
-  Box,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -19,52 +15,17 @@ import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import Image from "../../components/Image";
+import InfoItem from "../../components/InfoItem";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Request", href: "#" },
 ];
 
-function InfoItem({ title, value, isRequired }) {
-  return (
-    <TableRow>
-      <TableCell width="20%">
-        <Stack direction="row">
-          {isRequired && (
-            <Typography variant="subtitle2" color="error.main">
-              *
-            </Typography>
-          )}
-          <Typography variant="subtitle2">{title}:</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell sx={{ alignItems: "start" }}>
-        <Typography variant="body2">{value}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-}
-
 export default function AccountRequestDetail() {
   const { _id } = useParams();
 
   const [request, setRequest] = useState();
-  const [image, setImage] = useState();
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 500,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-  };
 
   const handleGetRequestById = async () => {
     try {
@@ -90,25 +51,6 @@ export default function AccountRequestDetail() {
 
   return (
     <Page title="Request">
-      {/*  */}
-      <Button
-        onClick={() => {
-          handleOpen();
-          setImage(request?.avatar_url);
-        }}
-      >
-        Open modal
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <img src={image} width="500px" height="500" />
-        </Box>
-      </Modal>
       <LinkBar array={BREADCRUMBS} />
 
       <TableContainer component={Card} sx={{ padding: 2, mb: 2 }}>
@@ -122,18 +64,10 @@ export default function AccountRequestDetail() {
             <InfoItem
               title="Avatar"
               value={
-                // <Image
-                //   images={[request?.avatar_url]}
-                //   alt={request?.fullname}
-                //   style={{ borderRadius: 10, width: 122, height: 122 }}
-                // />
-                <img
-                  src={request?.avatar_url}
+                <Image
+                  image={request?.avatar_url}
+                  alt={request?.fullname}
                   style={{ borderRadius: 10, width: 122, height: 122 }}
-                  onClick={() => {
-                    handleOpen();
-                    setImage(request?.avatar_url);
-                  }}
                 />
               }
               isRequired
@@ -154,18 +88,10 @@ export default function AccountRequestDetail() {
             <InfoItem
               title="Prove Image"
               value={
-                // <Image
-                //   images={[request?.proveImage_url]}
-                //   alt="prove_image"
-                //   style={{ borderRadius: 10, width: 122, height: 122 }}
-                // />
-                <img
-                  src={request?.proveImage_url}
+                <Image
+                  image={request?.proveImage_url}
+                  alt="prove_image"
                   style={{ borderRadius: 10, width: 122, height: 122 }}
-                  onClick={() => {
-                    handleOpen();
-                    setImage(request?.proveImage_url);
-                  }}
                 />
               }
               isRequired

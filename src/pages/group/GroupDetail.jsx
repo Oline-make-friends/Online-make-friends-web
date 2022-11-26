@@ -30,6 +30,7 @@ import Page from "../../components/Page";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
+import InfoItem from "../../components/InfoItem";
 
 const MEMBER_TABLE_HEAD = [
     { id: "fullname", label: "User", alignRight: false },
@@ -50,26 +51,6 @@ const POST_TABLE_HEAD = [
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
 ];
-
-function InfoItem({ title, value, isRequired }) {
-  return (
-    <TableRow>
-      <TableCell width="130">
-        <Stack direction="row">
-          {isRequired && (
-            <Typography variant="subtitle2" color="error.main">
-              *
-            </Typography>
-          )}
-          <Typography variant="subtitle2">{title}:</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell sx={{ alignItems: "start" }}>
-        <Typography variant="body2">{value}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-}
 
 function OverViewTab({ group }) {
     console.log(group?.admins)
@@ -393,6 +374,7 @@ function PostsTab({ posts }) {
 }
 
 export default function GroupDetail() {
+  const navigate = useNavigate();
   const { _id } = useParams();
   const [group, setGroup] = useState();
 
@@ -422,6 +404,13 @@ export default function GroupDetail() {
     setTab(newTab);
   };
 
+  const handleDelete = async () => {
+    try {
+      await axios.post("http://localhost:8000/group/delete/",{_id: _id});
+      navigate("/groups");
+    } catch (error) {}
+  };
+
   return (
     <Page title="Group Detail">
       <LinkBar array={BREADCRUMBS}></LinkBar>
@@ -434,7 +423,7 @@ export default function GroupDetail() {
           >
             <Stack alignItems="center" direction="row" spacing={2}>
               <Image
-                images={[group?.avatar_url]}
+                image={group?.avatar_url}
                 alt={group?.name}
                 style={{ borderRadius: 10, width: 122, height: 122 }}
               />
@@ -442,7 +431,12 @@ export default function GroupDetail() {
                 {group?.name}
               </Typography>
             </Stack>
-            <Button variant="outlined" color="error" startIcon={<HiTrash />}>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<HiTrash />}
+              onClick={handleDelete}
+            >
               Delete
             </Button>
           </Stack>

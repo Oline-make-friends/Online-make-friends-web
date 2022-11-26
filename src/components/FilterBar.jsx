@@ -19,6 +19,7 @@ import {
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';
 import { ColorManyPicker } from '../../../components/color-utils';
+import { AiOutlineClose } from "react-icons/ai";
 
 export const SORT_BY_OPTIONS = [
   { value: 'featured', label: 'Featured' },
@@ -71,7 +72,7 @@ export default function ShopFilterSidebar({ isOpenFilter, onOpenFilter, onCloseF
             Filters
           </Typography>
           <IconButton onClick={onCloseFilter}>
-            <Iconify icon="eva:close-fill" width={20} height={20} />
+            <AiOutlineClose size={20}/>
           </IconButton>
         </Stack>
 

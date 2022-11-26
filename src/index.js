@@ -5,7 +5,6 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { ChakraProvider } from "@chakra-ui/react";
 
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -37,17 +36,15 @@ CometChat.init(CONSTANT.APP_ID, appSetting).then(
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <ChakraProvider>
-    <HelmetProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </PersistGate>
-      </Provider>
-    </HelmetProvider>
-  </ChakraProvider>
+  <HelmetProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
+  </HelmetProvider>
 );
 
 reportWebVitals();

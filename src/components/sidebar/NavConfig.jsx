@@ -5,8 +5,8 @@ import {
   MdReport,
 } from "react-icons/md";
 import { GiBookshelf } from "react-icons/gi";
-import { FaHouseUser } from "react-icons/fa";
-import { AiFillBell, AiFillSetting } from "react-icons/ai";
+import { FaUser } from "react-icons/fa";
+import { AiFillBell } from "react-icons/ai";
 import { RiCalendarEventFill } from "react-icons/ri";
 import { BsFillChatFill } from "react-icons/bs";
 
@@ -17,8 +17,8 @@ const navConfig = [
     icon: <MdSpaceDashboard size={22} />,
   },
   {
-    title: "user",
-    icon: <FaHouseUser size={22} />,
+    title: "account",
+    icon: <FaUser size={22} />,
     children: [
       {
         title: "users",
@@ -36,8 +36,8 @@ const navConfig = [
     icon: <MdArticle size={22} />,
   },  
   {
-    title: "sources",
-    path: "/sources",
+    title: "courses",
+    path: "/courses",
     icon: <GiBookshelf size={22} />,
   },
   {

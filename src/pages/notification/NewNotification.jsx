@@ -29,14 +29,13 @@ export default function NewNotification() {
 
   const handleSendNoti = async () => {
     try {
-      await axios.post("http://localhost:8000/noti/add",{
+      await axios.post("http://localhost:8000/noti/add", {
         title: title,
         content: content,
-        user_id: admin._id
+        user_id: admin._id,
       });
-      setOpen(false);
-    } catch (error) {
-    }
+      window.location.reload();
+    } catch (error) {}
   };
 
   return (

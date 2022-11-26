@@ -11,66 +11,45 @@ import {
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableRow,
   Typography,
 } from "@mui/material";
 import Page from "../../components/Page";
 import LinkBar from "../../components/LinkBar";
 import AvatarUser from "../../components/AvatarUser";
 import { HiTrash } from "react-icons/hi";
+import InfoItem from "../../components/InfoItem";
 
-function InfoItem({ title, value, isRequired }) {
-  return (
-    <TableRow>
-      <TableCell width="130">
-        <Stack direction="row">
-          {isRequired && (
-            <Typography variant="subtitle2" color="error.main">
-              *
-            </Typography>
-          )}
-          <Typography variant="subtitle2">{title}:</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell sx={{ alignItems: "start" }}>
-        <Typography variant="body2">{value}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-export default function SourceDetail() {
+export default function CourseDetail() {
   const navigate = useNavigate();
   const { _id } = useParams();
 
-  const [source, setSource] = useState();
+  const [course, setCourse] = useState();
 
-  const handleGetSourceById = async () => {
+  const handleGetCourseById = async () => {
     try {
       const rest = await axios.get("http://localhost:8000/course/get/" + _id);
-      setSource(rest.data);
+      setCourse(rest.data);
       console.log(rest.data);
     } catch (error) {}
   };
 
   useEffect(() => {
-    handleGetSourceById();
+    handleGetCourseById();
     // eslint-disable-next-line
   }, []);
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Source", href: "/sources" },
-    { label: source?.name, href: "#" },
+    { label: "Course", href: "/courses" },
+    { label: course?.name, href: "#" },
   ];
 
-  const deleteSourse = async () => {
+  const deleteCourse = async () => {
     try {
-      await axios.get(`http://localhost:8000/course/delete/${_id}`);
+      await axios.get("http://localhost:8000/course/delete/" + _id);
       toast.success("deleted course");
-      navigate("/sources");
+      navigate("/courses");
     } catch (error) {
       console.log(error.message);
       toast.error("check connection");
@@ -88,13 +67,13 @@ export default function SourceDetail() {
           mb={2}
         >
           <Typography variant="h4" gutterBottom>
-            {source?.name}
+            {course?.name}
           </Typography>
           <Button
             variant="outlined"
             color="error"
             startIcon={<HiTrash />}
-            onClick={() => deleteSourse}
+            onClick={deleteCourse}
           >
             Delete
           </Button>
@@ -108,14 +87,13 @@ export default function SourceDetail() {
               <Divider />
               <Table>
                 <TableBody>
-                  <InfoItem title="Title" value={source?.name} isRequired />
-                  <InfoItem title="Description" value={source?.description} />
+                  <InfoItem title="Title" value={course?.name} isRequired />
+                  <InfoItem title="Description" value={course?.description} />
                   <InfoItem
                     title="Created By"
                     value={
                       <AvatarUser
-                        id={source?.created_by?._id}
-                        url={source?.created_by?.avatar_url}
+                        id={course?.created_by._id}
                       />
                     }
                   />
@@ -126,25 +104,25 @@ export default function SourceDetail() {
           <Grid item xs={6} md={4}>
             <Card sx={{ p: 2, mb: 2 }}>
               <Typography variant="subtitle1" mb={2}>
-                Source Configuration
+                Course Configuration
               </Typography>
               <Divider />
 
               <InfoItem
                 title="Create At"
-                value={source?.createdAt?.substring(0, 10)}
+                value={course?.createdAt?.substring(0, 10)}
                 isRequired
               />
               <InfoItem
                 title="Update At"
-                value={source?.updatedAt?.substring(0, 10)}
+                value={course?.updatedAt?.substring(0, 10)}
               />
             </Card>
           </Grid>
         </Grid>
       </Container>
       <Container>
-        {source?.quizs.map((row, counter) => {
+        {course?.quizs.map((row, counter) => {
           const { question, options, answer } = row;
           return (
             <Card sx={{ p: 2, mb: 2 }}>
