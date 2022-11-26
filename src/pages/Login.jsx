@@ -73,7 +73,7 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -83,7 +83,7 @@ export default function Login() {
     try {
       e.preventDefault();
       const newUser = {
-        username: username,
+        username: email,
         password: password,
       };
       loginUser(newUser, dispatch, navigate, toast);
@@ -93,15 +93,15 @@ export default function Login() {
       ) {
         setError("Your are not admin");
       } else {
-        setError("Username or password is wrong");
+        setError("Email or password is wrong");
       }
     } catch (error) {
-      setError("Username or password is wrong");
+      setError("Email or password is wrong");
     }
   };
 
   const handleSendEmailReset = () => {
-    handleSendEmailResetPassword(toast, username);
+    handleSendEmailResetPassword(toast, email);
   };
 
   return (
@@ -133,9 +133,9 @@ export default function Login() {
             <form onSubmit={logIn}>
               <Stack spacing={3}>
                 <TextField
-                  name="username"
-                  label="Username"
-                  onChange={(e) => setUsername(e.target.value)}
+                  name="email"
+                  label="Email"
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
 

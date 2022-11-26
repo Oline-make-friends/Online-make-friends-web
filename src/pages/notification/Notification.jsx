@@ -66,6 +66,7 @@ export default function Notification() {
   const handleGetAllNoti = async () => {
     try {
       const res = await axios.get("http://localhost:8000/noti/getAll");
+      console.log(res)
       ///
       let temp = [];
 

@@ -103,7 +103,7 @@ export default function AccountRequestDetail() {
                   variant="ghost"
                   color={request?.is_prove ? "info" : "error"}
                 >
-                  {request?.is_prove === true ? "Proved" : "Not yet"}
+                  {request?.is_prove === true ? "Proved" : "Not Proved"}
                 </Label>
               }
             />

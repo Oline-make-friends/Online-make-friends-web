@@ -29,6 +29,7 @@ import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 
 import { loginByGmail } from "../redux/apiRequest";
 import LinkBar from "../components/LinkBar";
+import moment from "moment/moment";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -228,6 +229,7 @@ function GeneralTab({ info }) {
           <DatePicker
             label="Date of birth"
             value={dateOfBirth}
+            maxDate={moment().subtract(15, "years")._d}
             onChange={(newValue) => {
               setDateOfBirth(newValue);
               setChange(true);

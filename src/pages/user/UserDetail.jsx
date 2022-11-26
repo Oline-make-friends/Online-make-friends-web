@@ -33,17 +33,11 @@ import SearchNotFound from "../../components/SearchNotFound";
 import Image from "../../components/Image";
 import AvatarUser from "../../components/AvatarUser";
 import InfoItem from "../../components/InfoItem";
-
-const TABLE_HEAD = [
-  { id: "fullname", label: "User", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "gender", label: "Gender", alignRight: false },
-  { id: "location", label: "Location", alignRight: false },
-  { id: "major", label: "Major", alignRight: false },
-  { id: "is_admin", label: "Role", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "is_active", label: "Status", alignRight: false },
-];
+import {
+  FILTER_GENDER_OPTIONS,
+  FILTER_STATUS_OPTIONS,
+  USER_TABLE_HEAD,
+} from "../../constans/constans";
 
 const POST_TABLE_HEAD = [
   { id: "title", label: "Title", alignRight: false },
@@ -53,6 +47,46 @@ const POST_TABLE_HEAD = [
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
 ];
+
+function applyFilter(array, searchQuery, genderQuery, statusQuery) {
+  console.log("applyFilter");
+  console.log(searchQuery);
+  console.log(genderQuery);
+  console.log(statusQuery);
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  var filteredList = array;
+  console.log(filteredList);
+  if (searchQuery || genderQuery || statusQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) =>
+          _user.fullname
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1 ||
+          _user.username
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (genderQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) => _user.gender.toLowerCase() === genderQuery.toLowerCase()
+      );
+    }
+    if (statusQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) => _user.is_active.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
 
 function OverViewTab({
   _id,
@@ -173,15 +207,26 @@ function OverViewTab({
 }
 
 function FriendsTab({ friendList }) {
-  console.log(friendList);
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredUsers = applyFilter(friendList, filterName);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderQuery, setGenderQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+  const filteredFriends = applyFilter(
+    friendList,
+    searchQuery,
+    genderQuery,
+    statusQuery
+  );
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const isUserNotFound = filteredFriends.length === 0;
+
+  const emptyRows =
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - filteredFriends.length)
+      : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -192,30 +237,57 @@ function FriendsTab({ friendList }) {
     setPage(0);
   };
 
-  function applyFilter(array, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    if (query) {
-      return filter(
-        array,
-        (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-      );
-    }
-    return stabilizedThis.map((el) => el[0]);
-  }
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - friendList.length) : 0;
+  const handleGenderQuery = (event) => {
+    setGenderQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Fullname, Email...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: genderQuery,
+      label: "Gender",
+      onChange: handleGenderQuery,
+      items: FILTER_GENDER_OPTIONS,
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_STATUS_OPTIONS,
+    },
+  ];
 
   return (
     <Card>
-      <TableToolbar />
+      <TableToolbar conditions={FILTER_CONDITIONS} />
 
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
-            <TableHeader headLabel={TABLE_HEAD} rowCount={friendList.length} />
+            <TableHeader
+              headLabel={USER_TABLE_HEAD}
+              rowCount={filteredFriends.length}
+            />
             <TableBody>
-              {friendList
+              {filteredFriends
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
@@ -226,9 +298,9 @@ function FriendsTab({ friendList }) {
                     gender,
                     location,
                     major,
-                    is_admin,
-                    createdAt,
                     is_active,
+                    createdAt,
+                    updatedAt,
                   } = row;
                   console.log(_id);
                   return (
@@ -242,18 +314,16 @@ function FriendsTab({ friendList }) {
                           window.location.reload();
                         }}
                       >
-                        <AvatarUser id={_id} fullname={fullname} avatar={avatar_url}/>                        
+                        <AvatarUser
+                          id={_id}
+                          fullname={fullname}
+                          avatar={avatar_url}
+                        />
                       </TableCell>
                       <TableCell align="left">{username}</TableCell>
                       <TableCell align="left">{gender}</TableCell>
                       <TableCell align="left">{location}</TableCell>
                       <TableCell align="left">{major}</TableCell>
-                      <TableCell align="left">
-                        {is_admin ? "Admin" : "Member"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {createdAt.toString().substring(0, 10)}
-                      </TableCell>
                       <TableCell align="left">
                         <Label
                           variant="ghost"
@@ -263,6 +333,12 @@ function FriendsTab({ friendList }) {
                             is_active === true ? "active" : "banned"
                           )}
                         </Label>
+                      </TableCell>
+                      <TableCell align="left">
+                        {createdAt.toString().substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="left">
+                        {updatedAt.toString().substring(0, 10)}
                       </TableCell>
                     </TableRow>
                   );
@@ -278,7 +354,7 @@ function FriendsTab({ friendList }) {
               <TableBody>
                 <TableRow>
                   <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                    <SearchNotFound searchQuery={filterName} />
+                    <SearchNotFound searchQuery={searchQuery} />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -290,7 +366,7 @@ function FriendsTab({ friendList }) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={friendList.length}
+        count={filteredFriends.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -300,20 +376,26 @@ function FriendsTab({ friendList }) {
   );
 }
 
-// function FollowersTab({ followerList }) {
-//   return <div>This is FollowersTab</div>;
-// }
-
 function FollowingTab({ followingList }) {
-  console.log(followingList);
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredUsers = applyFilter(followingList, filterName);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderQuery, setGenderQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+
+  const filteredUsers = applyFilter(
+    followingList,
+    searchQuery,
+    genderQuery,
+    statusQuery
+  );
 
   const isUserNotFound = filteredUsers.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -324,33 +406,57 @@ function FollowingTab({ followingList }) {
     setPage(0);
   };
 
-  function applyFilter(array, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    if (query) {
-      return filter(
-        array,
-        (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-      );
-    }
-    return stabilizedThis.map((el) => el[0]);
-  }
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - followingList.length) : 0;
+  const handleGenderQuery = (event) => {
+    setGenderQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Fullname, Email...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: genderQuery,
+      label: "Gender",
+      onChange: handleGenderQuery,
+      items: FILTER_GENDER_OPTIONS,
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_STATUS_OPTIONS,
+    },
+  ];
 
   return (
     <Card>
-      <TableToolbar />
+      <TableToolbar conditions={FILTER_CONDITIONS} />
 
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
             <TableHeader
-              headLabel={TABLE_HEAD}
-              rowCount={followingList.length}
+              headLabel={USER_TABLE_HEAD}
+              rowCount={filteredUsers.length}
             />
             <TableBody>
-              {followingList
+              {filteredUsers
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
@@ -361,9 +467,9 @@ function FollowingTab({ followingList }) {
                     gender,
                     location,
                     major,
-                    is_admin,
-                    createdAt,
                     is_active,
+                    createdAt,
+                    updatedAt,
                   } = row;
                   console.log(_id);
                   return (
@@ -377,18 +483,16 @@ function FollowingTab({ followingList }) {
                           window.location.reload();
                         }}
                       >
-                        <AvatarUser id={_id} fullname={fullname} avatar={avatar_url}/>
+                        <AvatarUser
+                          id={_id}
+                          fullname={fullname}
+                          avatar={avatar_url}
+                        />
                       </TableCell>
                       <TableCell align="left">{username}</TableCell>
                       <TableCell align="left">{gender}</TableCell>
                       <TableCell align="left">{location}</TableCell>
                       <TableCell align="left">{major}</TableCell>
-                      <TableCell align="left">
-                        {is_admin ? "Admin" : "Member"}
-                      </TableCell>
-                      <TableCell align="left">
-                        {createdAt.toString().substring(0, 10)}
-                      </TableCell>
                       <TableCell align="left">
                         <Label
                           variant="ghost"
@@ -398,6 +502,12 @@ function FollowingTab({ followingList }) {
                             is_active === true ? "active" : "banned"
                           )}
                         </Label>
+                      </TableCell>
+                      <TableCell align="left">
+                        {createdAt.toString().substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="left">
+                        {updatedAt.toString().substring(0, 10)}
                       </TableCell>
                     </TableRow>
                   );
@@ -413,7 +523,7 @@ function FollowingTab({ followingList }) {
               <TableBody>
                 <TableRow>
                   <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                    <SearchNotFound searchQuery={filterName} />
+                    <SearchNotFound searchQuery={searchQuery} />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -425,7 +535,7 @@ function FollowingTab({ followingList }) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={followingList.length}
+        count={filteredUsers.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -649,9 +759,6 @@ export default function UserDetail() {
             <TabPanel value="friends">
               <FriendsTab friendList={user?.friends} />
             </TabPanel>
-            {/* <TabPanel value="followers">
-              <FollowersTab />
-            </TabPanel> */}
             <TabPanel value="followings">
               <FollowingTab followingList={user?.follows} />
             </TabPanel>

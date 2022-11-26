@@ -4,7 +4,6 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 
 import AccountPopover from './AccountPopover';
-import NotificationsPopover from './NotificationsPopover';
 
 import { AiOutlineMenuFold } from "react-icons/ai";
 
@@ -45,7 +44,6 @@ export default function Header({ onOpenSidebar }) {
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <NotificationsPopover />
           <AccountPopover />
         </Stack>
       </ToolbarStyle>
