@@ -15,7 +15,7 @@ import SearchNotFound from "../../components/SearchNotFound";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Source", href: "#" },
+  { label: "Course", href: "#" },
 ];
 
 const TABLE_HEAD = [
@@ -33,29 +33,29 @@ function applyFilter(array, query) {
   if (query) {
     return filter(
       array,
-      (_source) => _source.name.to.indexOf(query.toLowerCase()) !== -1
+      (_course) => _course.name.to.indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Source() {
+export default function Course() {
   const navigate = useNavigate();
-  const [sources, setSource] = useState([]);
+  const [courses, setCourse] = useState([]);
 
-  const handleGetAllSource = async () => {
+  const handleGetAllCourse = async () => {
     try {
       const res = await axios.get(`http://localhost:8000/course/getAll`);
       console.log(res.data);
-      setSource(res.data?.reverse());
+      setCourse(res.data?.reverse());
     } catch (error) {
       console.log(error.message);
-      toast.error("can not get all source");
+      toast.error("can not get all course");
     }
   };
 
   useEffect(() => {
-    handleGetAllSource();
+    handleGetAllCourse();
     // eslint-disable-next-line
   }, []);
 
@@ -65,28 +65,28 @@ export default function Source() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChangePage = (source, newPage) => {
+  const handleChangePage = (course, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (source) => {
-    setRowsPerPage(parseInt(source.target.value, 10));
+  const handleChangeRowsPerPage = (course) => {
+    setRowsPerPage(parseInt(course.target.value, 10));
     setPage(0);
   };
 
-  const handleFilterByName = (source) => {
-    setFilterName(source.target.value);
+  const handleFilterByName = (course) => {
+    setFilterName(course.target.value);
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sources.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - courses.length) : 0;
 
-  const filteredSources = applyFilter(sources, filterName);
+  const filteredCourses = applyFilter(courses, filterName);
 
-  const isSourceNotFound = filteredSources.length === 0;
+  const isCourseNotFound = filteredCourses.length === 0;
   
   return (
-    <Page title="Source">
+    <Page title="Course">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
           <Stack
@@ -96,7 +96,7 @@ export default function Source() {
             mb={2}
           >
             <Typography variant="h4" gutterBottom>
-              Sources
+              Courses
             </Typography>
           </Stack>
   
@@ -111,10 +111,10 @@ export default function Source() {
                 <Table>
                   <TableHeader
                     headLabel={TABLE_HEAD}
-                    rowCount={sources.length}
+                    rowCount={courses.length}
                   />
                   <TableBody>
-                    {sources
+                    {courses
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row) => {
                         const {
@@ -134,7 +134,7 @@ export default function Source() {
                               scope="row"
                               style={{ cursor: "pointer" }}
                               onClick={() => {
-                                navigate("/source/" + _id);
+                                navigate("/course/" + _id);
                               }}
                             >
                               {name}
@@ -164,7 +164,7 @@ export default function Source() {
                     )}
                   </TableBody>
   
-                  {isSourceNotFound && (
+                  {isCourseNotFound && (
                     <TableBody>
                       <TableRow>
                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -180,7 +180,7 @@ export default function Source() {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={sources.length}
+              count={courses.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

@@ -6,7 +6,6 @@ import axios from "axios";
 import {
   Alert,
   Autocomplete,
-  Avatar,
   Box,
   Button,
   Card,
@@ -23,6 +22,7 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import Page from "../components/Page";
+import Image from "../components/Image";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
@@ -149,7 +149,7 @@ function GeneralTab({ info }) {
       </Snackbar>
       <Stack direction="row" spacing={5} my={4} alignItems="center">
         <Stack direction="column">
-          <Avatar sx={{ width: 80, height: 80 }} src={info.avatar_url} />
+          <Image image={info.avatar_url} alt={info.fullname} style={{borderRadius: "50%", width: 80, height: 80}}/>
           <input
             id="ip"
             type="file"

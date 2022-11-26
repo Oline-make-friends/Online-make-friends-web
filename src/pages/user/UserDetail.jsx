@@ -32,6 +32,7 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import Image from "../../components/Image";
 import AvatarUser from "../../components/AvatarUser";
+import InfoItem from "../../components/InfoItem";
 
 const TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },
@@ -52,26 +53,6 @@ const POST_TABLE_HEAD = [
   { id: "createAt", label: "Created Day", alignRight: false },
   { id: "updatedAt", label: "Updated Day", alignRight: false },
 ];
-
-function InfoItem({ title, value, isRequired }) {
-  return (
-    <TableRow>
-      <TableCell width="20%">
-        <Stack direction="row">
-          {isRequired && (
-            <Typography variant="subtitle2" color="error.main">
-              *
-            </Typography>
-          )}
-          <Typography variant="subtitle2">{title}:</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell sx={{ alignItems: "start" }}>
-        <Typography variant="body2">{value}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-}
 
 function OverViewTab({
   _id,
@@ -163,7 +144,8 @@ function OverViewTab({
               <Typography variant="subtitle2">Prove Image:</Typography>
               <Image
                 style={{ borderRadius: 10, width: 122, height: 122 }}
-                images={[proveImage]}
+                image={proveImage}
+                alt={fullname}
               />
             </Stack>
             <Stack direction="row" spacing={2}>
@@ -622,7 +604,7 @@ export default function UserDetail() {
           >
             <Stack direction="row" spacing={2}>
               <Image
-                images={[user?.avatar_url]}
+                image={user?.avatar_url}
                 alt={user?.fullname}
                 style={{ borderRadius: 10, width: 122, height: 122 }}
               />

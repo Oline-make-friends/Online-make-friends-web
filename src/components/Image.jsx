@@ -1,43 +1,45 @@
-import { Container } from "@mui/material";
-import { useCallback, useState } from "react";
-import ImageViewer from "react-simple-image-viewer";
+import { Dialog, IconButton, styled } from "@mui/material";
+import { useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
 
-export default function Image({images, ...others}) {
-  const [currentImage, setCurrentImage] = useState(0);
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
+const CloseButton = styled(IconButton)(({ theme }) => ({
+  position: 'fixed',
+  top:50,
+  right:50,
+  color: 'white'
+}));
 
-  const openImageViewer = useCallback((index) => {
-    setCurrentImage(index);
-    setIsViewerOpen(true);
-  }, []);
-
-  const closeImageViewer = () => {
-    setCurrentImage(0);
-    setIsViewerOpen(false);
-  };
+export default function Image({image, alt, ...others}) {
+  console.log(image)
+  console.log(alt)
+  const [open, setOpen] = useState(false);
+  
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <div style={{ cursor: "pointer", zIndex: "999" }}>
-      {images.map((src, index) => (
-        <img
-          {...others}
-          src={src}
-          onClick={() => openImageViewer(index)}
-          key={index}
-        />
-      ))}
+      <img
+        src={image}
+        alt={alt}
+        onClick={() => {
+          handleOpen();
+        }}
+        {...others}
+      />
 
-      {isViewerOpen && (
-        <ImageViewer
-          src={images}
-          currentIndex={currentImage}
-          onClose={closeImageViewer}
-          backgroundStyle={{
-            backgroundColor: "rgba(0,0,0,0.9)",
-          }}
-          closeOnClickOutside={true}
-        />
-      )}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: { borderRadius: 0, backgroundColor: "transparent" },
+        }}
+      >
+        <CloseButton onClick={handleClose}>
+          <AiOutlineClose size={50} />
+        </CloseButton>
+        <img src={image} alt={alt} />
+      </Dialog>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   Container,
@@ -8,9 +7,7 @@ import {
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableRow,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -22,26 +19,7 @@ import AvatarUser from "../../components/AvatarUser";
 import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
-
-function InfoItem({ title, value, isRequired }) {
-  return (
-    <TableRow>
-      <TableCell width="130">
-        <Stack direction="row">
-          {isRequired && (
-            <Typography variant="subtitle2" color="error.main">
-              *
-            </Typography>
-          )}
-          <Typography variant="subtitle2">{title}:</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell sx={{ alignItems: "start" }}>
-        <Typography variant="body2">{value}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-}
+import InfoItem from "../../components/InfoItem";
 
 export default function ReportDetail() {
   const navigate = useNavigate();

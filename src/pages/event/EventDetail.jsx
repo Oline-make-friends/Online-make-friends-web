@@ -16,32 +16,14 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { HiTrash } from "react-icons/hi";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import AvatarUser from "../../components/AvatarUser";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
-
-function InfoItem({ title, value, isRequired }) {
-  return (
-    <TableRow>
-      <TableCell width="130">
-        <Stack direction="row">
-          {isRequired && (
-            <Typography variant="subtitle2" color="error.main">
-              *
-            </Typography>
-          )}
-          <Typography variant="subtitle2">{title}:</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell sx={{ alignItems: "start" }}>
-        <Typography variant="body2">{value}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-}
+import InfoItem from "../../components/InfoItem";
 
 export default function EventDetail() {
+  const navigate = useNavigate();
   const { _id } = useParams();
 
   const [event, setEvent] = useState();
@@ -60,6 +42,13 @@ export default function EventDetail() {
     handleGetEventById();
     // eslint-disable-next-line
   }, []);
+
+  const handleDelete = async () => {
+    try {
+      await axios.post("http://localhost:8000/event/delete/", { id: _id });
+      navigate("/events");
+    } catch (error) {}
+  };
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
@@ -84,6 +73,7 @@ export default function EventDetail() {
             variant="outlined"
             color="error"
             startIcon={<HiTrash />}
+            onClick={handleDelete}
           >
             Delete
           </Button>
@@ -134,7 +124,7 @@ export default function EventDetail() {
               >
                 {event?.user_joined.map((row) => {
                   return (
-                    <Card sx={{p: 2}}>
+                    <Card sx={{ p: 2 }}>
                       <AvatarUser
                         id={row._id}
                         fullname={row.fullname}
