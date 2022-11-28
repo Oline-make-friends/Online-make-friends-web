@@ -22,30 +22,49 @@ import Page from "../../components/Page";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
-
-const TABLE_HEAD = [
-  { id: "title", label: "Title", alignRight: false },
-  { id: "type", label: "Type", alignRight: false },
-  { id: "date_time", label: "Organization Day", alignRight: false },
-  { id: "user_joined", label: "Joiners", alignRight: false },
-  { id: "createdBy", label: "Creator", alignRight: false },
-  { id: "createdAt", label: "Created Day", alignRight: false },
-  { id: "updatedAt", label: "Updated Day", alignRight: false },
-  { id: "" },
-];
+import { EVENT_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Event", href: "#" },
 ];
 
-function applyFilter(array, query) {
+function applyFilter(array, searchQuery, organizationDateQuery, creatorQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (_event) => _event.name.to.indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  if (searchQuery || organizationDateQuery || creatorQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_event) =>
+          (_event.title &&
+            _event.title
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1) ||
+          (_event.type &&
+            _event.type
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1)
+      );
+    }
+    if (organizationDateQuery) {
+      filteredList = filter(
+        filteredList,
+        (_event) =>
+        _event.date_time === organizationDateQuery
+      );
+    }
+    if (creatorQuery) {
+      filteredList = filter(
+        filteredList,
+        (_event) =>
+          _event.created_by &&
+          _event.created_by._id.trim() === creatorQuery.trim()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -53,24 +72,56 @@ function applyFilter(array, query) {
 export default function Event() {
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [organizationDateQuery, setOrganizationDateQuery] = useState("");
+  const [creatorQuery, setCreatorQuery] = useState("");
+  const [creatorList, setCreatorList] = useState([]);
+
+  const filteredEvents = applyFilter(
+    events,
+    searchQuery,
+    organizationDateQuery,
+    creatorQuery
+  );
+
+  const isEventNotFound = filteredEvents.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredEvents.length) : 0;
 
   const handleGetAllEvent = async () => {
     try {
       const res = await axios.get("http://localhost:8000/event/getAll");
       setEvents(res.data);
-      console.log(res.data);
+
+      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      console.log(res2.data[0]);
+      const temp = [{ value: "", display: "All" }];
+      for (let i = 0; i < res2.data.length; i++) {
+        temp.push({
+          value: res2.data[i]._id,
+          display: res2.data[i].fullname,
+        });
+      }
+      console.log(temp);
+      setCreatorList(
+        temp.sort(function (a, b) {
+          if (a.display.toLowerCase() === "all") return -1;
+          if (b.display.toLowerCase() === "all") return 1;
+          if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+          if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+          return 0;
+        })
+      );
     } catch (error) {}
   };
+
   useEffect(() => {
     handleGetAllEvent();
     // eslint-disable-next-line
   }, []);
-
-  const [page, setPage] = useState(0);
-
-  const [filterName, setFilterName] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -81,19 +132,46 @@ export default function Event() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - events.length) : 0;
+  const handleOrganizationDateQuery = (event) => {
+    setOrganizationDateQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredUsers = applyFilter(events, filterName);
+  const handleCreatorQuery = (event) => {
+    console.log(event.target.value);
+    setCreatorQuery(event.target.value);
+    setPage(0);
+  };
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Title, Type...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "date",
+      query: organizationDateQuery,
+      label: "Organization Day",
+      onChange: handleOrganizationDateQuery,
+    },
+    {
+      type: "select",
+      query: creatorQuery,
+      label: "Creator",
+      onChange: handleCreatorQuery,
+      items: creatorList,
+    }
+  ];
 
   return (
-    <Page title="Event">
+    <Page title="Events">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -108,17 +186,16 @@ export default function Event() {
         </Stack>
 
         <Card>
-          <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
+          <TableToolbar conditions={FILTER_CONDITIONS} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader headLabel={TABLE_HEAD} rowCount={events.length} />
+                <TableHeader
+                  headLabel={EVENT_TABLE_HEAD}
+                  rowCount={filteredEvents.length}
+                />
                 <TableBody>
-                  {events
+                  {filteredEvents
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
@@ -178,11 +255,11 @@ export default function Event() {
                   )}
                 </TableBody>
 
-                {isUserNotFound && (
+                {isEventNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -194,7 +271,7 @@ export default function Event() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={events.length}
+            count={filteredEvents.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

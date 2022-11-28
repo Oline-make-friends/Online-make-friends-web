@@ -20,25 +20,44 @@ import {
 import Page from "../../components/Page";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
-import { TableHeader } from "../../components/table";
+import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
+import { FILTER_DELETED_STATUS_OPTIONS, GROUP_TABLE_HEAD } from "../../constans/constans";
+import Label from "../../components/Label";
 
-const TABLE_HEAD = [
-  { id: "name", label: "Name", alignRight: false },
-  { id: "admin", label: "Admin", alignRight: false },
-  { id: "content", label: "Content", alignRight: false },
-  { id: "createdAt", label: "Created At", alignRight: false },
-  { id: "updatedAt", label: "Updated At", alignRight: false },
-  { id: "" },
-];
-
-function applyFilter(array, query) {
+function applyFilter(array, searchQuery, adminQuery, statusQuery) {
+  console.log(statusQuery)
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (group) => group.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  console.log(filteredList);
+  if (searchQuery || adminQuery || statusQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_group) =>
+          _group.name
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1 ||
+          _group.content
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (adminQuery) {
+      filteredList = filter(
+        filteredList,
+        (_group) => _group.admins.includes(adminQuery.toLowerCase()) 
+      );
+    }
+    if (statusQuery) {
+      filteredList = filter(
+        filteredList,
+        (_group) => _group.is_deleted.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -46,26 +65,45 @@ function applyFilter(array, query) {
 export default function Group() {
   const navigate = useNavigate();
   const [groups, setGroup] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [adminQuery, setAdminQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+  const [adminList, setAdminList] = useState([]);
+
+  const filteredGroups = applyFilter(groups, searchQuery, adminQuery, statusQuery);
+
+  const isGroupNotFound = filteredGroups.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredGroups.length) : 0;
+
   const handleGetAllGroup = async () => {
     try {
       const res = await axios.get("http://localhost:8000/group/getAll");
-
       setGroup(res.data);
-      console.log(res.data);
-      toast.success("get all group success!");
+      
+      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      const temp = [{value: "", display: "All"}];
+      for (let i = 0; i < res2.data.length; i++) {
+          temp.push({
+            value: res2.data[i]._id,
+            display: res2.data[i].fullname,
+          });
+      }
+      console.log(temp);
+      setAdminList(
+        temp.sort(function (a, b) {
+          if (a.display.toLowerCase() === "all") return -1;
+          if (b.display.toLowerCase() === "all") return 1;
+          if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+          if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+          return 0;
+        })
+      )
     } catch (error) {
       toast.error("get all group  fail!");
-    }
-  };
-  const deleteGroup = async (id) => {
-    try {
-      const res = await axios.post("http://localhost:8000/group/delete", {
-        _id: id,
-      });
-      console.log(res.data);
-      handleGetAllGroup();
-    } catch (error) {
-      toast.error("Send noti fail!");
     }
   };
 
@@ -73,12 +111,6 @@ export default function Group() {
     handleGetAllGroup();
     // eslint-disable-next-line
   }, []);
-
-  const [page, setPage] = useState(0);
-
-  const [filterName, setFilterName] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -89,16 +121,43 @@ export default function Group() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - groups.length) : 0;
+  const handleAdminQuery = (event) => {
+    setAdminQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredGroup = applyFilter(groups, filterName);
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
 
-  const isUserNotFound = filteredGroup.length === 0;
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Name, Content...",
+      onChange: handleSearchQuery
+    },
+    {
+      type: "select",
+      query: adminQuery,
+      label: "Admin",
+      onChange: handleAdminQuery,
+      items: adminList
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_DELETED_STATUS_OPTIONS
+    }
+  ];
 
   return (
     <Page title="Group">
@@ -123,38 +182,49 @@ export default function Group() {
         </Stack>
 
         <Card>
-          {/* <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          /> */}
-
+        <TableToolbar conditions={FILTER_CONDITIONS}/>
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader headLabel={TABLE_HEAD} rowCount={groups.length} />
+                <TableHeader
+                  headLabel={GROUP_TABLE_HEAD}
+                  rowCount={filteredGroups.length}
+                />
                 <TableBody>
-                  {groups
+                  {filteredGroups
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, name, admins, content, createdAt, updatedAt } = row;
-                      console.log(_id)
+                      const {
+                        _id,
+                        name,
+                        admins,
+                        content,
+                        is_deleted,
+                        createdAt,
+                        updatedAt,
+                      } = row;
                       return (
                         <TableRow hover key={_id} tabIndex={-1}>
                           <TableCell
                             align="left"
                             style={{ cursor: "pointer" }}
                             onClick={() => {
-                                navigate("/group/" + _id);
-                              }}
+                              navigate("/group/" + _id);
+                            }}
                           >
                             {name}
-                          </TableCell>                          
+                          </TableCell>
                           <TableCell align="left">
                             {/* {admins.map((admin) => admin.fullname + "\n")} */}
                             {/* {admins[0]} */}
                             <AvatarUser id={admins[0]} />
                           </TableCell>
                           <TableCell align="left">{content}</TableCell>
+                          <TableCell align="left">
+                            <Label color={is_deleted ? "error" : "success"}>
+                              {is_deleted ? "Deleted" : "Not Deleted"}
+                            </Label>
+                          </TableCell>
                           <TableCell align="left">
                             {createdAt?.substring(0, 10)}
                           </TableCell>
@@ -171,11 +241,11 @@ export default function Group() {
                   )}
                 </TableBody>
 
-                {isUserNotFound && (
+                {isGroupNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -187,7 +257,7 @@ export default function Group() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={groups.length}
+            count={filteredGroups.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

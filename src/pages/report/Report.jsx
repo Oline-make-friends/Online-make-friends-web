@@ -21,33 +21,47 @@ import Page from "../../components/Page";
 import Label from "../../components/Label";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
-import { TableHeader } from "../../components/table";
+import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
 import { useNavigate } from "react-router";
 import LinkBar from "../../components/LinkBar";
-
-const TABLE_HEAD = [
-  { id: "content", label: "Content", alignRight: false },
-  { id: "sent_by", label: "Reporter", alignRight: false },
-  { id: "status", label: "Status", alignRight: false },
-  { id: "createdAt", label: "Created At", alignRight: false },
-  { id: "updatedAt", label: "Updated At", alignRight: false },
-  { id: "" },
-];
+import { FILTER_REPORT_STATUS_OPTIONS, REPORT_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Report", href: "#" },
 ];
 
-function applyFilter(array, query) {
+function applyFilter(array, searchQuery, reporterQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (report) =>
-        report.content.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  if (searchQuery || reporterQuery || statusQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_report) =>
+          _report.content &&
+          _report.content
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (reporterQuery) {
+      filteredList = filter(
+        filteredList,
+        (_report) =>
+        _report.sent_by &&
+        _report.sent_by._id.trim() === reporterQuery.trim()
+      );
+    }
+    if (statusQuery) {
+      filteredList = filter(
+        filteredList,
+        (_report) => _report.status.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -55,12 +69,49 @@ function applyFilter(array, query) {
 export default function Report() {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [reporterQuery, setReporterQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+  const [reporterList, setReporterList] = useState([]);
+
+  const filteredReports = applyFilter(
+    reports,
+    searchQuery,
+    reporterQuery,
+    statusQuery
+  );
+
+  const isReportNotFound = filteredReports.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredReports.length) : 0;
+    
   const handleGetAllReport = async () => {
     try {
       const res = await axios.get("http://localhost:8000/report/getAll");
-      toast.success("get report success!");
       setReports(res.data);
-      console.log(res.data);
+
+      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      console.log(res2.data[0]);
+      const temp = [{ value: "", display: "All" }];
+      for (let i = 0; i < res2.data.length; i++) {
+        temp.push({
+          value: res2.data[i]._id,
+          display: res2.data[i].fullname,
+        });
+      }
+      console.log(temp);
+      setReporterList(
+        temp.sort(function (a, b) {
+          if (a.display.toLowerCase() === "all") return -1;
+          if (b.display.toLowerCase() === "all") return 1;
+          if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+          if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+          return 0;
+        })
+      );
     } catch (error) {
       toast.error("get report fail!");
     }
@@ -69,12 +120,6 @@ export default function Report() {
   useEffect(() => {
     handleGetAllReport();
   }, []);
-
-  const [page, setPage] = useState(0);
-
-  const [filterReport, setFilterReport] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -85,19 +130,46 @@ export default function Report() {
     setPage(0);
   };
 
-  const handleFilterByContent = (event) => {
-    setFilterReport(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reports.length) : 0;
+  const handleReporterQuery = (event) => {
+    setReporterQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredReportList = applyFilter(reports, filterReport);
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
 
-  const isReportNotFound = filteredReportList.length === 0;
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Content...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: reporterQuery,
+      label: "Reporter",
+      onChange: handleReporterQuery,
+      items: reporterList
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_REPORT_STATUS_OPTIONS
+    }
+  ];
 
   return (
-    <Page title="Report">
+    <Page title="Reports">
       <LinkBar array={BREADCRUMBS} />
       <Container>
         <Stack
@@ -112,17 +184,16 @@ export default function Report() {
         </Stack>
 
         <Card>
-          {/* <TableToolbar
-            filterName={filterReport}
-            onFilterName={handleFilterByContent}
-          /> */}
-
+          <TableToolbar conditions={FILTER_CONDITIONS} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader headLabel={TABLE_HEAD} rowCount={reports.length} />
+                <TableHeader
+                  headLabel={REPORT_TABLE_HEAD}
+                  rowCount={filteredReports.length}
+                />
                 <TableBody>
-                  {reports
+                  {filteredReports
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
@@ -176,7 +247,7 @@ export default function Report() {
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterReport} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -188,7 +259,7 @@ export default function Report() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={reports.length}
+            count={filteredReports.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

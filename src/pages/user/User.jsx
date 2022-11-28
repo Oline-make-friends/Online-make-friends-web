@@ -31,7 +31,6 @@ const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Users", href: "#" },
 ];
-
 function applyFilter(array, searchQuery, genderQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;

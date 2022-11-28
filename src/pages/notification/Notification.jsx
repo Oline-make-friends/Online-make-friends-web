@@ -24,27 +24,41 @@ import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
 import NewNotification from "./NewNotification";
 import AvatarUser from "../../components/AvatarUser";
-
-const TABLE_HEAD = [
-  { id: "title", label: "Title", alignRight: false },
-  { id: "content", label: "Content", alignRight: false },
-  { id: "receiver", label: "Receiver", alignRight: false },
-  { id: "createAt", label: "Created At", alignRight: false },
-  { id: "updatedAt", label: "Updated At", alignRight: false },
-];
+import { NOTI_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Notification", href: "#" },
 ];
 
-function applyFilter(array, query) {
+function applyFilter(array, searchQuery, creatorQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (noti) => noti.title.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  if (searchQuery || creatorQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_noti) =>
+          (_noti.title &&
+            _noti.title
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1) ||
+          (_noti.content &&
+            _noti.content
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1)
+      );
+    }
+    if (creatorQuery) {
+      filteredList = filter(
+        filteredList,
+        (_noti) =>
+          _noti.user_id && _noti.user_id._id.trim() === creatorQuery.trim()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -52,31 +66,49 @@ function applyFilter(array, query) {
 export default function Notification() {
   const navigate = useNavigate();
   const [notis, setNotis] = useState([]);
-  // const handleGetAllNoti = async () => {
-  //   try {
-  //     const res = await axios.get("http://localhost:8000/noti/getAll");
-  //     toast.success("get notification success!");
-  //     setNotis(res.data);
-  //     console.log(res.data);
-  //   } catch (error) {
-  //     toast.error("get notification  fail!");
-  //   }
-  // };
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [creatorQuery, setCreatorQuery] = useState("");
+  const [creatorList, setCreatorList] = useState([]);
+
+  const filteredNotis = applyFilter(notis, searchQuery, creatorQuery);
+
+  const isNotiNotFound = filteredNotis.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredNotis.length) : 0;
 
   const handleGetAllNoti = async () => {
     try {
       const res = await axios.get("http://localhost:8000/noti/getAll");
-      console.log(res)
-      ///
       let temp = [];
-
       for (let i = 0; i < res.data.length; i++) {
         if (res.data[i]?.user_id?.is_admin === true) {
           temp.push(res.data[i]);
         }
       }
-      //////
       setNotis(temp);
+
+      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      console.log(res2.data[0]);
+      const temp2 = [{ value: "", display: "All" }];
+      for (let i = 0; i < res2.data.length; i++) {
+        temp2.push({
+          value: res2.data[i]._id,
+          display: res2.data[i].fullname,
+        });
+      }
+      console.log(temp2);
+      setCreatorList(
+        temp2.sort(function (a, b) {
+          if (a.display.toLowerCase() === "all") return -1;
+          if (b.display.toLowerCase() === "all") return 1;
+          if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+          if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+          return 0;
+        })
+      );
     } catch (error) {
       toast.error("get notification fail");
     }
@@ -87,12 +119,6 @@ export default function Notification() {
     // eslint-disable-next-line
   }, []);
 
-  const [page, setPage] = useState(0);
-
-  const [filterNoti, setFilterNoti] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -102,19 +128,34 @@ export default function Notification() {
     setPage(0);
   };
 
-  const handleFilterByTitle = (event) => {
-    setFilterNoti(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - notis.length) : 0;
+  const handleCreatorQuery = (event) => {
+    setCreatorQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredNotiList = applyFilter(notis, filterNoti);
-
-  const isNotiNotFound = filteredNotiList.length === 0;
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Title, Content...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: creatorQuery,
+      label: "Creator",
+      onChange: handleCreatorQuery,
+      items: creatorList
+    }
+  ];
 
   return (
-    <Page title="Notification">
+    <Page title="Notifications">
       <LinkBar array={BREADCRUMBS} />
       <Container>
         <Stack
@@ -130,17 +171,16 @@ export default function Notification() {
         </Stack>
 
         <Card>
-          <TableToolbar
-            filterName={filterNoti}
-            onFilterName={handleFilterByTitle}
-          />
-
+          <TableToolbar conditions={FILTER_CONDITIONS} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader headLabel={TABLE_HEAD} rowCount={notis.length} />
+                <TableHeader
+                  headLabel={NOTI_TABLE_HEAD}
+                  rowCount={filteredNotis.length}
+                />
                 <TableBody>
-                  {notis
+                  {filteredNotis
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
@@ -191,7 +231,7 @@ export default function Notification() {
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterNoti} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -203,7 +243,7 @@ export default function Notification() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={notis.length}
+            count={filteredNotis.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

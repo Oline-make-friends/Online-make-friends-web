@@ -6,8 +6,6 @@ import {
   getUserSuccess,
   getProfileSuccess,
 } from "./userSlice";
-import { CometChat } from "@cometchat-pro/chat";
-import * as CONSTANT from "../constans/constans";
 
 export const loginUser = async (user, dispatch, navigate, toast) => {
   dispatch(loginStart());

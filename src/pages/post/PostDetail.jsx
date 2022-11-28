@@ -37,17 +37,12 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { HiTrash } from "react-icons/hi";
 import InfoItem from "../../components/InfoItem";
-
-const LIKE_TABLE_HEAD = [
-  { id: "fullname", label: "User", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "gender", label: "Gender", alignRight: false },
-  { id: "location", label: "Location", alignRight: false },
-  { id: "major", label: "Major", alignRight: false },
-  { id: "is_admin", label: "Role", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "is_active", label: "Status", alignRight: false },
-];
+import {
+  FILTER_DELETED_STATUS_OPTIONS,
+  FILTER_GENDER_OPTIONS,
+  FILTER_STATUS_OPTIONS,
+  USER_TABLE_HEAD,
+} from "../../constans/constans";
 
 const COMMENT_TABLE_HEAD = [
   { id: "creator", label: "Creator", alignRight: false },
@@ -78,8 +73,8 @@ function OverViewTab({ post }) {
               <InfoItem
                 title="Hashtag"
                 value={
-                  <Label variant="ghost" color="info">
-                    {post?.hashtag}
+                  <Label variant="ghost" color="warning">
+                    #{post?.hashtag}
                   </Label>
                 }
               />
@@ -101,7 +96,9 @@ function OverViewTab({ post }) {
                     variant="ghost"
                     color={post?.is_deleted ? "error" : "success"}
                   >
-                    {sentenceCase(post?.is_deleted === true ? "Deleted" : "Active")}
+                    {sentenceCase(
+                      post?.is_deleted === true ? "Deleted" : "Not Deleted"
+                    )}
                   </Label>
                 }
                 isRequired
@@ -124,7 +121,10 @@ function OverViewTab({ post }) {
                 value={post?.createdAt.substring(0, 10)}
                 isRequired
               />
-              <InfoItem title="Update At" value={post?.updatedAt.substring(0, 10)} />
+              <InfoItem
+                title="Update At"
+                value={post?.updatedAt.substring(0, 10)}
+              />
             </TableBody>
           </Table>
         </TableContainer>
@@ -137,11 +137,58 @@ function LikesTab({ likes }) {
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredUsers = applyFilter(likes, filterName);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderQuery, setGenderQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+
+  function applyFilter(array, searchQuery, genderQuery, statusQuery) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    var filteredList = array;
+    console.log(filteredList);
+    if (searchQuery || genderQuery || statusQuery) {
+      if (searchQuery) {
+        filteredList = filter(
+          filteredList,
+          (_user) =>
+            _user.fullname
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1 ||
+            _user.username
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1
+        );
+      }
+      if (genderQuery) {
+        filteredList = filter(
+          filteredList,
+          (_user) => _user.gender.toLowerCase() === genderQuery.toLowerCase()
+        );
+      }
+      if (statusQuery) {
+        filteredList = filter(
+          filteredList,
+          (_user) => _user.is_active.toString() === statusQuery.toLowerCase()
+        );
+      }
+      return filteredList;
+    }
+    return stabilizedThis.map((el) => el[0]);
+  }
+
+  const filteredUsers = applyFilter(
+    likes,
+    searchQuery,
+    genderQuery,
+    statusQuery
+  );
 
   const isUserNotFound = filteredUsers.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -152,30 +199,57 @@ function LikesTab({ likes }) {
     setPage(0);
   };
 
-  function applyFilter(array, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    if (query) {
-      return filter(
-        array,
-        (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-      );
-    }
-    return stabilizedThis.map((el) => el[0]);
-  }
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - likes.length) : 0;
+  const handleGenderQuery = (event) => {
+    setGenderQuery(event.target.value);
+    setPage(0);
+  };
 
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Fullname, Email...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: genderQuery,
+      label: "Gender",
+      onChange: handleGenderQuery,
+      items: FILTER_GENDER_OPTIONS,
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_STATUS_OPTIONS,
+    },
+  ];
+  
   return (
     <Card>
-      <TableToolbar />
+      <TableToolbar conditions={FILTER_CONDITIONS} />
 
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
-            <TableHeader headLabel={LIKE_TABLE_HEAD} rowCount={likes.length} />
+            <TableHeader
+              headLabel={USER_TABLE_HEAD}
+              rowCount={filteredUsers.length}
+            />
             <TableBody>
-              {likes
+              {filteredUsers
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
@@ -242,7 +316,7 @@ function LikesTab({ likes }) {
               <TableBody>
                 <TableRow>
                   <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                    <SearchNotFound searchQuery={filterName} />
+                    <SearchNotFound searchQuery={searchQuery} />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -254,7 +328,7 @@ function LikesTab({ likes }) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={likes.length}
+        count={filteredUsers.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -264,14 +338,59 @@ function LikesTab({ likes }) {
   );
 }
 
-function CommentsTab({ comments }) {
-
+function CommentsTab ({ comments }) {
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredComments = applyFilter(comments, filterName);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [creatorQuery, setCreatorQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
+  const [creatorList, setCreatorList] = useState([]);
 
-  const isPostNotFound = filteredComments.length === 0;
+  const filteredComments = applyFilter(
+    comments,
+    searchQuery,
+    creatorQuery,
+    statusQuery
+  );
+
+  const isCommentNotFound = filteredComments.length === 0;
+
+  const emptyRows =
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - filteredComments.length)
+      : 0;
+
+  const handleGetAllCreator = async () => {
+    console.log("handleGetAllCreator")
+    try {
+      const res = await axios.get("http://localhost:8000/user/getAllUser");
+      console.log(res.data[0]);
+      const temp = [{ value: "", display: "All" }];
+      for (let i = 0; i < res.data.length; i++) {
+        temp.push({
+          value: res.data[i]._id,
+          display: res.data[i].fullname,
+        });
+      }
+      console.log(temp);
+      setCreatorList(
+        temp.sort(function (a, b) {
+          if (a.display.toLowerCase() === "all") return -1;
+          if (b.display.toLowerCase() === "all") return 1;
+          if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+          if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+          return 0;
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetAllCreator();
+    // eslint-disable-next-line
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -282,33 +401,93 @@ function CommentsTab({ comments }) {
     setPage(0);
   };
 
-  function applyFilter(array, query) {
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleCreatorQuery = (event) => {
+    setCreatorQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Content...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: creatorQuery,
+      label: "Creator",
+      onChange: handleCreatorQuery,
+      items: creatorList,
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_DELETED_STATUS_OPTIONS,
+    },
+  ];
+
+  function applyFilter(array, searchQuery, creatorQuery, statusQuery) {
     const stabilizedThis = array.map((el, index) => [el, index]);
-    if (query) {
-      return filter(
-        array,
-        (comment) => comment.content.to.indexOf(query.toLowerCase()) !== -1
-      );
+    var filteredList = array;
+    console.log(filteredList);
+    if (searchQuery || creatorQuery || statusQuery) {
+      if (searchQuery) {
+        filteredList = filter(
+          filteredList,
+          (_comment) =>
+            _comment.content &&
+            _comment.content
+              .trim()
+              .toLowerCase()
+              .indexOf(searchQuery.trim().toLowerCase()) !== -1
+        );
+      }
+      if (creatorQuery) {
+        filteredList = filter(
+          filteredList,
+          (_comment) =>
+            _comment.user_id &&
+            _comment.user_id.toLowerCase() === creatorQuery.toLowerCase()
+        );
+      }
+      if (statusQuery) {
+        filteredList = filter(
+          filteredList,
+          (_comment) =>
+            _comment.is_deleted.toString() === statusQuery.toLowerCase()
+        );
+      }
+      return filteredList;
     }
     return stabilizedThis.map((el) => el[0]);
   }
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - comments.length) : 0;
-
   return (
     <Card>
-      <TableToolbar />
+      <TableToolbar conditions={FILTER_CONDITIONS} />
 
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
             <TableHeader
               headLabel={COMMENT_TABLE_HEAD}
-              rowCount={comments.length}
+              rowCount={filteredComments.length}
             />
             <TableBody>
-              {comments
+              {filteredComments
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
@@ -330,7 +509,7 @@ function CommentsTab({ comments }) {
                           variant="ghost"
                           color={is_deleted ? "error" : "success"}
                         >
-                          {is_deleted?"Deleted":"Active"}
+                          {is_deleted ? "Deleted" : "Not Deleted"}
                         </Label>
                       </TableCell>
                       <TableCell align="left">
@@ -349,11 +528,11 @@ function CommentsTab({ comments }) {
               )}
             </TableBody>
 
-            {isPostNotFound && (
+            {isCommentNotFound && (
               <TableBody>
                 <TableRow>
                   <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                    <SearchNotFound searchQuery={filterName} />
+                    <SearchNotFound searchQuery={filteredComments} />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -365,7 +544,7 @@ function CommentsTab({ comments }) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={comments.length}
+        count={filteredComments.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -380,7 +559,6 @@ export default function PostDetail() {
   const { isPost } = state;
   const navigate = useNavigate();
   const { _id } = useParams();
-  // const { isPost } = useLocation();
   const [post, setPost] = useState();
 
   const handleGetPostById = async () => {
@@ -462,7 +640,7 @@ export default function PostDetail() {
               <LikesTab likes={post?.likes} />
             </TabPanel>
             <TabPanel value="comments">
-              <CommentsTab comments={post?.comments} />
+              <CommentsTab comments={post?.comments}/>
             </TabPanel>
           </TabContext>
         </Card>

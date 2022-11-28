@@ -23,26 +23,11 @@ import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
 import Label from "../../components/Label";
-import { FILTER_GENDER_OPTIONS } from "../../constans/constans";
+import { FILTER_GENDER_OPTIONS, FILTER_REQUEST_STATUS_OPTIONS, REQUEST_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Request", href: "#" },
-];
-
-const TABLE_HEAD = [
-  { id: "fullname", label: "User", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "gender", label: "Gender", alignRight: false },
-  { id: "status", label: "Status", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "updatedAt", label: "Updated Day", alignRight: false },
-];
-
-export const FILTER_STATUS_OPTIONS = [
-  { value: "", display: "All" },
-  { value: "true", display: "Proved" },
-  { value: "false", display: "Not Proved" },
 ];
 
 function applyFilter(array, searchQuery, genderQuery, statusQuery) {
@@ -163,7 +148,7 @@ export default function AccountRequest() {
       query: statusQuery,
       label: "Status",
       onChange: handleStatusQuery,
-      items: FILTER_STATUS_OPTIONS,
+      items: FILTER_REQUEST_STATUS_OPTIONS,
     },
   ];
 
@@ -189,7 +174,7 @@ export default function AccountRequest() {
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <TableHeader
-                  headLabel={TABLE_HEAD}
+                  headLabel={REQUEST_TABLE_HEAD}
                   rowCount={filteredRequests.length}
                 />
                 <TableBody>
