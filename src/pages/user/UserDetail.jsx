@@ -37,22 +37,11 @@ import {
   FILTER_GENDER_OPTIONS,
   FILTER_STATUS_OPTIONS,
   USER_TABLE_HEAD,
+  POST_TABLE_HEAD,
+  FILTER_POST_TYPE_OPTIONS
 } from "../../constans/constans";
 
-const POST_TABLE_HEAD = [
-  { id: "title", label: "Title", alignRight: false },
-  { id: "type", label: "Type", alignRight: false },
-  { id: "like", label: "Like", alignRight: false },
-  { id: "comment", label: "Comment", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "updatedAt", label: "Updated Day", alignRight: false },
-];
-
-function applyFilter(array, searchQuery, genderQuery, statusQuery) {
-  console.log("applyFilter");
-  console.log(searchQuery);
-  console.log(genderQuery);
-  console.log(statusQuery);
+function applyUserFilter(array, searchQuery, genderQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
   console.log(filteredList);
@@ -81,6 +70,48 @@ function applyFilter(array, searchQuery, genderQuery, statusQuery) {
       filteredList = filter(
         filteredList,
         (_user) => _user.is_active.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
+
+function applyPostFilter(
+  array,
+  searchQuery,
+  hashtagQuery,
+  typeQuery
+) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  var filteredList = array;
+  if (searchQuery || hashtagQuery  || typeQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.content &&
+          _post.content
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (hashtagQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.hashtag &&
+          _post.hashtag
+            .trim()
+            .toLowerCase()
+            .indexOf(hashtagQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (typeQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) => _post.type && _post.type.toLowerCase() === typeQuery.toLowerCase()
       );
     }
     return filteredList;
@@ -214,7 +245,7 @@ function FriendsTab({ friendList }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [genderQuery, setGenderQuery] = useState("");
   const [statusQuery, setStatusQuery] = useState("");
-  const filteredFriends = applyFilter(
+  const filteredFriends = applyUserFilter(
     friendList,
     searchQuery,
     genderQuery,
@@ -385,7 +416,7 @@ function FollowingTab({ followingList }) {
   const [genderQuery, setGenderQuery] = useState("");
   const [statusQuery, setStatusQuery] = useState("");
 
-  const filteredUsers = applyFilter(
+  const filteredUsers = applyUserFilter(
     followingList,
     searchQuery,
     genderQuery,
@@ -547,13 +578,25 @@ function FollowingTab({ followingList }) {
 
 function PostsTab({ userId }) {
   const navigate = useNavigate();
-
   const [postList, setPostList] = useState([]);
 
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredUsers = applyFilter(postList, filterName);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hashtagQuery, setHashtagQuery] = useState("");
+  const [typeQuery, setTypeQuery] = useState("");
+
+  const filteredPosts = applyPostFilter(
+    postList,
+    searchQuery,
+    hashtagQuery,
+    typeQuery
+  );
+
+  const isPostNotFound = filteredPosts.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredPosts.length) : 0;
 
   useEffect(() => {
     handleGetPostByUserId();
@@ -567,8 +610,6 @@ function PostsTab({ userId }) {
     } catch (error) {}
   };
 
-  const isUserNotFound = filteredUsers.length === 0;
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -578,38 +619,64 @@ function PostsTab({ userId }) {
     setPage(0);
   };
 
-  function applyFilter(array, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    if (query) {
-      return filter(
-        array,
-        (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-      );
-    }
-    return stabilizedThis.map((el) => el[0]);
-  }
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - postList.length) : 0;
+  const handleHashtagQuery = (event) => {
+    setHashtagQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleTypeQuery = (event) => {
+    console.log(event.target.value);
+    setTypeQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Content...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "input",
+      query: hashtagQuery,
+      label: "Search by Hashtag...",
+      onChange: handleHashtagQuery,
+    },
+    {
+      type: "select",
+      query: typeQuery,
+      label: "Type",
+      onChange: handleTypeQuery,
+      items: FILTER_POST_TYPE_OPTIONS,
+    },
+  ];
 
   return (
     <Card>
-      <TableToolbar />
+      <TableToolbar conditions={FILTER_CONDITIONS}/>
 
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
             <TableHeader
               headLabel={POST_TABLE_HEAD}
-              rowCount={postList.length}
+              rowCount={filteredPosts.length}
             />
             <TableBody>
-              {postList
+              {filteredPosts
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
                     _id,
                     content,
+                    hashtag,
+                    created_by,
                     type,
                     likes,
                     comments,
@@ -627,6 +694,8 @@ function PostsTab({ userId }) {
                       >
                         {content}
                       </TableCell>
+                      <TableCell><Label color="warning">#{hashtag}</Label></TableCell>
+                      <TableCell><AvatarUser id={created_by._id}/></TableCell>
                       <TableCell align="left">{type}</TableCell>
                       <TableCell align="left">{likes.length}</TableCell>
                       <TableCell align="left">{comments.length}</TableCell>
@@ -646,11 +715,11 @@ function PostsTab({ userId }) {
               )}
             </TableBody>
 
-            {isUserNotFound && (
+            {isPostNotFound && (
               <TableBody>
                 <TableRow>
                   <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                    <SearchNotFound searchQuery={filterName} />
+                    <SearchNotFound searchQuery={searchQuery} />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -662,7 +731,7 @@ function PostsTab({ userId }) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={postList.length}
+        count={filteredPosts.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

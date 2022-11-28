@@ -1,13 +1,11 @@
 import { filter } from "lodash";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import {
   Card,
   Table,
   Stack,
-  Avatar,
   TableRow,
   TableBody,
   TableCell,
@@ -22,30 +20,67 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
+import AvatarUser from "../../components/AvatarUser";
 import axios from "axios";
-
-const TABLE_HEAD = [
-  { id: "title", label: "Title", alignRight: false },
-  { id: "createdBy", label: "Created By", alignRight: false },
-  { id: "type", label: "Type", alignRight: false },
-  { id: "like", label: "Like", alignRight: false },
-  { id: "comment", label: "Comment", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "updatedAt", label: "Updated Day", alignRight: false },
-];
+import {
+  FILTER_POST_TYPE_OPTIONS,
+  POST_TABLE_HEAD,
+} from "../../constans/constans";
+import Label from "../../components/Label";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Posts", href: "#" },
 ];
 
-function applyFilter(array, query) {
+function applyFilter(
+  array,
+  searchQuery,
+  hashtagQuery,
+  createdByQuery,
+  typeQuery
+) {
   const stabilizedThis = array.map((el, index) => [el, index]);
-  if (query) {
-    return filter(
-      array,
-      (_post) => _post.name.to.indexOf(query.toLowerCase()) !== -1
-    );
+  var filteredList = array;
+  if (searchQuery || hashtagQuery || createdByQuery || typeQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.content &&
+          _post.content
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (hashtagQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.hashtag &&
+          _post.hashtag
+            .trim()
+            .toLowerCase()
+            .indexOf(hashtagQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (createdByQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.created_by &&
+          _post.created_by._id.trim() === createdByQuery.trim()
+      );
+    }
+    if (typeQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.type && _post.type.toLowerCase() === typeQuery.toLowerCase()
+      );
+    }
+    return filteredList;
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -53,26 +88,59 @@ function applyFilter(array, query) {
 export default function Post() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hashtagQuery, setHashtagQuery] = useState("");
+  const [createdByQuery, setCreatedByQuery] = useState("");
+  const [typeQuery, setTypeQuery] = useState("");
+  const [createdByList, setCreatedByList] = useState([]);
+
+  const filteredPosts = applyFilter(
+    posts,
+    searchQuery,
+    hashtagQuery,
+    createdByQuery,
+    typeQuery
+  );
+
+  const isPostNotFound = filteredPosts.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredPosts.length) : 0;
+
   const handleGetAllPost = async () => {
     try {
       const res = await axios.get("http://localhost:8000/post/getAll");
-      toast.success("get post success!");
       setPosts(res.data);
-      console.log(res.data);
+      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      console.log(res2.data[0]);
+      const temp = [{ value: "", display: "All" }];
+      for (let i = 0; i < res2.data.length; i++) {
+        temp.push({
+          value: res2.data[i]._id,
+          display: res2.data[i].fullname,
+        });
+      }
+      console.log(temp);
+      setCreatedByList(
+        temp.sort(function (a, b) {
+          if (a.display.toLowerCase() === "all") return -1;
+          if (b.display.toLowerCase() === "all") return 1;
+          if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+          if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+          return 0;
+        })
+      );
     } catch (error) {
-      toast.error("get post fail!");
+      console.log(error);
     }
   };
+
   useEffect(() => {
     handleGetAllPost();
     // eslint-disable-next-line
   }, []);
-
-  const [page, setPage] = useState(0);
-
-  const [filterName, setFilterName] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -83,16 +151,56 @@ export default function Post() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - posts.length) : 0;
+  const handleHashtagQuery = (event) => {
+    setHashtagQuery(event.target.value);
+    setPage(0);
+  };
 
-  const filteredPosts = applyFilter(posts, filterName);
+  const handleCreatedByQuery = (event) => {
+    console.log(event.target.value);
+    setCreatedByQuery(event.target.value);
+    setPage(0);
+  };
 
-  const isPostNotFound = filteredPosts.length === 0;
+  const handleTypeQuery = (event) => {
+    console.log(event.target.value);
+    setTypeQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Content...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "input",
+      query: hashtagQuery,
+      label: "Search by Hashtag...",
+      onChange: handleHashtagQuery,
+    },
+    {
+      type: "select",
+      query: createdByQuery,
+      label: "Created By",
+      onChange: handleCreatedByQuery,
+      items: createdByList,
+    },
+    {
+      type: "select",
+      query: typeQuery,
+      label: "Type",
+      onChange: handleTypeQuery,
+      items: FILTER_POST_TYPE_OPTIONS,
+    },
+  ];
 
   return (
     <Page title="Posts">
@@ -110,23 +218,23 @@ export default function Post() {
         </Stack>
 
         <Card>
-          <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
+          <TableToolbar conditions={FILTER_CONDITIONS} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableHeader headLabel={TABLE_HEAD} rowCount={posts.length} />
+                <TableHeader
+                  headLabel={POST_TABLE_HEAD}
+                  rowCount={filteredPosts.length}
+                />
                 <TableBody>
-                  {posts
+                  {filteredPosts
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
                         _id,
                         created_by,
                         content,
+                        hashtag,
                         type,
                         likes,
                         comments,
@@ -148,6 +256,11 @@ export default function Post() {
                           >
                             {content}
                           </TableCell>
+                          <TableCell align="left">
+                            <Label variant="ghost" color="warning">
+                              #{hashtag}
+                            </Label>
+                          </TableCell>
                           <TableCell
                             component="th"
                             scope="row"
@@ -162,10 +275,7 @@ export default function Post() {
                               alignItems="center"
                               spacing={2}
                             >
-                              <Avatar
-                                alt={created_by.fullname}
-                                src={created_by.avatar_url}
-                              />
+                              <AvatarUser id={created_by.id} />
                               <Typography variant="subtitle2" noWrap>
                                 {created_by.fullname}
                               </Typography>
@@ -194,7 +304,7 @@ export default function Post() {
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
+                        <SearchNotFound searchQuery={searchQuery} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -206,7 +316,7 @@ export default function Post() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={posts.length}
+            count={filteredPosts.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

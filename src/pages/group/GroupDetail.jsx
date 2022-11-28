@@ -31,30 +31,105 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import InfoItem from "../../components/InfoItem";
+import {
+  FILTER_GENDER_OPTIONS,
+  FILTER_POST_TYPE_OPTIONS,
+  FILTER_STATUS_OPTIONS,
+  POST_TABLE_HEAD,
+  USER_TABLE_HEAD,
+} from "../../constans/constans";
 
-const MEMBER_TABLE_HEAD = [
-    { id: "fullname", label: "User", alignRight: false },
-    { id: "email", label: "Email", alignRight: false },
-    { id: "gender", label: "Gender", alignRight: false },
-    { id: "location", label: "Location", alignRight: false },
-    { id: "major", label: "Major", alignRight: false },
-    { id: "is_admin", label: "Role", alignRight: false },
-    { id: "createAt", label: "Created Day", alignRight: false },
-    { id: "is_active", label: "Status", alignRight: false },
-  ];
+function applyUserFilter(array, searchQuery, genderQuery, statusQuery) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  var filteredList = array;
+  console.log(filteredList);
+  if (searchQuery || genderQuery || statusQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) =>
+          _user.fullname
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1 ||
+          _user.username
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (genderQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) => _user.gender.toLowerCase() === genderQuery.toLowerCase()
+      );
+    }
+    if (statusQuery) {
+      filteredList = filter(
+        filteredList,
+        (_user) => _user.is_active.toString() === statusQuery.toLowerCase()
+      );
+    }
+    return filteredList;
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
 
-const POST_TABLE_HEAD = [
-  { id: "title", label: "Title", alignRight: false },
-  { id: "type", label: "Type", alignRight: false },
-  { id: "like", label: "Like", alignRight: false },
-  { id: "comment", label: "Comment", alignRight: false },
-  { id: "createAt", label: "Created Day", alignRight: false },
-  { id: "updatedAt", label: "Updated Day", alignRight: false },
-];
+function applyPostFilter(
+  array,
+  searchQuery,
+  hashtagQuery,
+  createdByQuery,
+  typeQuery
+) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  var filteredList = array;
+  if (searchQuery || hashtagQuery || createdByQuery || typeQuery) {
+    if (searchQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.content &&
+          _post.content
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (hashtagQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.hashtag &&
+          _post.hashtag
+            .trim()
+            .toLowerCase()
+            .indexOf(hashtagQuery.trim().toLowerCase()) !== -1
+      );
+    }
+    if (createdByQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.created_by &&
+          _post.created_by._id.trim() === createdByQuery.trim()
+      );
+    }
+    if (typeQuery) {
+      filteredList = filter(
+        filteredList,
+        (_post) =>
+          _post.type && _post.type.toLowerCase() === typeQuery.toLowerCase()
+      );
+    }
+    return filteredList;
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
 
 function OverViewTab({ group }) {
-    console.log(group?.admins)
-    console.log(group?.name)
+  console.log(group?.admins);
+  console.log(group?.name);
   return (
     <Grid container spacing={2}>
       <Grid item xs={6} md={8}>
@@ -75,7 +150,9 @@ function OverViewTab({ group }) {
                     variant="ghost"
                     color={group?.is_delete ? "error" : "success"}
                   >
-                    {sentenceCase(group?.is_delete === true ? "Deleted" : "Active")}
+                    {sentenceCase(
+                      group?.is_deleted === true ? "Deleted" : "Not Deleted"
+                    )}
                   </Label>
                 }
                 isRequired
@@ -124,7 +201,10 @@ function OverViewTab({ group }) {
                 value={group?.createdAt?.substring(0, 10)}
                 isRequired
               />
-              <InfoItem title="Update At" value={group?.updatedAt?.substring(0, 10)} />
+              <InfoItem
+                title="Update At"
+                value={group?.updatedAt?.substring(0, 10)}
+              />
             </TableBody>
           </Table>
         </TableContainer>
@@ -134,141 +214,25 @@ function OverViewTab({ group }) {
 }
 
 function MemberTab({ members }) {
-    const navigate = useNavigate();
-  
-    const [page, setPage] = useState(0);
-    const [filterName, setFilterName] = useState("");
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const filteredUsers = applyFilter(members, filterName);
-  
-    const isUserNotFound = filteredUsers.length === 0;
-  
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-    };
-  
-    function applyFilter(array, query) {
-      const stabilizedThis = array.map((el, index) => [el, index]);
-      if (query) {
-        return filter(
-          array,
-          (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-        );
-      }
-      return stabilizedThis.map((el) => el[0]);
-    }
-  
-    const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - members.length) : 0;
-  
-    return (
-      <Card>
-        <TableToolbar />
-  
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 800 }}>
-            <Table>
-              <TableHeader headLabel={MEMBER_TABLE_HEAD} rowCount={members.length} />
-              <TableBody>
-                {members
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    const {
-                      _id,
-                      avatar_url,
-                      fullname,
-                      username,
-                      gender,
-                      location,
-                      major,
-                      is_admin,
-                      createdAt,
-                      is_active,
-                    } = row;
-                    console.log(_id);
-                    return (
-                      <TableRow hover key={_id} tabIndex={-1}>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            navigate("/user/" + _id);
-                            window.location.reload();
-                          }}
-                        >
-                          <AvatarUser id={_id} fullname={fullname} avatar={avatar_url}/>                        
-                        </TableCell>
-                        <TableCell align="left">{username}</TableCell>
-                        <TableCell align="left">{gender}</TableCell>
-                        <TableCell align="left">{location}</TableCell>
-                        <TableCell align="left">{major}</TableCell>
-                        <TableCell align="left">
-                          {is_admin ? "Admin" : "Member"}
-                        </TableCell>
-                        <TableCell align="left">
-                          {createdAt.toString().substring(0, 10)}
-                        </TableCell>
-                        <TableCell align="left">
-                          <Label
-                            variant="ghost"
-                            color={is_active ? "success" : "error"}
-                          >
-                            {sentenceCase(
-                              is_active === true ? "active" : "banned"
-                            )}
-                          </Label>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-  
-              {isUserNotFound && (
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                      <SearchNotFound searchQuery={filterName} />
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              )}
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-  
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={members.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Card>
-    );
-  }
-
-function PostsTab({ posts }) {
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
-  const [filterName, setFilterName] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const filteredPosts = applyFilter(posts, filterName);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderQuery, setGenderQuery] = useState("");
+  const [statusQuery, setStatusQuery] = useState("");
 
-  const isPostNotFound = filteredPosts.length === 0;
+  const filteredUsers = applyUserFilter(
+    members,
+    searchQuery,
+    genderQuery,
+    statusQuery
+  );
+
+  const isUserNotFound = filteredUsers.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -279,38 +243,274 @@ function PostsTab({ posts }) {
     setPage(0);
   };
 
-  function applyFilter(array, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    if (query) {
-      return filter(
-        array,
-        (_user) => _user.name.to.indexOf(query.toLowerCase()) !== -1
-      );
-    }
-    return stabilizedThis.map((el) => el[0]);
-  }
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - posts.length) : 0;
+  const handleGenderQuery = (event) => {
+    setGenderQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleStatusQuery = (event) => {
+    setStatusQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Fullname, Email...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "select",
+      query: genderQuery,
+      label: "Gender",
+      onChange: handleGenderQuery,
+      items: FILTER_GENDER_OPTIONS,
+    },
+    {
+      type: "select",
+      query: statusQuery,
+      label: "Status",
+      onChange: handleStatusQuery,
+      items: FILTER_STATUS_OPTIONS,
+    },
+  ];
 
   return (
     <Card>
-      <TableToolbar />
+      <TableToolbar conditions={FILTER_CONDITIONS} />
+      <Scrollbar>
+        <TableContainer sx={{ minWidth: 800 }}>
+          <Table>
+            <TableHeader
+              headLabel={USER_TABLE_HEAD}
+              rowCount={filteredUsers.length}
+            />
+            <TableBody>
+              {filteredUsers
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  const {
+                    _id,
+                    avatar_url,
+                    fullname,
+                    username,
+                    gender,
+                    location,
+                    major,
+                    is_admin,
+                    createdAt,
+                    is_active,
+                  } = row;
+                  console.log(_id);
+                  return (
+                    <TableRow hover key={_id} tabIndex={-1}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          navigate("/user/" + _id);
+                          window.location.reload();
+                        }}
+                      >
+                        <AvatarUser
+                          id={_id}
+                          fullname={fullname}
+                          avatar={avatar_url}
+                        />
+                      </TableCell>
+                      <TableCell align="left">{username}</TableCell>
+                      <TableCell align="left">{gender}</TableCell>
+                      <TableCell align="left">{location}</TableCell>
+                      <TableCell align="left">{major}</TableCell>
+                      <TableCell align="left">
+                        {is_admin ? "Admin" : "Member"}
+                      </TableCell>
+                      <TableCell align="left">
+                        {createdAt.toString().substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="left">
+                        <Label
+                          variant="ghost"
+                          color={is_active ? "success" : "error"}
+                        >
+                          {sentenceCase(
+                            is_active === true ? "active" : "banned"
+                          )}
+                        </Label>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
 
+            {isUserNotFound && (
+              <TableBody>
+                <TableRow>
+                  <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                    <SearchNotFound searchQuery={searchQuery} />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            )}
+          </Table>
+        </TableContainer>
+      </Scrollbar>
+
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredUsers.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Card>
+  );
+}
+
+function PostsTab({ posts }) {
+  const navigate = useNavigate();
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hashtagQuery, setHashtagQuery] = useState("");
+  const [createdByQuery, setCreatedByQuery] = useState("");
+  const [typeQuery, setTypeQuery] = useState("");
+  const [createdByList, setCreatedByList] = useState([]);
+
+  const filteredPosts = applyPostFilter(
+    posts,
+    searchQuery,
+    hashtagQuery,
+    createdByQuery,
+    typeQuery
+  );
+
+  const isPostNotFound = filteredPosts.length === 0;
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredPosts.length) : 0;
+
+  const handleGetCreatedByList = async () => {
+    const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+    console.log(res2.data[0]);
+    const temp = [{ value: "", display: "All" }];
+    for (let i = 0; i < res2.data.length; i++) {
+      temp.push({
+        value: res2.data[i]._id,
+        display: res2.data[i].fullname,
+      });
+    }
+    console.log(temp);
+    setCreatedByList(
+      temp.sort(function (a, b) {
+        if (a.display.toLowerCase() === "all") return -1;
+        if (b.display.toLowerCase() === "all") return 1;
+        if (a.display.toLowerCase() < b.display.toLowerCase()) return -1;
+        if (a.display.toLowerCase() > b.display.toLowerCase()) return 1;
+        return 0;
+      })
+    );
+  };
+
+  useEffect(() => {
+    handleGetCreatedByList();
+    // eslint-disable-next-line
+  }, []);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearchQuery = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleHashtagQuery = (event) => {
+    setHashtagQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleCreatedByQuery = (event) => {
+    console.log(event.target.value);
+    setCreatedByQuery(event.target.value);
+    setPage(0);
+  };
+
+  const handleTypeQuery = (event) => {
+    console.log(event.target.value);
+    setTypeQuery(event.target.value);
+    setPage(0);
+  };
+
+  const FILTER_CONDITIONS = [
+    {
+      type: "input",
+      query: searchQuery,
+      label: "Search by Content...",
+      onChange: handleSearchQuery,
+    },
+    {
+      type: "input",
+      query: hashtagQuery,
+      label: "Search by Hashtag...",
+      onChange: handleHashtagQuery,
+    },
+    {
+      type: "select",
+      query: createdByQuery,
+      label: "Created By",
+      onChange: handleCreatedByQuery,
+      items: createdByList,
+    },
+    {
+      type: "select",
+      query: typeQuery,
+      label: "Type",
+      onChange: handleTypeQuery,
+      items: FILTER_POST_TYPE_OPTIONS,
+    },
+  ];
+
+  return (
+    <Card>
+      <TableToolbar conditions={FILTER_CONDITIONS} />
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
           <Table>
             <TableHeader
               headLabel={POST_TABLE_HEAD}
-              rowCount={posts.length}
+              rowCount={filteredPosts.length}
             />
             <TableBody>
-              {posts
+              {filteredPosts
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   const {
                     _id,
                     content,
+                    hashtag,
+                    created_by,
                     type,
                     likes,
                     comments,
@@ -327,6 +527,12 @@ function PostsTab({ posts }) {
                         }}
                       >
                         {content}
+                      </TableCell>
+                      <TableCell align="left">
+                        <Label color="warning">#{hashtag}</Label>
+                      </TableCell>
+                      <TableCell align="left">
+                        <AvatarUser id={created_by._id} />
                       </TableCell>
                       <TableCell align="left">{type}</TableCell>
                       <TableCell align="left">{likes.length}</TableCell>
@@ -351,7 +557,7 @@ function PostsTab({ posts }) {
               <TableBody>
                 <TableRow>
                   <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                    <SearchNotFound searchQuery={filterName} />
+                    <SearchNotFound searchQuery={searchQuery} />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -363,7 +569,7 @@ function PostsTab({ posts }) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={posts.length}
+        count={filteredPosts.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -400,13 +606,13 @@ export default function GroupDetail() {
   const [tab, setTab] = useState("overview");
 
   const handleTab = (event, newTab) => {
-    console.log(newTab)
+    console.log(newTab);
     setTab(newTab);
   };
 
   const handleDelete = async () => {
     try {
-      await axios.post("http://localhost:8000/group/delete/",{_id: _id});
+      await axios.post("http://localhost:8000/group/delete/", { _id: _id });
       navigate("/groups");
     } catch (error) {}
   };
