@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import moment from "moment";
 
 const RootStyle = styled(Toolbar)(({ theme }) => ({
   height: 96,
@@ -27,8 +26,8 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.shorter,
   }),
-  '&.Mui-focused': { width: 350, boxShadow: theme.customShadows.z8 },
-  '& fieldset': {
+  "&.Mui-focused": { width: 350, boxShadow: theme.customShadows.z8 },
+  "& fieldset": {
     borderWidth: `1px !important`,
     borderColor: `${theme.palette.grey[500_32]} !important`,
   },
@@ -47,7 +46,7 @@ const FormControlStyle = styled(FormControl)(({ theme }) => ({
   },
 }));
 
-const DatePickerStyle = styled(DatePicker)(({theme}) => ({
+const DatePickerStyle = styled(DatePicker)(({ theme }) => ({
   width: 250,
   marginLeft: 10,
   transition: theme.transitions.create(["box-shadow", "width"], {
@@ -61,7 +60,6 @@ const DatePickerStyle = styled(DatePicker)(({theme}) => ({
 }));
 
 export default function TableToolbar({ conditions }) {
-  console.log(conditions);
   return (
     <RootStyle direction="row" justifyItems="space-between">
       {conditions &&

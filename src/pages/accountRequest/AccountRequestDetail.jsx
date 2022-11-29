@@ -1,7 +1,9 @@
 import {
+  Alert,
   Button,
   Card,
   Divider,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -10,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
@@ -19,13 +21,24 @@ import InfoItem from "../../components/InfoItem";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Request", href: "#" },
+  { label: "Requests", href: "/requests" },
+  { label: "Request Detail", href: "#" },
 ];
 
 export default function AccountRequestDetail() {
+  const navigate = useNavigate();
   const { _id } = useParams();
-
   const [request, setRequest] = useState();
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackBar(false);
+  };
 
   const handleGetRequestById = async () => {
     try {
@@ -33,26 +46,52 @@ export default function AccountRequestDetail() {
         "http://localhost:8000/user/getUser/" + _id
       );
       setRequest(rest.data);
-      console.log(rest.data);
-    } catch (error) {}
+    } catch (error) {
+      navigate("/404");
+    }
   };
+
   const handleStatusUser = async () => {
+    const action = request.is_prove ? "Disprove" : "Prove";
     try {
       await axios.post(`http://localhost:8000/user/blockUser/${_id}`);
       await axios.post(`http://localhost:8000/user/proveUser/${_id}`);
-      handleGetRequestById();
-    } catch (error) {}
+      setSnackBar(true);
+      setAlertContent(action + "Success");
+      setAlertType("success");
+    } catch (error) {
+      setSnackBar(true);
+      setAlertContent(action + "Fail");
+      setAlertType("error");
+    }
   };
 
   useEffect(() => {
     handleGetRequestById();
     // eslint-disable-next-line
-  }, []);
+  }, [request]);
 
   return (
-    <Page title="Request">
+    <Page title="Account Request Detail">
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
       <LinkBar array={BREADCRUMBS} />
-
       <TableContainer component={Card} sx={{ padding: 2, mb: 2 }}>
         <Typography variant="subtitle1" mb={2}>
           Basic Information
@@ -130,24 +169,26 @@ export default function AccountRequestDetail() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Stack direction="row" justifyContent="left" sx={{ zIndex: "-1" }}>
-        <Button
-          sx={{ margin: 2 }}
-          color="success"
-          variant="contained"
-          onClick={() => handleStatusUser()}
-        >
-          Prove
-        </Button>
-        <Button
-          sx={{ margin: 2 }}
-          color="error"
-          variant="contained"
-          onClick={() => handleStatusUser()}
-        >
-          Disprove
-        </Button>
-      </Stack>
+      {request?.is_prove || (
+        <Stack direction="row" justifyContent="left" sx={{ zIndex: "-1" }}>
+          <Button
+            sx={{ margin: 2 }}
+            color="success"
+            variant="contained"
+            onClick={() => handleStatusUser()}
+          >
+            Prove
+          </Button>
+          {/* <Button
+            sx={{ margin: 2 }}
+            color="error"
+            variant="contained"
+            onClick={() => handleStatusUser()}
+          >
+            Disprove
+          </Button> */}
+        </Stack>
+      )}
     </Page>
   );
 }

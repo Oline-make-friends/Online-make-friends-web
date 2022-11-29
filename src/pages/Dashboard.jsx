@@ -34,8 +34,6 @@ export default function Dashboard() {
       setIsActive(isActive);
       setFemale(female);
       setMale(male);
-
-      console.log(res.data);
     } catch (error) {
       toast.error("get notification  fail!");
     }

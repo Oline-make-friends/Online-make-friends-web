@@ -28,7 +28,7 @@ import { NOTI_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Notification", href: "#" },
+  { label: "Notifications", href: "#" },
 ];
 
 function applyFilter(array, searchQuery, creatorQuery) {
@@ -90,16 +90,16 @@ export default function Notification() {
       }
       setNotis(temp);
 
-      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
-      console.log(res2.data[0]);
+      const res2 = await axios.get("http://localhost:8000/user/getAllAdmin");
       const temp2 = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp2.push({
           value: res2.data[i]._id,
-          display: res2.data[i].fullname,
+          display: res2.data[i].fullname
+            ? res2.data[i].fullname
+            : res2.data[i].username,
         });
       }
-      console.log(temp2);
       setCreatorList(
         temp2.sort(function (a, b) {
           if (a.display.toLowerCase() === "all") return -1;
@@ -117,7 +117,7 @@ export default function Notification() {
   useEffect(() => {
     handleGetAllNoti();
     // eslint-disable-next-line
-  }, []);
+  }, [notis]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -150,8 +150,8 @@ export default function Notification() {
       query: creatorQuery,
       label: "Creator",
       onChange: handleCreatorQuery,
-      items: creatorList
-    }
+      items: creatorList,
+    },
   ];
 
   return (
@@ -165,7 +165,7 @@ export default function Notification() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Notification
+            Notifications
           </Typography>
           <NewNotification />
         </Stack>

@@ -3,17 +3,15 @@ import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'fixed',
-  top:50,
-  right:50,
-  color: 'white'
+  position: "fixed",
+  top: 50,
+  right: 50,
+  color: "white",
 }));
 
-export default function Image({image, alt, ...others}) {
-  console.log(image)
-  console.log(alt)
+export default function Image({ image, alt, ...others }) {
   const [open, setOpen] = useState(false);
-  
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 

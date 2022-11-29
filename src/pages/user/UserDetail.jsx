@@ -1,11 +1,13 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
+  Alert,
   Box,
   Button,
   Card,
   Container,
   Divider,
   Grid,
+  Snackbar,
   Stack,
   Tab,
   Table,
@@ -38,13 +40,12 @@ import {
   FILTER_STATUS_OPTIONS,
   USER_TABLE_HEAD,
   POST_TABLE_HEAD,
-  FILTER_POST_TYPE_OPTIONS
+  FILTER_POST_TYPE_OPTIONS,
 } from "../../constans/constans";
 
 function applyUserFilter(array, searchQuery, genderQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  console.log(filteredList);
   if (searchQuery || genderQuery || statusQuery) {
     if (searchQuery) {
       filteredList = filter(
@@ -77,15 +78,10 @@ function applyUserFilter(array, searchQuery, genderQuery, statusQuery) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-function applyPostFilter(
-  array,
-  searchQuery,
-  hashtagQuery,
-  typeQuery
-) {
+function applyPostFilter(array, searchQuery, hashtagQuery, typeQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  if (searchQuery || hashtagQuery  || typeQuery) {
+  if (searchQuery || hashtagQuery || typeQuery) {
     if (searchQuery) {
       filteredList = filter(
         filteredList,
@@ -111,7 +107,8 @@ function applyPostFilter(
     if (typeQuery) {
       filteredList = filter(
         filteredList,
-        (_post) => _post.type && _post.type.toLowerCase() === typeQuery.toLowerCase()
+        (_post) =>
+          _post.type && _post.type.toLowerCase() === typeQuery.toLowerCase()
       );
     }
     return filteredList;
@@ -135,105 +132,147 @@ function OverViewTab({
   is_admin,
   is_prove,
 }) {
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackBar(false);
+  };
+
   const handleStatusUser = () => {
+    const action = is_active ? "Ban" : "Unban";
     try {
       axios.post(`http://localhost:8000/user/blockUser/${_id}`);
-      window.location.reload();
-    } catch (error) {}
+      setSnackBar(true);
+      setAlertContent(action + " Success!");
+      setAlertType("success");
+    } catch (error) {
+      setSnackBar(true);
+      setAlertContent(action + " Fail!");
+      setAlertType("error");
+    }
   };
+
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={6} md={8}>
-        <TableContainer component={Card} sx={{ padding: 2 }}>
-          <Typography variant="subtitle1" mb={2}>
-            Basic Information
-          </Typography>
-          <Divider />
+    <div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
+      <Grid container spacing={2}>
+        <Grid item xs={6} md={8}>
+          <TableContainer component={Card} sx={{ padding: 2 }}>
+            <Typography variant="subtitle1" mb={2}>
+              Basic Information
+            </Typography>
+            <Divider />
 
-          <Table sx={{ minWidth: 500 }}>
-            <TableBody>
-              <InfoItem title="Fullname" value={fullname} isRequired />
-              <InfoItem title="Email" value={username} isRequired />
-              <InfoItem
-                title="Role"
-                value={
-                  <Label variant="ghost" color={is_admin ? "error" : "info"}>
-                    {sentenceCase(is_admin === true ? "Admin" : "Member")}
-                  </Label>
-                }
-                isRequired
-              />
-              <InfoItem title="About" value={about} />
-              <InfoItem title="Date of birth" value={dob} />
-              <InfoItem
-                title="Gender"
-                value={
-                  <Label
-                    variant="ghost"
-                    color={gender === "Male" ? "info" : "error"}
-                  >
-                    {gender}
-                  </Label>
-                }
-              />
-              <InfoItem title="Location" value={location} />
-              <InfoItem title="Major" value={major} />
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TableContainer component={Card} sx={{ padding: 2 }}>
-          <Typography variant="subtitle1" mb={2}>
-            Account Configuration
-          </Typography>
-          <Divider />
+            <Table sx={{ minWidth: 500 }}>
+              <TableBody>
+                <InfoItem title="Fullname" value={fullname} isRequired />
+                <InfoItem title="Email" value={username} isRequired />
+                <InfoItem
+                  title="Role"
+                  value={
+                    <Label variant="ghost" color={is_admin ? "error" : "info"}>
+                      {sentenceCase(is_admin === true ? "Admin" : "Member")}
+                    </Label>
+                  }
+                  isRequired
+                />
+                <InfoItem title="About" value={about} />
+                <InfoItem title="Date of birth" value={dob} />
+                <InfoItem
+                  title="Gender"
+                  value={
+                    <Label
+                      variant="ghost"
+                      color={gender === "Male" ? "info" : "error"}
+                    >
+                      {gender}
+                    </Label>
+                  }
+                />
+                <InfoItem title="Location" value={location} />
+                <InfoItem title="Major" value={major} />
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TableContainer component={Card} sx={{ padding: 2 }}>
+            <Typography variant="subtitle1" mb={2}>
+              Account Configuration
+            </Typography>
+            <Divider />
 
-          <Table sx={{ minWidth: 500 }}>
-            <TableBody>
-              <InfoItem
-                title="Create At"
-                value={createdAt?.substring(0, 10)}
-                isRequired
-              />
-              <InfoItem title="Update At" value={updatedAt?.substring(0, 10)} />
-            </TableBody>
-          </Table>
-        </TableContainer>
+            <Table sx={{ minWidth: 500 }}>
+              <TableBody>
+                <InfoItem
+                  title="Create At"
+                  value={createdAt?.substring(0, 10)}
+                  isRequired
+                />
+                <InfoItem
+                  title="Update At"
+                  value={updatedAt?.substring(0, 10)}
+                />
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+        <Grid item xs={6} md={4}>
+          <Card sx={{ padding: 2 }}>
+            <Typography variant="subtitle1" mb={2}>
+              Statuses
+            </Typography>
+            <Stack direction="column" spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <Typography variant="subtitle2">Prove Image:</Typography>
+                <Image
+                  style={{ borderRadius: 10, width: 122, height: 122 }}
+                  image={proveImage}
+                  alt={fullname}
+                />
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <Label variant="ghost" color={is_active ? "success" : "error"}>
+                  {sentenceCase(is_active === true ? "active" : "banned")}
+                </Label>
+                <Label variant="ghost" color={is_prove ? "success" : "error"}>
+                  {sentenceCase(is_prove === true ? "Proved" : "Unproved")}
+                </Label>
+              </Stack>
+              <Stack>
+                <Button
+                  onClick={handleStatusUser}
+                  variant="contained"
+                  startIcon={is_active ? <AiFillLock /> : <AiFillUnlock />}
+                >
+                  {is_active ? "Ban" : "Unban"}
+                </Button>
+              </Stack>
+            </Stack>
+          </Card>
+        </Grid>
       </Grid>
-      <Grid item xs={6} md={4}>
-        <Card sx={{ padding: 2 }}>
-          <Typography variant="subtitle1" mb={2}>
-            Statuses
-          </Typography>
-          <Stack direction="column" spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <Typography variant="subtitle2">Prove Image:</Typography>
-              <Image
-                style={{ borderRadius: 10, width: 122, height: 122 }}
-                image={proveImage}
-                alt={fullname}
-              />
-            </Stack>
-            <Stack direction="row" spacing={2}>
-              <Label variant="ghost" color={is_active ? "success" : "error"}>
-                {sentenceCase(is_active === true ? "active" : "banned")}
-              </Label>
-              <Label variant="ghost" color={is_prove ? "success" : "error"}>
-                {sentenceCase(is_prove === true ? "Proved" : "Unproved")}
-              </Label>
-            </Stack>
-            <Stack>
-              <Button
-                onClick={handleStatusUser}
-                variant="contained"
-                startIcon={is_active ? <AiFillLock /> : <AiFillUnlock />}
-              >
-                {is_active ? "Ban" : "Unban"}
-              </Button>
-            </Stack>
-          </Stack>
-        </Card>
-      </Grid>
-    </Grid>
+    </div>
   );
 }
 
@@ -333,7 +372,6 @@ function FriendsTab({ friendList }) {
                     createdAt,
                     updatedAt,
                   } = row;
-                  console.log(_id);
                   return (
                     <TableRow hover key={_id} tabIndex={-1}>
                       <TableCell
@@ -502,7 +540,6 @@ function FollowingTab({ followingList }) {
                     createdAt,
                     updatedAt,
                   } = row;
-                  console.log(_id);
                   return (
                     <TableRow hover key={_id} tabIndex={-1}>
                       <TableCell
@@ -607,7 +644,9 @@ function PostsTab({ userId }) {
     try {
       const rest = await axios.post("http://localhost:8000/post/get/" + userId);
       setPostList(rest.data);
-    } catch (error) {}
+    } catch (error) {
+      console.log("Get post list fail! " + error);
+    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -630,7 +669,6 @@ function PostsTab({ userId }) {
   };
 
   const handleTypeQuery = (event) => {
-    console.log(event.target.value);
     setTypeQuery(event.target.value);
     setPage(0);
   };
@@ -659,7 +697,7 @@ function PostsTab({ userId }) {
 
   return (
     <Card>
-      <TableToolbar conditions={FILTER_CONDITIONS}/>
+      <TableToolbar conditions={FILTER_CONDITIONS} />
 
       <Scrollbar>
         <TableContainer sx={{ minWidth: 800 }}>
@@ -694,8 +732,12 @@ function PostsTab({ userId }) {
                       >
                         {content}
                       </TableCell>
-                      <TableCell><Label color="warning">#{hashtag}</Label></TableCell>
-                      <TableCell><AvatarUser id={created_by._id}/></TableCell>
+                      <TableCell>
+                        <Label color="warning">#{hashtag}</Label>
+                      </TableCell>
+                      <TableCell>
+                        <AvatarUser id={created_by._id} />
+                      </TableCell>
                       <TableCell align="left">{type}</TableCell>
                       <TableCell align="left">{likes.length}</TableCell>
                       <TableCell align="left">{comments.length}</TableCell>
@@ -742,10 +784,12 @@ function PostsTab({ userId }) {
 }
 
 export default function UserDetail() {
+  const navigate = useNavigate();
   const { _id } = useParams();
 
   const [user, setUser] = useState();
   const [tab, setTab] = useState("overview");
+
   const handleTab = (event, newTab) => {
     setTab(newTab);
   };
@@ -753,7 +797,7 @@ export default function UserDetail() {
   useEffect(() => {
     handleGetUserById();
     // eslint-disable-next-line
-  }, []);
+  }, [user]);
 
   const handleGetUserById = async () => {
     try {
@@ -761,8 +805,9 @@ export default function UserDetail() {
         "http://localhost:8000/user/getUser/" + _id
       );
       setUser(rest.data);
-      console.log(user);
-    } catch (error) {}
+    } catch (error) {
+      navigate("/404");
+    }
   };
 
   const BREADCRUMBS = [
@@ -772,7 +817,7 @@ export default function UserDetail() {
   ];
 
   return (
-    <Page title="Users">
+    <Page title="User Detail">
       <LinkBar array={BREADCRUMBS} />
       <Container>
         <Card sx={{ padding: 2 }}>

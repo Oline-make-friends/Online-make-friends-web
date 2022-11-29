@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
+import PropTypes from "prop-types";
+import { Link as RouterLink } from "react-router-dom";
 
-import { useTheme } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { useTheme } from "@mui/material/styles";
+import { Box } from "@mui/material";
 
 Logo.propTypes = {
   disabledLink: PropTypes.bool,
@@ -26,7 +26,11 @@ export default function Logo({ disabledLink = false, sx }) {
         viewBox="0 0 430 150"
         preserveAspectRatio="xMidYMid meet"
       >
-        <g fill={PRIMARY_DARK} transform="translate(0,152) scale(0.1,-0.1)" stroke="none">
+        <g
+          fill={PRIMARY_DARK}
+          transform="translate(0,152) scale(0.1,-0.1)"
+          stroke="none"
+        >
           <defs>
             <linearGradient id="BG1" x1="50%" x2="50%" y1="0" y2="100%">
               <stop offset="0%" stopColor={PRIMARY_DARK} />

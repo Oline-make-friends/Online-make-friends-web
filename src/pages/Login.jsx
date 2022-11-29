@@ -12,6 +12,7 @@ import {
   Card,
   Container,
   Typography,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { LoadingButton } from "@mui/lab";
@@ -116,7 +117,12 @@ export default function Login() {
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
             </Typography>
-            <img src="/illustrations/login.png" alt="login" width="80%" style={{alignSelf: "center"}}/>
+            <img
+              src="/illustrations/login.png"
+              alt="login"
+              width="80%"
+              style={{ alignSelf: "center" }}
+            />
           </SectionStyle>
         )}
 
@@ -126,10 +132,20 @@ export default function Login() {
               Sign in to FStudy Admin
             </Typography>
 
-            <Typography sx={{ color: "text.secondary", mb: 5 }}>
+            <Typography sx={{ color: "text.secondary", mb: 2 }}>
               Enter your details below.
             </Typography>
-
+            {err && (
+              <Alert
+                severity="error"
+                sx={{ display: "flex", mb: 5 }}
+                onClose={() => {
+                  setError("");
+                }}
+              >
+                {err}
+              </Alert>
+            )}
             <form onSubmit={logIn}>
               <Stack spacing={3}>
                 <TextField

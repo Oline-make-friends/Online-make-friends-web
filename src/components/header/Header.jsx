@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import { alpha, styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
+import { alpha, styled } from "@mui/material/styles";
+import { Box, Stack, AppBar, Toolbar, IconButton } from "@mui/material";
 
-import AccountPopover from './AccountPopover';
+import AccountPopover from "./AccountPopover";
 
 import { AiOutlineMenuFold } from "react-icons/ai";
 
@@ -23,7 +23,7 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 
 const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
   minHeight: APPBAR_SMALLSCREEN,
-  [theme.breakpoints.up('lg')]: {
+  [theme.breakpoints.up("lg")]: {
     minHeight: APPBAR_LARGESCREEN,
     padding: theme.spacing(0, 5),
   },
@@ -37,13 +37,20 @@ export default function Header({ onOpenSidebar }) {
   return (
     <RootStyle>
       <ToolbarStyle>
-        <IconButton onClick={onOpenSidebar} sx={{ mr: 1, color: 'text.primary', display: { lg: 'none' } }}>
-          <AiOutlineMenuFold/>
+        <IconButton
+          onClick={onOpenSidebar}
+          sx={{ mr: 1, color: "text.primary", display: { lg: "none" } }}
+        >
+          <AiOutlineMenuFold />
         </IconButton>
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={{ xs: 0.5, sm: 1.5 }}
+        >
           <AccountPopover />
         </Stack>
       </ToolbarStyle>
