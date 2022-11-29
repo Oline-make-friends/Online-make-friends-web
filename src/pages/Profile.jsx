@@ -53,11 +53,11 @@ function GeneralTab({ info }) {
   const [change, setChange] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [snackBar, setSnackBar] = useState(true);
-  const [alertContent, setAlertContent] = useState("Hello");
-  const [alertType, setAlertType] = useState("info");
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
 
-  const handleClose = (event, reason) => {
+  const handleCloseSnackBar = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
@@ -142,15 +142,24 @@ function GeneralTab({ info }) {
         }}
         open={snackBar}
         autoHideDuration={5000}
-        onClose={handleClose}
+        onClose={handleCloseSnackBar}
       >
-        <Alert onClose={handleClose} severity={alertType}>
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
           {alertContent}
         </Alert>
       </Snackbar>
       <Stack direction="row" spacing={5} my={4} alignItems="center">
         <Stack direction="column">
-          <Image image={info.avatar_url} alt={info.fullname} style={{borderRadius: "50%", width: 80, height: 80}}/>
+          <Image
+            image={info.avatar_url}
+            alt={info.fullname}
+            style={{ borderRadius: "50%", width: 80, height: 80 }}
+          />
           <input
             id="ip"
             type="file"
@@ -250,21 +259,24 @@ function UpdatePasswordTab() {
   const [password, setPassword] = useState();
   const [newPassword, setNewPassword] = useState();
   const [confirm, setConfirm] = useState();
-  const [noti, setNoti] = useState();
 
   const [showPassword, setShowPassword] = useState();
   const [showNewPassword, setShowNewPassword] = useState();
   const [showConfirm, setShowConfirm] = useState();
-  console.log(user);
+
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
 
   const updatePassword = async () => {
     try {
       if (password !== user.password) {
-        setNoti("Current password is wrong");
+        setAlertType("error");
+        setAlertContent("Current password is wrong");
         return;
       }
       if (newPassword !== confirm) {
-        setNoti("Confirm password is wrong");
+        setAlertType("error");
+        setAlertContent("Confirm password is wrong");
         return;
       }
       await axios.post(`http://localhost:8000/user/update/${user._id}`, {
@@ -273,16 +285,28 @@ function UpdatePasswordTab() {
       setPassword("");
       setNewPassword("");
       setConfirm("");
-      setNoti("Update password success");
+      setAlertType("success");
+      setAlertContent("Update password success");
     } catch (error) {
-      setNoti("Update password fail,check input");
+      setAlertType("error");
+      setAlertContent("Update password fail,check input");
     }
   };
 
   return (
     <form>
       <Stack direction="column" spacing={5} my={4} alignItems="start">
-        <b>{noti}</b>
+        {alertContent && (
+          <Alert
+            severity={alertType}
+            sx={{ display: "flex", mb: 5 }}
+            onClose={() => {
+              setAlertContent("");
+            }}
+          >
+            {alertContent}
+          </Alert>
+        )}
         <TextField
           required
           fullWidth
@@ -366,8 +390,6 @@ const Profile = () => {
   const handleTab = (event, newValue) => {
     setValue(newValue);
   };
-
-  console.log(user);
 
   return (
     <Page title="Profile">

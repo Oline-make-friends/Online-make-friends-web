@@ -26,7 +26,7 @@ import { EVENT_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Event", href: "#" },
+  { label: "Events", href: "#" },
 ];
 
 function applyFilter(array, searchQuery, organizationDateQuery, creatorQuery) {
@@ -52,8 +52,7 @@ function applyFilter(array, searchQuery, organizationDateQuery, creatorQuery) {
     if (organizationDateQuery) {
       filteredList = filter(
         filteredList,
-        (_event) =>
-        _event.date_time === organizationDateQuery
+        (_event) => _event.date_time === organizationDateQuery
       );
     }
     if (creatorQuery) {
@@ -89,7 +88,9 @@ export default function Event() {
   const isEventNotFound = filteredEvents.length === 0;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredEvents.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - filteredEvents.length)
+      : 0;
 
   const handleGetAllEvent = async () => {
     try {
@@ -97,7 +98,6 @@ export default function Event() {
       setEvents(res.data);
 
       const res2 = await axios.get("http://localhost:8000/user/getAllUser");
-      console.log(res2.data[0]);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({
@@ -105,7 +105,6 @@ export default function Event() {
           display: res2.data[i].fullname,
         });
       }
-      console.log(temp);
       setCreatorList(
         temp.sort(function (a, b) {
           if (a.display.toLowerCase() === "all") return -1;
@@ -143,7 +142,6 @@ export default function Event() {
   };
 
   const handleCreatorQuery = (event) => {
-    console.log(event.target.value);
     setCreatorQuery(event.target.value);
     setPage(0);
   };
@@ -167,7 +165,7 @@ export default function Event() {
       label: "Creator",
       onChange: handleCreatorQuery,
       items: creatorList,
-    }
+    },
   ];
 
   return (
@@ -181,7 +179,7 @@ export default function Event() {
           mb={2}
         >
           <Typography variant="h4" gutterBottom>
-            Event
+            Events
           </Typography>
         </Stack>
 

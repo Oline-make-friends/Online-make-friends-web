@@ -18,7 +18,7 @@ export default function AccountRequest() {
     try {
       const rest = await axios.get(
         "http://localhost:8000/user/getAllProveAccount"
-      );      
+      );
       setRequests(rest.data);
     } catch (error) {}
   };
@@ -33,7 +33,7 @@ export default function AccountRequest() {
       <CardContent>
         {requests.map(
           (request) =>
-            (!request.is_prove && (
+            !request.is_prove && (
               <div>
                 <Divider />
                 <Stack
@@ -52,7 +52,7 @@ export default function AccountRequest() {
                   </Typography>
                 </Stack>
               </div>
-            ))
+            )
         )}
       </CardContent>
     </Card>

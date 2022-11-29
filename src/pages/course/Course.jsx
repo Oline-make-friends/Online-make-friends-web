@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { filter } from "lodash";
 
-import { Card, Container, Stack, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Typography } from "@mui/material";
+import {
+  Card,
+  Container,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TablePagination,
+  TableRow,
+  Typography,
+} from "@mui/material";
 
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
@@ -16,13 +26,12 @@ import { COURSE_TABLE_HEAD } from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Course", href: "#" },
+  { label: "Courses", href: "#" },
 ];
 
 function applyFilter(array, searchQuery, creatorQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  console.log(filteredList);
   if (searchQuery || creatorQuery) {
     if (searchQuery) {
       filteredList = filter(
@@ -42,7 +51,8 @@ function applyFilter(array, searchQuery, creatorQuery) {
     if (creatorQuery) {
       filteredList = filter(
         filteredList,
-        (_course) => _course.created_by._id.toLowerCase() === creatorQuery.toLowerCase()
+        (_course) =>
+          _course.created_by._id.toLowerCase() === creatorQuery.toLowerCase()
       );
     }
     return filteredList;
@@ -59,34 +69,28 @@ export default function Course() {
   const [creatorQuery, setCreatorQuery] = useState("");
   const [creatorList, setCreatorList] = useState("");
 
-  const filteredCourses = applyFilter(
-    courses,
-    searchQuery,
-    creatorQuery,
-  );
+  const filteredCourses = applyFilter(courses, searchQuery, creatorQuery);
 
   const isCourseNotFound = filteredCourses.length === 0;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredCourses.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - filteredCourses.length)
+      : 0;
 
   const handleGetAllCourse = async () => {
     try {
-      console.log("set course")
       const res = await axios.get(`http://localhost:8000/course/getAll`);
-      console.log(res.data);
       setCourse(res.data?.reverse());
-      console.log("set creator")
+
       const res2 = await axios.get("http://localhost:8000/user/getAllUser");
-      console.log(res2.data)
-      const temp = [{value: "", display: "All"}];
+      const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
-          temp.push({
-            value: res2.data[i]._id,
-            display: res2.data[i].fullname,
-          });
+        temp.push({
+          value: res2.data[i]._id,
+          display: res2.data[i].fullname,
+        });
       }
-      console.log(temp);
       setCreatorList(
         temp.sort(function (a, b) {
           if (a.display.toLowerCase() === "all") return -1;
@@ -98,12 +102,10 @@ export default function Course() {
       );
     } catch (error) {
       console.log(error.message);
-      toast.error("can not get all course");
     }
   };
 
   useEffect(() => {
-    console.log("hello")
     handleGetAllCourse();
     // eslint-disable-next-line
   }, []);
@@ -132,17 +134,17 @@ export default function Course() {
       type: "input",
       query: searchQuery,
       label: "Search by Name, Description...",
-      onChange: handleSearchQuery
+      onChange: handleSearchQuery,
     },
     {
       type: "select",
       query: creatorQuery,
       label: "Creator",
       onChange: handleCreatorQuery,
-      items: creatorList
-    }
+      items: creatorList,
+    },
   ];
-  
+
   return (
     <Page title="Courses">
       <LinkBar array={BREADCRUMBS}></LinkBar>
@@ -159,7 +161,7 @@ export default function Course() {
         </Stack>
 
         <Card>
-        <TableToolbar conditions={FILTER_CONDITIONS}/>
+          <TableToolbar conditions={FILTER_CONDITIONS} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>

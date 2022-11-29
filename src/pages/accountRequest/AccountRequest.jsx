@@ -23,18 +23,20 @@ import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
 import Label from "../../components/Label";
-import { FILTER_GENDER_OPTIONS, FILTER_REQUEST_STATUS_OPTIONS, REQUEST_TABLE_HEAD } from "../../constans/constans";
+import {
+  FILTER_GENDER_OPTIONS,
+  FILTER_REQUEST_STATUS_OPTIONS,
+  REQUEST_TABLE_HEAD,
+} from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Request", href: "#" },
+  { label: "Requests", href: "#" },
 ];
 
 function applyFilter(array, searchQuery, genderQuery, statusQuery) {
-  console.log("applyFilter");
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  console.log(filteredList);
   if (searchQuery || genderQuery || statusQuery) {
     if (searchQuery) {
       filteredList = filter(
@@ -54,13 +56,15 @@ function applyFilter(array, searchQuery, genderQuery, statusQuery) {
     if (genderQuery) {
       filteredList = filter(
         filteredList,
-        (_request) => _request.gender && _request.gender.toLowerCase() === genderQuery.toLowerCase()
+        (_request) =>
+          _request.gender &&
+          _request.gender.toLowerCase() === genderQuery.toLowerCase()
       );
     }
     if (statusQuery) {
       filteredList = filter(
         filteredList,
-        (_request) =>_request.is_prove.toString() === statusQuery.toLowerCase()
+        (_request) => _request.is_prove.toString() === statusQuery.toLowerCase()
       );
     }
     return filteredList;
@@ -153,7 +157,7 @@ export default function AccountRequest() {
   ];
 
   return (
-    <Page title="Users">
+    <Page title="Account Requests">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -163,7 +167,7 @@ export default function AccountRequest() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Account Request
+            Account Requests
           </Typography>
         </Stack>
 

@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import { TableRow, TableCell, TableHead } from '@mui/material';
+import { TableRow, TableCell, TableHead } from "@mui/material";
 
 TableHeader.propTypes = {
-  order: PropTypes.oneOf(['asc', 'desc']),
+  order: PropTypes.oneOf(["asc", "desc"]),
   orderBy: PropTypes.string,
   rowCount: PropTypes.number,
   headLabel: PropTypes.array,
@@ -12,19 +12,16 @@ TableHeader.propTypes = {
   onSelectAllClick: PropTypes.func,
 };
 
-export default function TableHeader({
-  rowCount,
-  headLabel
-}) {
+export default function TableHeader({ rowCount, headLabel }) {
   return (
     <TableHead>
       <TableRow>
         {headLabel.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.alignRight ? 'right' : 'left'}
+            align={headCell.alignRight ? "right" : "left"}
           >
-              {headCell.label}
+            {headCell.label}
           </TableCell>
         ))}
       </TableRow>

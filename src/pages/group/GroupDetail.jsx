@@ -1,11 +1,12 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
+  Alert,
   Box,
-  Button,
   Card,
   Container,
   Divider,
   Grid,
+  Snackbar,
   Stack,
   Tab,
   Table,
@@ -20,7 +21,6 @@ import axios from "axios";
 import { sentenceCase } from "change-case";
 import { filter } from "lodash";
 import { useEffect, useState } from "react";
-import { HiTrash } from "react-icons/hi";
 import { useNavigate, useParams } from "react-router";
 import AvatarUser from "../../components/AvatarUser";
 import Image from "../../components/Image";
@@ -38,11 +38,11 @@ import {
   POST_TABLE_HEAD,
   USER_TABLE_HEAD,
 } from "../../constans/constans";
+import DeleteButton from "../../components/DeleteButton";
 
 function applyUserFilter(array, searchQuery, genderQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  console.log(filteredList);
   if (searchQuery || genderQuery || statusQuery) {
     if (searchQuery) {
       filteredList = filter(
@@ -128,8 +128,6 @@ function applyPostFilter(
 }
 
 function OverViewTab({ group }) {
-  console.log(group?.admins);
-  console.log(group?.name);
   return (
     <Grid container spacing={2}>
       <Grid item xs={6} md={8}>
@@ -307,7 +305,6 @@ function MemberTab({ members }) {
                     createdAt,
                     is_active,
                   } = row;
-                  console.log(_id);
                   return (
                     <TableRow hover key={_id} tabIndex={-1}>
                       <TableCell
@@ -407,7 +404,6 @@ function PostsTab({ posts }) {
 
   const handleGetCreatedByList = async () => {
     const res2 = await axios.get("http://localhost:8000/user/getAllUser");
-    console.log(res2.data[0]);
     const temp = [{ value: "", display: "All" }];
     for (let i = 0; i < res2.data.length; i++) {
       temp.push({
@@ -415,7 +411,6 @@ function PostsTab({ posts }) {
         display: res2.data[i].fullname,
       });
     }
-    console.log(temp);
     setCreatedByList(
       temp.sort(function (a, b) {
         if (a.display.toLowerCase() === "all") return -1;
@@ -452,13 +447,11 @@ function PostsTab({ posts }) {
   };
 
   const handleCreatedByQuery = (event) => {
-    console.log(event.target.value);
     setCreatedByQuery(event.target.value);
     setPage(0);
   };
 
   const handleTypeQuery = (event) => {
-    console.log(event.target.value);
     setTypeQuery(event.target.value);
     setPage(0);
   };
@@ -584,11 +577,22 @@ export default function GroupDetail() {
   const { _id } = useParams();
   const [group, setGroup] = useState();
 
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackBar(false);
+  };
+
   const handleGetGroupById = async () => {
     try {
       const rest = await axios.get("http://localhost:8000/group/get/" + _id);
       setGroup(rest.data);
-      console.log(rest.data);
     } catch (error) {}
   };
 
@@ -599,26 +603,50 @@ export default function GroupDetail() {
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Group", href: "/groups" },
+    { label: "Groups", href: "/groups" },
     { label: group?.name, href: "#" },
   ];
 
   const [tab, setTab] = useState("overview");
 
   const handleTab = (event, newTab) => {
-    console.log(newTab);
     setTab(newTab);
   };
 
   const handleDelete = async () => {
     try {
       await axios.post("http://localhost:8000/group/delete/", { _id: _id });
-      navigate("/groups");
-    } catch (error) {}
+      setSnackBar(true);
+      setAlertContent("Delete Success!");
+      setAlertType("success");
+      navigate(-1);
+    } catch (error) {
+      setSnackBar(true);
+      setAlertContent("Delete Fail!");
+      setAlertType("error");
+    }
   };
 
   return (
     <Page title="Group Detail">
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Card sx={{ padding: 2 }}>
@@ -637,14 +665,8 @@ export default function GroupDetail() {
                 {group?.name}
               </Typography>
             </Stack>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<HiTrash />}
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
+
+            <DeleteButton type="group" action={handleDelete} />
           </Stack>
           <TabContext value={tab} onChange={handleTab}>
             <Box>

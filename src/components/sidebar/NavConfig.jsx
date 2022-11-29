@@ -34,7 +34,7 @@ const navConfig = [
     title: "posts",
     path: "/posts",
     icon: <MdArticle size={22} />,
-  },  
+  },
   {
     title: "courses",
     path: "/courses",
@@ -64,7 +64,7 @@ const navConfig = [
     title: "Chat",
     path: "/chat",
     icon: <BsFillChatFill size={22} />,
-  }
+  },
 ];
 
 export default navConfig;

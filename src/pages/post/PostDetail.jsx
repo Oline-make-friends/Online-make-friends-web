@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { filter } from "lodash";
-import { useLocation, useNavigate } from "react-router";
-import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 import axios from "axios";
 
 import "reactjs-popup/dist/index.css";
@@ -22,7 +21,8 @@ import {
   TableRow,
   TableCell,
   Stack,
-  Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import LinkBar from "../../components/LinkBar";
@@ -35,7 +35,6 @@ import { sentenceCase } from "change-case";
 import { TableHeader, TableToolbar } from "../../components/table";
 import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
-import { HiTrash } from "react-icons/hi";
 import InfoItem from "../../components/InfoItem";
 import {
   FILTER_DELETED_STATUS_OPTIONS,
@@ -43,6 +42,7 @@ import {
   FILTER_STATUS_OPTIONS,
   USER_TABLE_HEAD,
 } from "../../constans/constans";
+import DeleteButton from "../../components/DeleteButton";
 
 const COMMENT_TABLE_HEAD = [
   { id: "creator", label: "Creator", alignRight: false },
@@ -145,7 +145,6 @@ function LikesTab({ likes }) {
   function applyFilter(array, searchQuery, genderQuery, statusQuery) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     var filteredList = array;
-    console.log(filteredList);
     if (searchQuery || genderQuery || statusQuery) {
       if (searchQuery) {
         filteredList = filter(
@@ -236,7 +235,7 @@ function LikesTab({ likes }) {
       items: FILTER_STATUS_OPTIONS,
     },
   ];
-  
+
   return (
     <Card>
       <TableToolbar conditions={FILTER_CONDITIONS} />
@@ -264,7 +263,6 @@ function LikesTab({ likes }) {
                     createdAt,
                     is_active,
                   } = row;
-                  console.log(_id);
                   return (
                     <TableRow hover key={_id} tabIndex={-1}>
                       <TableCell
@@ -338,7 +336,7 @@ function LikesTab({ likes }) {
   );
 }
 
-function CommentsTab ({ comments }) {
+function CommentsTab({ comments }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
@@ -361,10 +359,8 @@ function CommentsTab ({ comments }) {
       : 0;
 
   const handleGetAllCreator = async () => {
-    console.log("handleGetAllCreator")
     try {
       const res = await axios.get("http://localhost:8000/user/getAllUser");
-      console.log(res.data[0]);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res.data.length; i++) {
         temp.push({
@@ -372,7 +368,6 @@ function CommentsTab ({ comments }) {
           display: res.data[i].fullname,
         });
       }
-      console.log(temp);
       setCreatorList(
         temp.sort(function (a, b) {
           if (a.display.toLowerCase() === "all") return -1;
@@ -442,7 +437,6 @@ function CommentsTab ({ comments }) {
   function applyFilter(array, searchQuery, creatorQuery, statusQuery) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     var filteredList = array;
-    console.log(filteredList);
     if (searchQuery || creatorQuery || statusQuery) {
       if (searchQuery) {
         filteredList = filter(
@@ -555,29 +549,37 @@ function CommentsTab ({ comments }) {
 }
 
 export default function PostDetail() {
-  const { state } = useLocation();
-  const { isPost } = state;
   const navigate = useNavigate();
   const { _id } = useParams();
   const [post, setPost] = useState();
 
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackBar(false);
+  };
+
   const handleGetPostById = async () => {
     try {
-      console.log(handleGetPostById);
       const rest = await axios.post(
         "http://localhost:8000/post/getPost/" + _id
       );
       setPost(rest.data);
-      console.log(post);
-    } catch (error) {}
+    } catch (error) {
+      navigate("/404");
+    }
   };
 
   useEffect(() => {
     handleGetPostById();
     // eslint-disable-next-line
   }, []);
-
-  console.log(post);
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "dashboard" },
@@ -588,25 +590,42 @@ export default function PostDetail() {
   const handleDeletePost = async () => {
     try {
       await axios.post(`http://localhost:8000/post/delete/` + _id);
-      if (isPost === true) {
-        navigate(-1);
-        return;
-      }
-      navigate("/posts");
-      toast.success("delete post success!");
+      setSnackBar(true);
+      setAlertContent("Delete Success!");
+      setAlertType("success");
+      navigate(-1);
     } catch (error) {
-      toast.error("delete post fail!");
+      setSnackBar(true);
+      setAlertContent("Delete Fail!");
+      setAlertType("error");
     }
   };
 
   const [tab, setTab] = useState("overview");
   const handleTab = (event, newTab) => {
-    console.log(newTab);
     setTab(newTab);
   };
 
   return (
     <Page title="Post Detail">
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
       <LinkBar array={BREADCRUMBS} />
       <Container>
         <Card sx={{ padding: 2 }}>
@@ -616,14 +635,7 @@ export default function PostDetail() {
             justifyContent="space-between"
           >
             <Typography variant="subtitle1">Post Detail</Typography>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<HiTrash />}
-              onClick={handleDeletePost}
-            >
-              Delete
-            </Button>
+            <DeleteButton type="post" action={handleDeletePost} />
           </Stack>
           <TabContext value={tab} onChange={handleTab}>
             <Box>
@@ -640,7 +652,7 @@ export default function PostDetail() {
               <LikesTab likes={post?.likes} />
             </TabPanel>
             <TabPanel value="comments">
-              <CommentsTab comments={post?.comments}/>
+              <CommentsTab comments={post?.comments} />
             </TabPanel>
           </TabContext>
         </Card>

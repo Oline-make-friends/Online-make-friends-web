@@ -14,7 +14,7 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination,
+  TablePagination
 } from "@mui/material";
 
 import Page from "../../components/Page";
@@ -34,28 +34,31 @@ const BREADCRUMBS = [
 function applyFilter(array, searchQuery, genderQuery, statusQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  console.log(filteredList);
   if (searchQuery || genderQuery || statusQuery) {
     if (searchQuery) {
       filteredList = filter(
         filteredList,
         (_user) =>
-          _user.fullname.trim().toLowerCase().indexOf(searchQuery.trim().toLowerCase()) !== -1||
-          _user.username.trim().toLowerCase().indexOf(searchQuery.trim().toLowerCase()) !== -1
+          _user.fullname
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1 ||
+          _user.username
+            .trim()
+            .toLowerCase()
+            .indexOf(searchQuery.trim().toLowerCase()) !== -1
       );
     }
     if (genderQuery) {
       filteredList = filter(
         filteredList,
-        (_user) =>
-          _user.gender.toLowerCase() === genderQuery.toLowerCase()
+        (_user) => _user.gender.toLowerCase() === genderQuery.toLowerCase()
       );
     }
     if (statusQuery) {
       filteredList = filter(
         filteredList,
-        (_user) =>
-          _user.is_active.toString() === statusQuery.toLowerCase()
+        (_user) => _user.is_active.toString() === statusQuery.toLowerCase()
       );
     }
     return filteredList;
@@ -144,7 +147,7 @@ export default function User() {
   ];
 
   return (
-    <Page title="Users">
+    <Page title="Users">      
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -154,15 +157,13 @@ export default function User() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            User
+            Users
           </Typography>
           <InviteAdmin />
         </Stack>
 
         <Card>
-          <TableToolbar
-            conditions={FILTER_CONDITIONS}
-          />
+          <TableToolbar conditions={FILTER_CONDITIONS} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

@@ -1,9 +1,11 @@
 import {
+  Alert,
   Button,
   Card,
   Container,
   Divider,
   Grid,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -13,19 +15,30 @@ import {
 import axios from "axios";
 import { sentenceCase } from "change-case";
 import { useEffect, useState } from "react";
-import { HiTrash } from "react-icons/hi";
 import { useNavigate, useParams } from "react-router";
 import AvatarUser from "../../components/AvatarUser";
 import Label from "../../components/Label";
 import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import InfoItem from "../../components/InfoItem";
+import DeleteButton from "../../components/DeleteButton";
 
 export default function ReportDetail() {
   const navigate = useNavigate();
   const { _id } = useParams();
-
   const [report, setReport] = useState();
+
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackBar(false);
+  };
 
   const handleGetReportById = async () => {
     try {
@@ -33,36 +46,69 @@ export default function ReportDetail() {
         "http://localhost:8000/report/getReport/" + _id
       );
       setReport(rest.data);
-      console.log(rest.data);
-    } catch (error) {}
+    } catch (error) {
+      navigate("/404");
+    }
   };
 
   const handleDeleteReport = async (id) => {
     try {
       await axios.post("http://localhost:8000/report/delete/" + _id);
-      navigate("/reports");
-    } catch (error) {}
+      setSnackBar(true);
+      setAlertContent("Delete Success!");
+      setAlertType("success");
+      navigate(-1);
+    } catch (error) {
+      setSnackBar(true);
+      setAlertContent("Delete Fail!");
+      setAlertType("error");
+    }
   };
+
   const handleStatusReport = async (id) => {
     try {
       await axios.post("http://localhost:8000/report/updateStatus/" + _id);
-      handleGetReportById();
-    } catch (error) {}
+      setSnackBar(true);
+      setAlertContent("Mark Done Report Success!");
+      setAlertType("success");
+    } catch (error) {
+      setSnackBar(true);
+      setAlertContent("Mark Done Report Fail!");
+      setAlertType("error");
+    }
   };
 
   useEffect(() => {
     handleGetReportById();
     // eslint-disable-next-line
-  }, []);
+  }, [report]);
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Report", href: "/reports" },
+    { label: "Reports", href: "/reports" },
     { label: "Report Detail", href: "#" },
   ];
 
   return (
-    <Page title="Report">
+    <Page title="Report Detail">
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -74,15 +120,7 @@ export default function ReportDetail() {
           <Typography variant="h4" gutterBottom>
             Report Detail
           </Typography>
-          <Button
-            sx={{ margin: 2 }}
-            color="error"
-            variant="outlined"
-            startIcon={<HiTrash />}
-            onClick={() => handleDeleteReport()}
-          >
-            Delete
-          </Button>
+          <DeleteButton type="report" action={handleDeleteReport} />
         </Stack>
         <Grid container spacing={1}>
           <Grid item xs={6} md={8}>

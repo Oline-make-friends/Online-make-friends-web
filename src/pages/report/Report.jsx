@@ -25,11 +25,14 @@ import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
 import { useNavigate } from "react-router";
 import LinkBar from "../../components/LinkBar";
-import { FILTER_REPORT_STATUS_OPTIONS, REPORT_TABLE_HEAD } from "../../constans/constans";
+import {
+  FILTER_REPORT_STATUS_OPTIONS,
+  REPORT_TABLE_HEAD,
+} from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Report", href: "#" },
+  { label: "Reports", href: "#" },
 ];
 
 function applyFilter(array, searchQuery, reporterQuery, statusQuery) {
@@ -51,8 +54,7 @@ function applyFilter(array, searchQuery, reporterQuery, statusQuery) {
       filteredList = filter(
         filteredList,
         (_report) =>
-        _report.sent_by &&
-        _report.sent_by._id.trim() === reporterQuery.trim()
+          _report.sent_by && _report.sent_by._id.trim() === reporterQuery.trim()
       );
     }
     if (statusQuery) {
@@ -86,15 +88,16 @@ export default function Report() {
   const isReportNotFound = filteredReports.length === 0;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredReports.length) : 0;
-    
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - filteredReports.length)
+      : 0;
+
   const handleGetAllReport = async () => {
     try {
       const res = await axios.get("http://localhost:8000/report/getAll");
       setReports(res.data);
 
       const res2 = await axios.get("http://localhost:8000/user/getAllUser");
-      console.log(res2.data[0]);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({
@@ -102,7 +105,6 @@ export default function Report() {
           display: res2.data[i].fullname,
         });
       }
-      console.log(temp);
       setReporterList(
         temp.sort(function (a, b) {
           if (a.display.toLowerCase() === "all") return -1;
@@ -157,15 +159,15 @@ export default function Report() {
       query: reporterQuery,
       label: "Reporter",
       onChange: handleReporterQuery,
-      items: reporterList
+      items: reporterList,
     },
     {
       type: "select",
       query: statusQuery,
       label: "Status",
       onChange: handleStatusQuery,
-      items: FILTER_REPORT_STATUS_OPTIONS
-    }
+      items: FILTER_REPORT_STATUS_OPTIONS,
+    },
   ];
 
   return (
@@ -179,7 +181,7 @@ export default function Report() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Report
+            Reports
           </Typography>
         </Stack>
 

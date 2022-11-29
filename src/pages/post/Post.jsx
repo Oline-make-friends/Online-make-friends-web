@@ -114,7 +114,6 @@ export default function Post() {
       const res = await axios.get("http://localhost:8000/post/getAll");
       setPosts(res.data);
       const res2 = await axios.get("http://localhost:8000/user/getAllUser");
-      console.log(res2.data[0]);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({
@@ -122,7 +121,6 @@ export default function Post() {
           display: res2.data[i].fullname,
         });
       }
-      console.log(temp);
       setCreatedByList(
         temp.sort(function (a, b) {
           if (a.display.toLowerCase() === "all") return -1;
@@ -162,13 +160,11 @@ export default function Post() {
   };
 
   const handleCreatedByQuery = (event) => {
-    console.log(event.target.value);
     setCreatedByQuery(event.target.value);
     setPage(0);
   };
 
   const handleTypeQuery = (event) => {
-    console.log(event.target.value);
     setTypeQuery(event.target.value);
     setPage(0);
   };
@@ -213,7 +209,7 @@ export default function Post() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Post
+            Posts
           </Typography>
         </Stack>
 

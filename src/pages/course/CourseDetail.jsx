@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
-import { toast } from "react-toastify";
 import {
-  Button,
+  Alert,
   Card,
   Container,
   Divider,
   Grid,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -17,8 +17,8 @@ import {
 import Page from "../../components/Page";
 import LinkBar from "../../components/LinkBar";
 import AvatarUser from "../../components/AvatarUser";
-import { HiTrash } from "react-icons/hi";
 import InfoItem from "../../components/InfoItem";
+import DeleteButton from "../../components/DeleteButton";
 
 export default function CourseDetail() {
   const navigate = useNavigate();
@@ -26,12 +26,25 @@ export default function CourseDetail() {
 
   const [course, setCourse] = useState();
 
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackBar(false);
+  };
+
   const handleGetCourseById = async () => {
     try {
       const rest = await axios.get("http://localhost:8000/course/get/" + _id);
       setCourse(rest.data);
-      console.log(rest.data);
-    } catch (error) {}
+    } catch (error) {
+      navigate("/404");
+    }
   };
 
   useEffect(() => {
@@ -41,23 +54,44 @@ export default function CourseDetail() {
 
   const BREADCRUMBS = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Course", href: "/courses" },
+    { label: "Courses", href: "/courses" },
     { label: course?.name, href: "#" },
   ];
 
   const deleteCourse = async () => {
     try {
       await axios.get("http://localhost:8000/course/delete/" + _id);
-      toast.success("deleted course");
-      navigate("/courses");
+      setSnackBar(true);
+      setAlertContent("Delete Success!");
+      setAlertType("success");
+      navigate(-1);
     } catch (error) {
-      console.log(error.message);
-      toast.error("check connection");
+      setSnackBar(true);
+      setAlertContent("Delete Fail!");
+      setAlertType("error");
     }
   };
 
   return (
-    <Page title="EventDetail">
+    <Page title="Course Detail">
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack
@@ -69,14 +103,8 @@ export default function CourseDetail() {
           <Typography variant="h4" gutterBottom>
             {course?.name}
           </Typography>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<HiTrash />}
-            onClick={deleteCourse}
-          >
-            Delete
-          </Button>
+
+          <DeleteButton type="course" action={deleteCourse} />
         </Stack>
         <Grid container spacing={1}>
           <Grid item xs={6} md={8}>
@@ -91,11 +119,7 @@ export default function CourseDetail() {
                   <InfoItem title="Description" value={course?.description} />
                   <InfoItem
                     title="Created By"
-                    value={
-                      <AvatarUser
-                        id={course?.created_by._id}
-                      />
-                    }
+                    value={<AvatarUser id={course?.created_by._id} />}
                   />
                 </TableBody>
               </Table>

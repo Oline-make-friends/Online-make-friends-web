@@ -1,10 +1,12 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Snackbar,
   TextField,
 } from "@mui/material";
 import axios from "axios";
@@ -16,6 +18,18 @@ export default function NewNotification() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
+
+  const [snackBar, setSnackBar] = useState(false);
+  const [alertContent, setAlertContent] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackBar(false);
+  };
 
   const admin = useSelector((state) => state.auth?.login.currentUser);
 
@@ -34,12 +48,37 @@ export default function NewNotification() {
         content: content,
         user_id: admin._id,
       });
-      window.location.reload();
-    } catch (error) {}
+      handleClose();
+      setSnackBar(true);
+      setAlertContent("Your notification have been created!");
+      setAlertType("success");
+    } catch (error) {
+      setSnackBar(true);
+      setAlertContent("Fail to create your notification!");
+      setAlertType("error");
+    }
   };
 
   return (
     <div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        open={snackBar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+      >
+        <Alert
+          variant="filled"
+          onClose={handleCloseSnackBar}
+          severity={alertType}
+          sx={{ color: "#fff" }}
+        >
+          {alertContent}
+        </Alert>
+      </Snackbar>
       <Button
         variant="outlined"
         color="info"

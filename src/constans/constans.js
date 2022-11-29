@@ -52,7 +52,6 @@ export const USER_TABLE_HEAD = [
   { id: "updatedAt", label: "Updated Day", alignRight: false },
 ];
 
-
 export const REQUEST_TABLE_HEAD = [
   { id: "fullname", label: "User", alignRight: false },
   { id: "email", label: "Email", alignRight: false },
