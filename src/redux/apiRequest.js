@@ -6,6 +6,8 @@ import {
   getUserSuccess,
   getProfileSuccess,
 } from "./userSlice";
+import { CometChat } from "@cometchat-pro/chat";
+import * as CONSTANT from "../constans/constans";
 
 export const loginUser = async (user, dispatch, navigate, toast) => {
   dispatch(loginStart());
@@ -14,6 +16,11 @@ export const loginUser = async (user, dispatch, navigate, toast) => {
     if (res.data === "Your are not admin") {
       return "Your are not admin";
     }
+    CometChat.login(`admin`, CONSTANT.AUTH_KEY)
+      .then(console.log("Login success"))
+      .catch(() => {
+        console.log("Login fail");
+      });
     dispatch(loginSuccess(res.data));
     toast.success("Login success!");
 
