@@ -5,10 +5,10 @@ import axios from "axios";
 import { Grid, Container, Typography } from "@mui/material";
 
 import Page from "../components/Page";
-import DashboardReport from "../components/dashboard/DashboardReport";
-import AppWidgetSummary from "../components/dashboard/AppWidgetSummary";
+import DashboardReport from "../components/Dashboard/DashboardReport";
+import AppWidgetSummary from "../components/Dashboard/AppWidgetSummary";
 import LinkBar from "../components/LinkBar";
-import AccountRequest from "../components/dashboard/AccountRequest";
+import AccountRequest from "../components/Dashboard/AccountRequest";
 import * as CONSTANT from "../constans/constans";
 
 const BREADCRUMBS = [{ label: "Dashboard", href: "#" }];

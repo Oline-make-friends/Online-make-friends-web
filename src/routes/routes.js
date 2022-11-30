@@ -22,7 +22,7 @@ import Course from "../pages/course/Course";
 import CourseDetail from "../pages/course/CourseDetail";
 import CometChat from "../pages/Chat";
 
-import RequireAuth from "../components/auth/RequireAuth";
+import RequireAuth from "../components/Auth/RequireAuth";
 import GroupDetail from "../pages/group/GroupDetail";
 import ReportDetail from "../pages/report/ReportDetail";
 import NotificationDetail from "../pages/notification/NotificationDetail";
