@@ -19,6 +19,7 @@ import LinkBar from "../../components/LinkBar";
 import AvatarUser from "../../components/AvatarUser";
 import InfoItem from "../../components/InfoItem";
 import DeleteButton from "../../components/DeleteButton";
+import * as CONSTANT from "../../constans/constans";
 
 export default function CourseDetail() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export default function CourseDetail() {
 
   const handleGetCourseById = async () => {
     try {
-      const rest = await axios.get("http://localhost:8000/course/get/" + _id);
+      const rest = await axios.get(`${CONSTANT.SERVER}/course/get/` + _id);
       setCourse(rest.data);
     } catch (error) {
       navigate("/404");
@@ -60,7 +61,7 @@ export default function CourseDetail() {
 
   const deleteCourse = async () => {
     try {
-      await axios.get("http://localhost:8000/course/delete/" + _id);
+      await axios.get(`${CONSTANT.SERVER}/course/delete/` + _id);
       setSnackBar(true);
       setAlertContent("Delete Success!");
       setAlertType("success");

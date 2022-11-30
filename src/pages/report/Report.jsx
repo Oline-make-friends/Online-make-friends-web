@@ -16,6 +16,7 @@ import {
   TableContainer,
   TablePagination,
 } from "@mui/material";
+import * as CONSTANT from "../../constans/constans";
 
 import Page from "../../components/Page";
 import Label from "../../components/Label";
@@ -94,10 +95,10 @@ export default function Report() {
 
   const handleGetAllReport = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/report/getAll");
+      const res = await axios.get(`${CONSTANT.SERVER}/report/getAll`);
       setReports(res.data);
 
-      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      const res2 = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({

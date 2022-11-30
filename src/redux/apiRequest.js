@@ -12,7 +12,7 @@ import * as CONSTANT from "../constans/constans";
 export const loginUser = async (user, dispatch, navigate, toast) => {
   dispatch(loginStart());
   try {
-    const res = await axios.post("http://localhost:8000/auth/loginAdmin", user);
+    const res = await axios.post(`${CONSTANT.SERVER}/auth/loginAdmin`, user);
     if (res.data === "Your are not admin") {
       return "Your are not admin";
     }
@@ -41,7 +41,7 @@ export const loginByGmail = async (email, dispatch, navigate, toast) => {
   dispatch(loginStart());
   try {
     const res = await axios.post(
-      `http://localhost:8000/auth/loginByGmail/${email}`
+      `${CONSTANT.SERVER}/auth/loginByGmail/${email}`
     );
     dispatch(loginSuccess(res.data));
     navigate("/profile");
@@ -54,7 +54,7 @@ export const loginByGmail = async (email, dispatch, navigate, toast) => {
 export const handleGetAllUser = async (dispatch, toast) => {
   dispatch(getUserStart());
   try {
-    const res = await axios.get("http://localhost:8000/user/getAllUser");
+    const res = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
     dispatch(getUserSuccess(res.data));
 
     toast.success("get user success");
@@ -66,7 +66,7 @@ export const handleGetAllUser = async (dispatch, toast) => {
 
 export const handleGetUserProfile = async (dispatch, toast, id) => {
   try {
-    const res = await axios.post(`http://localhost:8000/user/getUser/${id}`);
+    const res = await axios.post(`${CONSTANT.SERVER}/user/getUser/${id}`);
     dispatch(getProfileSuccess(res.data));
 
     toast.success("get user profile success");
@@ -78,7 +78,7 @@ export const handleGetUserProfile = async (dispatch, toast, id) => {
 export const handleSendEmailResetPassword = async (toast, username) => {
   try {
     await axios.post(
-      `http://localhost:8000/sendMail/sendEmailResetPassword/${username}`
+      `${CONSTANT.SERVER}/sendMail/sendEmailResetPassword/${username}`
     );
 
     toast.success("send email success");

@@ -23,6 +23,7 @@ import Scrollbar from "../../components/Scrollbar";
 import AvatarUser from "../../components/AvatarUser";
 import SearchNotFound from "../../components/SearchNotFound";
 import { COURSE_TABLE_HEAD } from "../../constans/constans";
+import * as CONSTANT from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -80,10 +81,10 @@ export default function Course() {
 
   const handleGetAllCourse = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/course/getAll`);
+      const res = await axios.get(`${CONSTANT.SERVER}/course/getAll`);
       setCourse(res.data?.reverse());
 
-      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      const res2 = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({

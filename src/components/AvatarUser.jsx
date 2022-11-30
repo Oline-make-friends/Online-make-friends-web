@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Stack, Typography } from "@mui/material";
+import * as CONSTANT from "../constans/constans";
 import axios from "axios";
 
 const AvatarUser = ({ id, url }) => {
   const navigate = useNavigate();
   const handleGetUser = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/user/getUser/" + id);
+      const res = await axios.post(`${CONSTANT.SERVER}/user/getUser/` + id);
       setUser(res.data);
     } catch (error) {}
   };

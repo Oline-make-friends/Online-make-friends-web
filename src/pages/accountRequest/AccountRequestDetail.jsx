@@ -18,6 +18,7 @@ import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import Image from "../../components/Image";
 import InfoItem from "../../components/InfoItem";
+import * as CONSTANT from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -42,9 +43,7 @@ export default function AccountRequestDetail() {
 
   const handleGetRequestById = async () => {
     try {
-      const rest = await axios.post(
-        "http://localhost:8000/user/getUser/" + _id
-      );
+      const rest = await axios.post(`${CONSTANT.SERVER}/user/getUser/` + _id);
       setRequest(rest.data);
     } catch (error) {
       navigate("/404");
@@ -54,8 +53,8 @@ export default function AccountRequestDetail() {
   const handleStatusUser = async () => {
     const action = request.is_prove ? "Disprove" : "Prove";
     try {
-      await axios.post(`http://localhost:8000/user/blockUser/${_id}`);
-      await axios.post(`http://localhost:8000/user/proveUser/${_id}`);
+      await axios.post(`${CONSTANT.SERVER}/user/blockUser/${_id}`);
+      await axios.post(`${CONSTANT.SERVER}/user/proveUser/${_id}`);
       setSnackBar(true);
       setAlertContent(action + "Success");
       setAlertType("success");

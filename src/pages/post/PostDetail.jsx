@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { filter } from "lodash";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import * as CONSTANT from "../../constans/constans";
 
 import "reactjs-popup/dist/index.css";
 
@@ -360,7 +361,7 @@ function CommentsTab({ comments }) {
 
   const handleGetAllCreator = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/user/getAllUser");
+      const res = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res.data.length; i++) {
         temp.push({
@@ -567,9 +568,7 @@ export default function PostDetail() {
 
   const handleGetPostById = async () => {
     try {
-      const rest = await axios.post(
-        "http://localhost:8000/post/getPost/" + _id
-      );
+      const rest = await axios.post(`${CONSTANT.SERVER}/post/getPost/` + _id);
       setPost(rest.data);
     } catch (error) {
       navigate("/404");
@@ -589,7 +588,7 @@ export default function PostDetail() {
 
   const handleDeletePost = async () => {
     try {
-      await axios.post(`http://localhost:8000/post/delete/` + _id);
+      await axios.post(`${CONSTANT.SERVER}/post/delete/` + _id);
       setSnackBar(true);
       setAlertContent("Delete Success!");
       setAlertType("success");

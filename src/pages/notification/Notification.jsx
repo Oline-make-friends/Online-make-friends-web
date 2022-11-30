@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import * as CONSTANT from "../../constans/constans";
 
 import {
   Card,
@@ -81,7 +82,7 @@ export default function Notification() {
 
   const handleGetAllNoti = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/noti/getAll");
+      const res = await axios.get(`${CONSTANT.SERVER}/noti/getAll`);
       let temp = [];
       for (let i = 0; i < res.data.length; i++) {
         if (res.data[i]?.user_id?.is_admin === true) {
@@ -90,7 +91,7 @@ export default function Notification() {
       }
       setNotis(temp);
 
-      const res2 = await axios.get("http://localhost:8000/user/getAllAdmin");
+      const res2 = await axios.get(`${CONSTANT.SERVER}/user/getAllAdmin`);
       const temp2 = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp2.push({

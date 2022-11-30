@@ -19,6 +19,7 @@ import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import InfoItem from "../../components/InfoItem";
 import DeleteButton from "../../components/DeleteButton";
+import * as CONSTANT from "../../constans/constans";
 
 export default function NotificationDetail() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function NotificationDetail() {
 
   const handleGetNotificationById = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/noti/getById/" + _id);
+      const res = await axios.get(`${CONSTANT.SERVER}/noti/getById/` + _id);
       setNotification(res.data);
     } catch (error) {
       navigate("/404");
@@ -53,7 +54,7 @@ export default function NotificationDetail() {
 
   const handleDelete = async () => {
     try {
-      await axios.post("http://localhost:8000/noti/delete/" + _id);
+      await axios.post(`${CONSTANT.SERVER}/noti/delete/` + _id);
       setSnackBar(true);
       setAlertContent("Delete Success!");
       setAlertType("success");

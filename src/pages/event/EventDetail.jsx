@@ -20,6 +20,7 @@ import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import InfoItem from "../../components/InfoItem";
 import DeleteButton from "../../components/DeleteButton";
+import * as CONSTANT from "../../constans/constans";
 
 export default function EventDetail() {
   const navigate = useNavigate();
@@ -40,9 +41,7 @@ export default function EventDetail() {
 
   const handleGetEventById = async () => {
     try {
-      const rest = await axios.get(
-        "http://localhost:8000/event/getEvent/" + _id
-      );
+      const rest = await axios.get(`${CONSTANT.SERVER}/event/getEvent/` + _id);
       setEvent(rest.data);
     } catch (error) {
       navigate("/404");
@@ -56,7 +55,7 @@ export default function EventDetail() {
 
   const handleDelete = async () => {
     try {
-      await axios.post("http://localhost:8000/event/delete/", { id: _id });
+      await axios.post(`${CONSTANT.SERVER}/event/delete/`, { id: _id });
       setSnackBar(true);
       setAlertContent("Delete Success!");
       setAlertType("success");

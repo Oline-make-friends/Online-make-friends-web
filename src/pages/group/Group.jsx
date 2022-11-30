@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import * as CONSTANT from "../../constans/constans";
 
 import {
   Card,
@@ -94,10 +95,10 @@ export default function Group() {
 
   const handleGetAllGroup = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/group/getAll");
+      const res = await axios.get(`${CONSTANT.SERVER}/group/getAll`);
       setGroup(res.data);
 
-      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      const res2 = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({

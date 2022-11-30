@@ -9,6 +9,7 @@ import DashboardReport from "../components/dashboard/DashboardReport";
 import AppWidgetSummary from "../components/dashboard/AppWidgetSummary";
 import LinkBar from "../components/LinkBar";
 import AccountRequest from "../components/dashboard/AccountRequest";
+import * as CONSTANT from "../constans/constans";
 
 const BREADCRUMBS = [{ label: "Dashboard", href: "#" }];
 
@@ -19,7 +20,7 @@ export default function Dashboard() {
   const [female, setFemale] = useState([]);
   const handleGetAllUser = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/user/getAllUser");
+      const res = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
       toast.success("get user success!");
       let isActive = 0;
       let male = 0;

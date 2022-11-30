@@ -11,6 +11,7 @@ import {
 
 import axios from "axios";
 import { useNavigate } from "react-router";
+import * as CONSTANT from "../../constans/constans";
 
 DashboardReport.propTypes = {
   title: PropTypes.string,
@@ -23,7 +24,7 @@ export default function DashboardReport() {
   const [reports, setReports] = useState([]);
   const handleGetAllReport = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/report/getAll");
+      const res = await axios.get(`${CONSTANT.SERVER}/report/getAll`);
       setReports(res.data);
     } catch (error) {}
   };

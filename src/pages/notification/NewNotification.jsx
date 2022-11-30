@@ -13,6 +13,7 @@ import axios from "axios";
 import { useState } from "react";
 import { HiPlus } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import * as CONSTANT from "../../constans/constans";
 
 export default function NewNotification() {
   const [open, setOpen] = useState(false);
@@ -43,7 +44,7 @@ export default function NewNotification() {
 
   const handleSendNoti = async () => {
     try {
-      await axios.post("http://localhost:8000/noti/add", {
+      await axios.post(`${CONSTANT.SERVER}/noti/add`, {
         title: title,
         content: content,
         user_id: admin._id,

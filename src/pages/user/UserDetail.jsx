@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
+import * as CONSTANT from "../../constans/constans";
 
 import { AiFillLock, AiFillUnlock } from "react-icons/ai";
 
@@ -146,7 +147,7 @@ function OverViewTab({
   const handleStatusUser = () => {
     const action = is_active ? "Ban" : "Unban";
     try {
-      axios.post(`http://localhost:8000/user/blockUser/${_id}`);
+      axios.post(`${CONSTANT.SERVER}/user/blockUser/${_id}`);
       setSnackBar(true);
       setAlertContent(action + " Success!");
       setAlertType("success");
@@ -642,7 +643,7 @@ function PostsTab({ userId }) {
 
   const handleGetPostByUserId = async () => {
     try {
-      const rest = await axios.post("http://localhost:8000/post/get/" + userId);
+      const rest = await axios.post(`${CONSTANT.SERVER}/post/get/` + userId);
       setPostList(rest.data);
     } catch (error) {
       console.log("Get post list fail! " + error);
@@ -801,9 +802,7 @@ export default function UserDetail() {
 
   const handleGetUserById = async () => {
     try {
-      const rest = await axios.post(
-        "http://localhost:8000/user/getUser/" + _id
-      );
+      const rest = await axios.post(`${CONSTANT.SERVER}/user/getUser/` + _id);
       setUser(rest.data);
     } catch (error) {
       navigate("/404");

@@ -22,6 +22,7 @@ import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
 import AvatarUser from "../../components/AvatarUser";
 import axios from "axios";
+import * as CONSTANT from "../../constans/constans";
 import {
   FILTER_POST_TYPE_OPTIONS,
   POST_TABLE_HEAD,
@@ -111,9 +112,9 @@ export default function Post() {
 
   const handleGetAllPost = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/post/getAll");
+      const res = await axios.get(`${CONSTANT.SERVER}/post/getAll`);
       setPosts(res.data);
-      const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+      const res2 = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
         temp.push({

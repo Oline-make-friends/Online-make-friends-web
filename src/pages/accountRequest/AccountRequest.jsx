@@ -23,6 +23,7 @@ import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import AvatarUser from "../../components/AvatarUser";
 import Label from "../../components/Label";
+import * as CONSTANT from "../../constans/constans";
 import {
   FILTER_GENDER_OPTIONS,
   FILTER_REQUEST_STATUS_OPTIONS,
@@ -98,7 +99,7 @@ export default function AccountRequest() {
   const handleGetAllRequest = async () => {
     try {
       const rest = await axios.get(
-        "http://localhost:8000/user/getAllProveAccount"
+        `${CONSTANT.SERVER}/user/getAllProveAccount`
       );
       setRequests(rest.data);
     } catch (error) {}

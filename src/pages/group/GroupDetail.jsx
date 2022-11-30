@@ -31,6 +31,7 @@ import Scrollbar from "../../components/Scrollbar";
 import SearchNotFound from "../../components/SearchNotFound";
 import { TableHeader, TableToolbar } from "../../components/table";
 import InfoItem from "../../components/InfoItem";
+import * as CONSTANT from "../../constans/constans";
 import {
   FILTER_GENDER_OPTIONS,
   FILTER_POST_TYPE_OPTIONS,
@@ -403,7 +404,7 @@ function PostsTab({ posts }) {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredPosts.length) : 0;
 
   const handleGetCreatedByList = async () => {
-    const res2 = await axios.get("http://localhost:8000/user/getAllUser");
+    const res2 = await axios.get(`${CONSTANT.SERVER}/user/getAllUser`);
     const temp = [{ value: "", display: "All" }];
     for (let i = 0; i < res2.data.length; i++) {
       temp.push({
@@ -591,7 +592,7 @@ export default function GroupDetail() {
 
   const handleGetGroupById = async () => {
     try {
-      const rest = await axios.get("http://localhost:8000/group/get/" + _id);
+      const rest = await axios.get(`${CONSTANT.SERVER}/group/get/` + _id);
       setGroup(rest.data);
     } catch (error) {}
   };
@@ -615,7 +616,7 @@ export default function GroupDetail() {
 
   const handleDelete = async () => {
     try {
-      await axios.post("http://localhost:8000/group/delete/", { _id: _id });
+      await axios.post(`${CONSTANT.SERVER}/group/delete/`, { _id: _id });
       setSnackBar(true);
       setAlertContent("Delete Success!");
       setAlertType("success");

@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { HiPlus } from "react-icons/hi";
+import * as CONSTANT from "../../constans/constans";
 
 export default function InviteAdmin() {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,7 @@ export default function InviteAdmin() {
 
   const handleInviteAdmin = async () => {
     try {
-      await axios.post("http://localhost:8000/auth/inviteAdmin/" + email);
+      await axios.post(`${CONSTANT.SERVER}/auth/inviteAdmin/` + email);
       setOpen(false);
       setSnackBar(true);
       setAlertContent("Invite New Admin Success!");

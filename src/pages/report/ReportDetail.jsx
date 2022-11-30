@@ -22,6 +22,7 @@ import LinkBar from "../../components/LinkBar";
 import Page from "../../components/Page";
 import InfoItem from "../../components/InfoItem";
 import DeleteButton from "../../components/DeleteButton";
+import * as CONSTANT from "../../constans/constans";
 
 export default function ReportDetail() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export default function ReportDetail() {
   const handleGetReportById = async () => {
     try {
       const rest = await axios.get(
-        "http://localhost:8000/report/getReport/" + _id
+        `${CONSTANT.SERVER}/report/getReport/` + _id
       );
       setReport(rest.data);
     } catch (error) {
@@ -53,7 +54,7 @@ export default function ReportDetail() {
 
   const handleDeleteReport = async (id) => {
     try {
-      await axios.post("http://localhost:8000/report/delete/" + _id);
+      await axios.post(`${CONSTANT.SERVER}/report/delete/` + _id);
       setSnackBar(true);
       setAlertContent("Delete Success!");
       setAlertType("success");
@@ -67,7 +68,7 @@ export default function ReportDetail() {
 
   const handleStatusReport = async (id) => {
     try {
-      await axios.post("http://localhost:8000/report/updateStatus/" + _id);
+      await axios.post(`${CONSTANT.SERVER}/report/updateStatus/` + _id);
       setSnackBar(true);
       setAlertContent("Mark Done Report Success!");
       setAlertType("success");

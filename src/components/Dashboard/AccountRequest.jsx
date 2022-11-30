@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import * as CONSTANT from "../../constans/constans";
 
 export default function AccountRequest() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function AccountRequest() {
   const handleGetAllRequest = async () => {
     try {
       const rest = await axios.get(
-        "http://localhost:8000/user/getAllProveAccount"
+        `${CONSTANT.SERVER}/user/getAllProveAccount`
       );
       setRequests(rest.data);
     } catch (error) {}

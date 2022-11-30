@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-
+import * as CONSTANT from "../constans/constans";
 import {
   Alert,
   Autocomplete,
@@ -67,7 +67,7 @@ function GeneralTab({ info }) {
 
   const updateAvatar = async (avatarURL) => {
     try {
-      await axios.post(`http://localhost:8000/user/update/${info._id}`, {
+      await axios.post(`${CONSTANT.SERVER}/user/update/${info._id}`, {
         avatar_url: avatarURL,
       });
       setAvatar(avatarURL);
@@ -113,7 +113,7 @@ function GeneralTab({ info }) {
 
   const updateProfile = async () => {
     try {
-      await axios.post(`http://localhost:8000/user/update/${info._id}`, {
+      await axios.post(`${CONSTANT.SERVER}/user/update/${info._id}`, {
         fullname: fullname,
         about: about,
         gender: gender,
@@ -279,7 +279,7 @@ function UpdatePasswordTab() {
         setAlertContent("Confirm password is wrong");
         return;
       }
-      await axios.post(`http://localhost:8000/user/update/${user._id}`, {
+      await axios.post(`${CONSTANT.SERVER}/user/update/${user._id}`, {
         password: newPassword,
       });
       setPassword("");
