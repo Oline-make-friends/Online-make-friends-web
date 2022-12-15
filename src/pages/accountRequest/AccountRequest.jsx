@@ -100,7 +100,7 @@ export default function AccountRequest() {
       const rest = await axios.get(
         "http://localhost:8000/user/getAllProveAccount"
       );
-      setRequests(rest.data);
+      setRequests(rest.data?.reverse());
     } catch (error) {}
   };
 

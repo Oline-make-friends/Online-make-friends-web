@@ -232,9 +232,9 @@ export default function Event() {
                             }}
                           >
                             <AvatarUser
-                              id={created_by._id}
-                              fullname={created_by.fullname}
-                              avatar={created_by.avatar_url}
+                              id={created_by?._id}
+                              fullname={created_by?.fullname}
+                              avatar={created_by?.avatar_url}
                             />
                           </TableCell>
                           <TableCell align="left">

@@ -14,7 +14,7 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
 } from "@mui/material";
 
 import Page from "../../components/Page";
@@ -25,7 +25,11 @@ import { TableHeader, TableToolbar } from "../../components/table";
 import LinkBar from "../../components/LinkBar";
 import axios from "axios";
 import InviteAdmin from "./InviteAdmin";
-import { FILTER_GENDER_OPTIONS, FILTER_STATUS_OPTIONS, USER_TABLE_HEAD } from "../../constans/constans";
+import {
+  FILTER_GENDER_OPTIONS,
+  FILTER_STATUS_OPTIONS,
+  USER_TABLE_HEAD,
+} from "../../constans/constans";
 
 const BREADCRUMBS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -90,7 +94,7 @@ export default function User() {
   const handleGetAllUser = async () => {
     try {
       const res = await axios.get("http://localhost:8000/user/getAllUser");
-      setUserList(res.data);
+      setUserList(res.data?.reverse());
     } catch (error) {}
   };
 
@@ -128,26 +132,26 @@ export default function User() {
       type: "input",
       query: searchQuery,
       label: "Search by Fullname, Email...",
-      onChange: handleSearchQuery
+      onChange: handleSearchQuery,
     },
     {
       type: "select",
       query: genderQuery,
       label: "Gender",
       onChange: handleGenderQuery,
-      items: FILTER_GENDER_OPTIONS
+      items: FILTER_GENDER_OPTIONS,
     },
     {
       type: "select",
       query: statusQuery,
       label: "Status",
       onChange: handleStatusQuery,
-      items: FILTER_STATUS_OPTIONS
-    }
+      items: FILTER_STATUS_OPTIONS,
+    },
   ];
 
   return (
-    <Page title="Users">      
+    <Page title="Users">
       <LinkBar array={BREADCRUMBS}></LinkBar>
       <Container>
         <Stack

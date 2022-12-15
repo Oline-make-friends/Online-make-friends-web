@@ -51,11 +51,12 @@ export default function AccountRequestDetail() {
     }
   };
 
-  const handleStatusUser = async () => {
+  const handleStatusUser = async (email) => {
     const action = request.is_prove ? "Disprove" : "Prove";
     try {
       await axios.post(`http://localhost:8000/user/blockUser/${_id}`);
       await axios.post(`http://localhost:8000/user/proveUser/${_id}`);
+      await axios.post(`http://localhost:8000/auth/proveAccount/${email}`);
       setSnackBar(true);
       setAlertContent(action + "Success");
       setAlertType("success");
@@ -175,7 +176,7 @@ export default function AccountRequestDetail() {
             sx={{ margin: 2 }}
             color="success"
             variant="contained"
-            onClick={() => handleStatusUser()}
+            onClick={() => handleStatusUser(request?.username)}
           >
             Prove
           </Button>
