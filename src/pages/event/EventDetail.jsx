@@ -129,8 +129,8 @@ export default function EventDetail() {
                     value={
                       <AvatarUser
                         id={event?.created_by._id}
-                        fullname={event?.created_by.fullname}
-                        avatar={event?.created_by.avatar_url}
+                        fullname={event?.created_by?.fullname}
+                        avatar={event?.created_by?.avatar_url}
                       />
                     }
                     isRequired

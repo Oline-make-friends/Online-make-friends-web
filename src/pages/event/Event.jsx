@@ -29,10 +29,10 @@ const BREADCRUMBS = [
   { label: "Events", href: "#" },
 ];
 
-function applyFilter(array, searchQuery, organizationDateQuery, creatorQuery) {
+function applyFilter(array, searchQuery, creatorQuery) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   var filteredList = array;
-  if (searchQuery || organizationDateQuery || creatorQuery) {
+  if (searchQuery || creatorQuery) {
     if (searchQuery) {
       filteredList = filter(
         filteredList,
@@ -47,12 +47,6 @@ function applyFilter(array, searchQuery, organizationDateQuery, creatorQuery) {
               .trim()
               .toLowerCase()
               .indexOf(searchQuery.trim().toLowerCase()) !== -1)
-      );
-    }
-    if (organizationDateQuery) {
-      filteredList = filter(
-        filteredList,
-        (_event) => _event.date_time === organizationDateQuery
       );
     }
     if (creatorQuery) {
@@ -74,16 +68,10 @@ export default function Event() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
-  const [organizationDateQuery, setOrganizationDateQuery] = useState("");
   const [creatorQuery, setCreatorQuery] = useState("");
   const [creatorList, setCreatorList] = useState([]);
 
-  const filteredEvents = applyFilter(
-    events,
-    searchQuery,
-    organizationDateQuery,
-    creatorQuery
-  );
+  const filteredEvents = applyFilter(events, searchQuery, creatorQuery);
 
   const isEventNotFound = filteredEvents.length === 0;
 
@@ -136,11 +124,6 @@ export default function Event() {
     setPage(0);
   };
 
-  const handleOrganizationDateQuery = (event) => {
-    setOrganizationDateQuery(event.target.value);
-    setPage(0);
-  };
-
   const handleCreatorQuery = (event) => {
     setCreatorQuery(event.target.value);
     setPage(0);
@@ -152,12 +135,6 @@ export default function Event() {
       query: searchQuery,
       label: "Search by Title, Type...",
       onChange: handleSearchQuery,
-    },
-    {
-      type: "date",
-      query: organizationDateQuery,
-      label: "Organization Day",
-      onChange: handleOrganizationDateQuery,
     },
     {
       type: "select",
