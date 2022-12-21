@@ -54,7 +54,8 @@ function applyFilter(array, searchQuery, reporterQuery, statusQuery) {
       filteredList = filter(
         filteredList,
         (_report) =>
-          _report.sent_by && _report.sent_by._id.trim() === reporterQuery.trim()
+          _report.sent_by &&
+          _report.sent_by?._id.trim() === reporterQuery.trim()
       );
     }
     if (statusQuery) {
@@ -219,7 +220,7 @@ export default function Report() {
                             {content}
                           </TableCell>
                           <TableCell component="th" scope="row">
-                            <AvatarUser id={sent_by._id} />
+                            <AvatarUser id={sent_by?._id} />
                           </TableCell>
                           <TableCell align="left">
                             <Label

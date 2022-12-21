@@ -112,7 +112,7 @@ export default function Post() {
   const handleGetAllPost = async () => {
     try {
       const res = await axios.get("http://localhost:8000/post/getAll");
-      setPosts(res.data);
+      setPosts(res?.data);
       const res2 = await axios.get("http://localhost:8000/user/getAllUser");
       const temp = [{ value: "", display: "All" }];
       for (let i = 0; i < res2.data.length; i++) {
@@ -223,6 +223,7 @@ export default function Post() {
                   rowCount={filteredPosts.length}
                 />
                 <TableBody>
+                  {console.log(filteredPosts)}
                   {filteredPosts
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
@@ -271,7 +272,7 @@ export default function Post() {
                               alignItems="center"
                               spacing={2}
                             >
-                              <AvatarUser id={created_by.id} />
+                              <AvatarUser id={created_by?._id} />
                               <Typography variant="subtitle2" noWrap>
                                 {created_by.fullname}
                               </Typography>
